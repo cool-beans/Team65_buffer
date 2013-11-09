@@ -14,17 +14,29 @@
 <body>
    <div class="header">
       <div class="row">
-         <h1>Application Header</h1>
-         {% include 'final_project/partials/login.html' %}
+         <div class=pull-left">
+            <h1>Application Header</h1>
+         </div>
+         <div class="pull-right">
+            {% include 'final_project/partials/login.html' %}
+         </div>
       </div>
    </div><!-- header-->
    <div class="content">
       <div class="navigation">
-         {% include 'final_project/partials/navigation.html' %}
+         <div class="row">
+            <div class="span12">
+               {% include 'final_project/partials/navigation.html' %}
+            </div>
+         </div>
       </div>
-      {% block content %}{% endblock %}
+      <div class="row">
+         {% block content %}{% endblock %}
+      </div>
    </div><!--content-->
    <div class="footer">
+      <div class="row">
+      </div>
    </div><!--footer-->
 </body>
 </html>
