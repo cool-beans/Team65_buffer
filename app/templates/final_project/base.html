@@ -9,8 +9,20 @@
 
    <script type="text/javascript" src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
+   <script type="text/javascript" src="{% static 'js/bootstrap-carousel.js' %}"></script>
 </head>
 <body>
-{% block content %}{% endblock %}
+   <div class="header">
+      <h1>Application Header</h1>
+         {% include 'final_project/partials/login.html' %}
+   </div><!-- header-->
+   <div class="content">
+      <div class="navigation">
+         {% include 'final_project/partials/navigation.html' %}
+      </div>
+      {% block content %}{% endblock %}
+   </div><!--content-->
+   <div class="footer">
+   </div><!--footer-->
 </body>
 </html>
