@@ -1,0 +1,59 @@
+{% extends "final_project/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Members{% endblock %}
+
+{% block content %}
+<div class="row">
+   <div class="span4">
+      <div class="panel panel=info">
+         <div class="list-group">
+             <a href="#" class="list-group-item">Dapibus ac facilisis in<span class="badge">14</span></a>
+             <a href="#" class="list-group-item">Dapibus ac facilisis in<span class="badge">14</span></a>
+             <a href="#" class="list-group-item">Dapibus ac facilisis in<span class="badge">14</span></a>
+             <a href="#" class="list-group-item">Dapibus ac facilisis in<span class="badge">14</span></a>
+         </div>
+      </div>
+   </div>
+   <div class="span8">
+      <table class="table table-hover">
+         <tr>
+            <th>Member First Name</th>
+            <th>Member Last Name</th>
+            <th>Active</th>
+            <th>Username</th>
+            <th>Email</th>
+         </tr>
+            <!-- for member in members -->
+         <tr>
+            <td>member.first_name</td>
+            <td>member.last_name</td>
+            <td>member.active</td>
+            <td>member.username</td>
+            <td>member.email</td>
+         </tr>
+         <tr>
+            <td>member.first_name</td>
+            <td>member.last_name</td>
+            <td>member.active</td>
+            <td>member.username</td>
+            <td>member.email</td>
+         </tr>
+         <tr>
+            <td>member.first_name</td>
+            <td>member.last_name</td>
+            <td>member.active</td>
+            <td>member.username</td>
+            <td>member.email</td>
+         </tr>
+         <tr>
+            <td>member.first_name</td>
+            <td>member.last_name</td>
+            <td>member.active</td>
+            <td>member.username</td>
+            <td>member.email</td>
+         </tr>
+         <!-- end forloop -->
+      </table>
+   </div>
+</div>
+{% endblock %}
