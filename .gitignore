@@ -55,3 +55,6 @@ nosetests.xml
 # Sublime project files
 *.sublime-project
 *.sublime-workspace
+
+# Vim
+*.swp
