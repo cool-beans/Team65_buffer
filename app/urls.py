@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     url(r'^about/$', 'app.views.about', name='about'),
     url(r'^programs/$', 'app.views.programs', name='programs'),
     #log in
-   url(r'^login/$', 'django.contrib.auth.views.login', {'template_name':'app/login.html'}, name='login'),
+   	url(r'^login/$', 'django.contrib.auth.views.login', {'template_name':'app/login.html'}, name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
     url(r'^register/$', 'app.views.register', name='register'),
    # Programs
@@ -16,5 +16,7 @@ urlpatterns = patterns('',
 
    # Members
     url(r'^members/$', 'app.views.members', name='members'),
-    url(r'^member_profile/$', 'app.views.member_profile', name='member_profile'),
+    url(r'^member_profile/(?P<member_id>\d+)$', 'app.views.member_profile', name='member_profile'),
+    url(r'^filter_members/(?P<program_id>\d+)$', 'app.views.filter_members', name='filter_members'),
+    url(r'^member_edit/(?P<member_id>\d+)$', 'app.views.member_edit', name='member_edit'),
 )
