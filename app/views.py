@@ -57,7 +57,7 @@ def register(request):
     		or not 'email' in request.POST or not request.POST['email']:
 
     		errors.append('Missing a field.')
-    		
+
     	# Check to make sure username was unique
     	elif len(User.objects.filter(username=request.POST['username'])) > 0:
 			errors.append('Username is already taken.')
@@ -65,7 +65,7 @@ def register(request):
     	# Check to make sure passwords match
     	elif request.POST['pass1'] != request.POST['pass2']:
     		errors.append('Passwords do not match.')
-    	
+
     	# Check to make sure phone is 10 digits
     	elif len(request.POST['phone']) != 10:
     		errors.append('Phone must be 10 digits.')
@@ -79,6 +79,7 @@ def register(request):
 			new_user.save()
 			new_user_id = new_user.id
 			context['user'] =  new_user
+            #membership = Membership(name="Blah",allowed_feq=1,price=100.00)
 
 			# Create a new member and associate it with the new user
 			new_member = Member(user=new_user,\
@@ -87,7 +88,9 @@ def register(request):
 								birthday=request.POST['birthday'],\
 								phone=request.POST['phone'],\
 								email=request.POST['email'],\
-								enroll_date=datetime.now())
+								enroll_date=datetime.now(),\
+                                membership=membership#incorrect
+                                )
 			new_member.save()
 
 			# Logs in new user and redirects to their member_profile page
@@ -174,7 +177,7 @@ def member_edit(request, member_id):
 	elif request.method == 'POST':
 		# Gigantic if statement checking if form is valid and fields are
     	# not blank
-    	if not 'pass1' in request.POST or not request.POST['pass1']\
+         if not 'pass1' in request.POST or not request.POST['pass1']\
     		or not 'pass2' in request.POST or not request.POST['pass2']\
     		or not 'first_name' in request.POST or not request.POST['first_name']\
     		or not 'last_name' in request.POST or not request.POST['last_name']\
@@ -183,11 +186,11 @@ def member_edit(request, member_id):
     		or not 'email' in request.POST or not request.POST['email']:
 
     		errors.append('Missing a field.')
-    		
+
     	# Check to make sure passwords match
     	elif request.POST['pass1'] != request.POST['pass2']:
     		errors.append('Passwords do not match.')
-    	
+
     	# Check to make sure phone is 10 digits
     	elif len(request.POST['phone']) != 10:
     		errors.append('Phone must be 10 digits.')
@@ -202,7 +205,7 @@ def member_edit(request, member_id):
     		old_user.password = request.POST['pass1']
     		old_user.save()
 
-    		# Change first_name, last_name, birthday, phone, and email 
+    		# Change first_name, last_name, birthday, phone, and email
     		# of the old_member and save the old_member
     		old_member.first_name = request.POST['first_name']
     		old_member.last_name = request.POST['last_name']

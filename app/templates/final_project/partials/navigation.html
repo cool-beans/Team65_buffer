@@ -15,7 +15,9 @@
        <li class="active"><a href="{% url 'home' %}">Home</a></li>
        <li class="active"><a href="{% url 'about' %}">About Us</a></li>
        <li><a href="{% url 'programs' %}">Programs</a></li>
+       {% if user.is_authenticated %}
        <li><a href="{% url 'members' %}">Members</a></li>
+       {% endif %}
     </ul>
   </div><!-- /.navbar-collapse -->
 </div>

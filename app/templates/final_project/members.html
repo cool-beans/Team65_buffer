@@ -22,7 +22,7 @@
             <th>Email</th>
             <th>Profie</th>
          </tr>
-            <!-- for member in members -->
+         {% for member in member %}
          <tr>
             <td>member.first_name</td>
             <td>member.last_name</td>
@@ -31,31 +31,8 @@
             <td>member.email</td>
             <td><button type="button" class="btn btn-primary">View Profile</button></td>
          </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.username</td>
-            <td>member.email</td>
-            <td><button type="button" class="btn btn-primary">View Profile</button></td>
-         </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.username</td>
-            <td>member.email</td>
-            <td><button type="button" class="btn btn-primary">View Profile</button></td>
-         </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.username</td>
-            <td>member.email</td>
-            <td><button type="button" class="btn btn-primary">View Profile</button></td>
-         </tr>
-         <!-- end forloop -->
+         {% endfor %}
+                  <!-- end forloop -->
       </table>
    </div>
 </div><!--row-->

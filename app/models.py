@@ -26,7 +26,7 @@ class Member(models.Model):
 
 	phone = models.CharField(max_length=10)
 	email = models.CharField(max_length=30)
-	
+
 	enroll_date = models.DateField()
 	membership = models.ForeignKey(Membership)
 	membership_exp_date = models.DateField()
@@ -68,7 +68,7 @@ class Recurrence(models.Model):
 
 	def __unicode__(self):
 		return self.EventType.name + "'s Recurrence"
-		
+
 class EventType(models.Model):
 	# Has many Events associated with one EventType
 	name = models.CharField(max_length=20)
