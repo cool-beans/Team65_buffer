@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
@@ -30,9 +30,9 @@ def about(request):
     context = {}
     return render(request, 'final_project/about.html', context)
 
-def login(request):
-    context = {}
-    return render(request, 'final_project/login.html', context)
+#def login(request):
+#    context = {}
+#    return render(request, 'final_project/login.html', context)
 
 def register(request):
     context = {}
@@ -72,12 +72,6 @@ def register(request):
 
         # Data was all clean, can create and save new user and member
         else:
-            print "username: "+request.POST['username']
-            print "first_name: "+request.POST['first_name']
-            print "last_name: "+request.POST['last_name']
-            print "phone: "+request.POST['phone']
-            print "enroll_date: "+request.POST['enroll_date']
-            print "username: "+request.POST['username']
             # create a new user and save it
             new_user = User.objects.create_user(username=request.POST['username'], \
                                         password=request.POST['pass1'], \
@@ -94,16 +88,16 @@ def register(request):
                                 birthday=request.POST['birthday'],\
                                 phone=request.POST['phone'],\
                                 email=request.POST['email'],\
-                                enroll_date=datetime.now(),\
+                                creation_date=datetime.now(),\
                                 )
             new_member.save()
-
+            
             # Logs in new user and redirects to their member_profile page
             new_user = authenticate(username=request.POST['username'], \
                                     password=request.POST['pass1'])
             login(request, new_user)
 
-            return redirect('/final_project/member_profile/' + new_user_id)
+            return redirect('/final_project/member_profile/' + str(new_user_id))
 
     context['errors'] = errors
     return render(request, 'final_project/register.html', context)
