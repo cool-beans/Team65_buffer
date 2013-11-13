@@ -51,6 +51,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+.db
 
 # Sublime project files
 *.sublime-project
