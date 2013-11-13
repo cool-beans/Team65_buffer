@@ -28,7 +28,7 @@ class Member(models.Model):
     email = models.CharField(max_length=30)
 
     creation_date = models.DateField()
-    membership = models.ForeignKey(Membership, blank=True)
+    membership = models.ForeignKey(Membership, null=True, blank=True)
     membership_exp_date = models.DateField(null=True, blank=True)
     #programs = models.ManyToManyField(Program)
     #events = models.ManyToManyField(Event)
