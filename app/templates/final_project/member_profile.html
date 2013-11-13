@@ -1,19 +1,35 @@
 {% extends "final_project/base.html" %}
 {% block title %}Final Project{% endblock %}
-{% block page %}Home{% endblock %}
+{% block page %}Member Profile{% endblock %}
 
 {% block content %}
-Username
-panel
-   panel
-      image
-<div class="panel panel-default">
+<div class="panel panel-info">
   <!-- Default panel contents -->
   <div class="panel-heading">
-     <h1 class="text-center">{{ user.username }}</h1>
+     <h1 class="text-center">{{ member.first_name }} {{ member.last_name }}</h1>
   </div>
   <div class="panel-body">
-
+     <div class="row">
+      <div class="col-lg-3">
+         Profile
+      </div>
+      <div class="col-lg-9">
+      Information
+      <ul class="list-group">
+         <li class="list-group-item">
+            Birthday: {{ member.birthday }}
+         </li>
+         <li class="list-group-item">
+            Phone: {{ member.phone }}
+         </li>
+         <li class="list-group-item">
+            Email: {{ member.email }}
+         </li>
+         <li class="list-group-item">
+            Account Created: {{ member.creation_date }}
+         </li>
+      </div>
+   </div>
   </div><!-- panel-body -->
 </div><!-- panel panel-default -->
 
