@@ -126,7 +126,6 @@ def filter_members (request, program_id):
     user = request.user
     program = Program.objects.get(id=program_id)
     members = Member.objects.filter(program=program).order_by('first_name')
-
     context['user'] = user
     context['members'] = members
     return render(request, 'final_project/members.html', context)
@@ -135,8 +134,8 @@ def filter_members (request, program_id):
 @login_required
 def member_profile(request, member_id):
     context = {}
-    user = request.user
-    member = None
+    user = request.member
+    user = None
 
     print "IN MEMBER_PROFILE!"
     print user.username + "'s member_id: " + str(user.member.id)
@@ -232,7 +231,7 @@ def program_create(request):
     # Make sure that the currently logged in user is a staff member
     if (Staff.objects.get(member=member) is None):
         context = {'error':'This page requires Staff login.',
-                   'user',user,
+                   'user':user,
                    'programs':Program.objects.all()}
         return render(request, 'final_project/programs.html',context)
     if (request.method == 'GET'):
@@ -257,7 +256,7 @@ def program_edit(request, program_id):
     # Make sure that the currently logged in user is a staff member
     if (Staff.objects.get(member=member) is None):
         context = {'error':'This page requires Staff login.',
-                   'user',user,
+                   'user':user,
                    'programs':Program.objects.all()}
         return render(request, 'final_project/programs.html',context)
     if (request.method == 'GET'):
