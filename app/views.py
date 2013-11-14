@@ -134,8 +134,8 @@ def filter_members (request, program_id):
 @login_required
 def member_profile(request, member_id):
     context = {}
-    user = request.member
-    user = None
+    user = request.user
+    member = None
 
     print "IN MEMBER_PROFILE!"
     print user.username + "'s member_id: " + str(user.member.id)
