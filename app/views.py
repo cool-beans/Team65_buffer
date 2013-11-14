@@ -131,11 +131,16 @@ def filter_members (request, program_id):
     context['members'] = members
     return render(request, 'final_project/members.html', context)
 
+#TODO: make member_profile not accessible except by staff and the member themselves.
 @login_required
 def member_profile(request, member_id):
     context = {}
     user = request.user
     member = None
+
+    print "IN MEMBER_PROFILE!"
+    print user.username + "'s member_id: " + str(user.member.id)
+    print "Is trying to access member_id: " + str(member_id)
 
     # If request was a GET, means it got redirected here from the register
     # page. Or the user wanted to view their own profile.
