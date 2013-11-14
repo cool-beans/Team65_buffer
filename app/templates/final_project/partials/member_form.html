@@ -1,0 +1,13 @@
+<form  method="post">
+   Username: <input type="text" name="username" value="{{ member.user.username }}"><br />
+   First Name: <input type="text" name="first_name" value="{{ member.first_name }}"><br />
+   Last Name: <input type="text" name="last_name" value="{{ member.last_name }}"><br />
+            Birthday: <input type="date" name="birthday" value="{{ member.birthday }}"><br />
+            Phone: <input type="text" name="phone" value="{{ member.phone }}"><br />
+            Email: <input type="text" name="email" value="{{ member.email }}"><br />
+            Password: <input type="password" name="pass1"><br />
+            Password Confirm: <input type="password" name="pass2"><br />
+            <input type="submit" value="Submit" />
+            <input type="hidden" name="next" value="{{ next }}" />
+            {% csrf_token %}
+         </form>
