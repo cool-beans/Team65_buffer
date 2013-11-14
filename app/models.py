@@ -4,105 +4,105 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Membership(models.Model):
-	# Many members with a Membership
-	# Many Memberships are allowed in many events
-	name = models.CharField(max_length=20)
-	#allowed_events = models.ManyToManyField(Event)
-	allowed_freq = models.IntegerField()
-	price = models.DecimalField(max_digits=7, decimal_places=2)
+    # Many members with a Membership
+    # Many Memberships are allowed in many events
+    name = models.CharField(max_length=20)
+    #allowed_events = models.ManyToManyField(Event)
+    allowed_freq = models.IntegerField()
+    price = models.DecimalField(max_digits=7, decimal_places=2)
 
-	def __unicode__(self):
-		return self.name
+    def __unicode__(self):
+        return self.name
 
 class Member(models.Model):
-	# Members can be Staff
-	# Many Members can attend many Events
-	# Many Members can be part of many Programs
-	# Members have many Attendence for events
-	user = models.OneToOneField(User)
-	first_name = models.CharField(max_length=100)
-	last_name = models.CharField(max_length=100)
-	birthday = models.DateField()
+    # Members can be Staff
+    # Many Members can attend many Events
+    # Many Members can be part of many Programs
+    # Members have many Attendence for events
+    user = models.OneToOneField(User)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birthday = models.DateField()
 
-	phone = models.CharField(max_length=10)
-	email = models.CharField(max_length=30)
+    phone = models.CharField(max_length=10)
+    email = models.CharField(max_length=30)
 
-	enroll_date = models.DateField()
-	membership = models.ForeignKey(Membership)
-	membership_exp_date = models.DateField()
-	#programs = models.ManyToManyField(Program)
-	#events = models.ManyToManyField(Event)
+    creation_date = models.DateField()
+    membership = models.ForeignKey(Membership, null=True, blank=True)
+    membership_exp_date = models.DateField(null=True, blank=True)
+    #programs = models.ManyToManyField(Program)
+    #events = models.ManyToManyField(Event)
 
-	def __unicode__(self):
-		return self.first_name + " " + self.last_name
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
 
 class Staff(models.Model):
-	# Many staff in many Events, EventTypes and Programs
-	member = models.OneToOneField(Member)
+    # Many staff in many Events, EventTypes and Programs
+    member = models.OneToOneField(Member)
 
-	def __unicode__(self):
-		return self.member.first_name + " " + self.member.last_name
+    def __unicode__(self):
+        return self.member.first_name + " " + self.member.last_name
 
 
 class Program(models.Model):
-	# Many EventTypes in one Program
-	name = models.CharField(max_length=20)
-	description = models.CharField(max_length=500)
-	staff = models.ManyToManyField(Staff)
-	members = models.ManyToManyField(Member)
+    # Many EventTypes in one Program
+    name = models.CharField(max_length=20)
+    description = models.CharField(max_length=500)
+    staff = models.ManyToManyField(Staff)
+    members = models.ManyToManyField(Member)
 
-	def __unicode__(self):
-		return self.name
+    def __unicode__(self):
+        return self.name
 
 
 class Recurrence(models.Model):
-	# Associated with one EventType
-	onSundays = models.BooleanField()
-	onMondays = models.BooleanField()
-	onTuesdays = models.BooleanField()
-	onWednesdays = models.BooleanField()
-	onThursdays = models.BooleanField()
-	onFridays = models.BooleanField()
-	onSaturdays = models.BooleanField()
-	oneTime_date = models.DateField(null=True, blank=True)
+    # Associated with one EventType
+    onSundays = models.BooleanField()
+    onMondays = models.BooleanField()
+    onTuesdays = models.BooleanField()
+    onWednesdays = models.BooleanField()
+    onThursdays = models.BooleanField()
+    onFridays = models.BooleanField()
+    onSaturdays = models.BooleanField()
+    oneTime_date = models.DateField(null=True, blank=True)
 
-	def __unicode__(self):
-		return self.EventType.name + "'s Recurrence"
+    def __unicode__(self):
+        return self.EventType.name + "'s Recurrence"
 
 class EventType(models.Model):
-	# Has many Events associated with one EventType
-	name = models.CharField(max_length=20)
-	program = models.ForeignKey(Program)
-	start = models.TimeField()
-	end = models.TimeField()
-	recurrence = models.OneToOneField(Recurrence)
-	allowed_memberships = models.ManyToManyField(Membership)
-	staff = models.ManyToManyField(Staff)
+    # Has many Events associated with one EventType
+    name = models.CharField(max_length=20)
+    program = models.ForeignKey(Program)
+    start = models.TimeField()
+    end = models.TimeField()
+    recurrence = models.OneToOneField(Recurrence)
+    allowed_memberships = models.ManyToManyField(Membership)
+    staff = models.ManyToManyField(Staff)
 
-	def __unicode__(self):
-		return self.name
+    def __unicode__(self):
+        return self.name
 
 # This is the physical calender event generated by an EventType
 # which may repeatedly generate events (i.e. for every Tuesday)
 # Otherwise, how would you delete a recurring event
 # for just one day?
 class Event(models.Model):
-	# Events are associated with an EventType
-	name = models.CharField(max_length=20)
-	date = models.DateField()
-	start = models.TimeField()
-	end = models.TimeField()
-	staff = models.ManyToManyField(Staff)
-	attendees = models.ManyToManyField(Member)
-	event_type = models.ForeignKey(EventType)
+    # Events are associated with an EventType
+    name = models.CharField(max_length=20)
+    date = models.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
+    staff = models.ManyToManyField(Staff)
+    attendees = models.ManyToManyField(Member)
+    event_type = models.ForeignKey(EventType)
 
-	def __unicode__(self):
-		return self.name
+    def __unicode__(self):
+        return self.name
 
 class Attendance(models.Model):
-	member = models.ForeignKey(Member)
-	event = models.ForeignKey(Event)
-	sign_in_time = models.TimeField()
+    member = models.ForeignKey(Member)
+    event = models.ForeignKey(Event)
+    sign_in_time = models.TimeField()
 
-	def __unicode__(self):
-		return self.sign_in_time
+    def __unicode__(self):
+        return self.sign_in_time
