@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row">
       <div class="span12">
-         <form action={% url 'login' %} method="post">
+         <form action="{% url 'login' %}" method="post">
             {{ form.username.label_tag }}
             <input type="text" name="username"><br />
             {{ form.password.label_tag }}
