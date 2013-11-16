@@ -9,41 +9,22 @@
          <tr>
             <th>Program Name</th>
             <th>Instructor</th>
-            <th>Active</th>
+            <th>Visible</th>
             <th>Number of Members</th>
             <th>View Profile</th>
          </tr>
-            <!-- for member in members -->
+
+      {% for program in programs %}
          <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.email</td>
-            <td><a class="btn btn-primary" href="{% url 'program_profile' %}">View Profile</a></td>
+            <td>{{ program.name }}</td>
+            <td>{{ program.description }}</td>
+            <td>{{ program.visible }}</td>
+            <td>{{ program.members.count }}</td>
+            <td><button type="button" class="btn btn-primary">View Program</button></td>
          </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.email</td>
-            <td><a class="btn btn-primary" href="{% url 'program_profile' %}">View Profile</a></td>
-         </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.email</td>
-            <td><a class="btn btn-primary" href="{% url 'program_profile' %}">View Profile</a></td>
-         </tr>
-         <tr>
-            <td>member.first_name</td>
-            <td>member.last_name</td>
-            <td>member.active</td>
-            <td>member.email</td>
-            <td><a class="btn btn-primary" href="{% url 'program_profile' %}">View Profile</a></td>
-         </tr>
+         {% endfor %}
          <!-- end forloop -->
-      </table>
+     </table>
    </div>
 </div><!--row-->
 {% endblock %}

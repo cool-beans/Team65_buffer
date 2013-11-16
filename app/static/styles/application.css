@@ -1,6 +1,9 @@
 /* Color Variables */
 /*Fonts*/
 /*Global Styles*/
+th {
+  background-color: blue; }
+
 html, body {
   height: 100%;
   font-family: "Comfortaa";
@@ -67,6 +70,10 @@ form {
     left: 4%; }
   form input[type=submit]:hover {
     background-color: #e7e7e7; }
+
+/* Member/Programs Tables */
+th {
+  background-color: blue; }
 
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5 {

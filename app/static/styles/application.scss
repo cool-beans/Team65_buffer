@@ -12,6 +12,10 @@ $yellow: #FFF377;
 $header_font:"Iceland";
 $content_font:"Comfortaa";
 /*Global Styles*/
+th{
+   background-color:blue;
+}
+
 html, body {
   height: 100%;
   font-family: $content_font;
@@ -99,10 +103,15 @@ form{//#login{
    input[type=submit]:hover{
       background-color:$medium_grey;
    }
-
-
 }
 
+/* Member/Programs Tables */
+//table{
+   th{
+      background-color:blue;
+   }
+
+//}
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5{
    height:200px;
