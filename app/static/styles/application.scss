@@ -50,7 +50,16 @@ h1,h2,h3,h4,h5,h6{
 #footer {
   height: 100px;
 }
-
+/* Homepage */
+#homepage_carousel{
+   position:relative;
+   left:25%;
+   width:50%;
+   img{
+      width:100%;
+      height:300px;
+   }
+}
 #Color1, #Color2, #Color3, #Color4, #Color5{
    height:200px;
    width:100px;
