@@ -10,5 +10,28 @@ h1,h2,h3,h4,h5,h6{
 
 #footer {
   height: 100px;
-  background:green;
+}
+
+#Color1, #Color2, #Color3, #Color4, #Color5{
+   height:200px;
+   width:100px;
+   display:inline-block;
+}
+#Color0{
+   background-color:#F5F5F5;
+}
+#Color1{
+   background-color:#7AEC74;//#3FC380;
+}
+#Color2{
+   background-color:#F1B2A3;//#F1C3B8;//#F1B2A3;//#E28181;
+}
+#Color3{
+   background-color:#BCDFFA;//#87C3F6;
+}
+#Color4{
+   background-color:#FFF377;//#FFCA4A;
+}
+#Color5{
+   background-color:#D0D0D0;
 }
