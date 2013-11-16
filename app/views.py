@@ -11,7 +11,7 @@ from django.contrib.auth import login, authenticate
 
 # Imports the models
 from app.models import *
-    
+
 
 # Action for the default shared-todo-list/ route.
 def home(request):
@@ -91,7 +91,7 @@ def register(request):
                                 creation_date=datetime.now(),\
                                 )
             new_member.save()
-            
+
             # Logs in new user and redirects to their member_profile page
             new_user = authenticate(username=request.POST['username'], \
                                     password=request.POST['pass1'])
@@ -236,7 +236,7 @@ def program_create(request):
         return render(request, 'final_project/programs.html',context)
     if (request.method == 'GET'):
         context = {'user': request.user}
-        return render(request,'final_project/program_create.html',context)    
+        return render(request,'final_project/program_create.html',context)
     form = ProgramCreation(request.POST)
     if not form.is_valid():
         context = {'error':'Bad name or description provided.'}
@@ -302,6 +302,4 @@ def program_add_member(request,program_id):
     program.save()
     context = {'user':request.user,'program':program}
     return render(request,'final_project/program_profile.html',context)
-
-
 
