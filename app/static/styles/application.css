@@ -1,19 +1,14 @@
 html, body {
   height: 100%;
+  font-family: "Comfortaa";
+  color:#666;
 }
 
-#wrapper {
-  min-height: 100%;
+h1,h2,h3,h4,h5,h6{
+   font-family:"Iceland";
 }
 
-#main {
-  overflow:auto;
-  padding-bottom:150px;
-}
-
-.footer {
-  position: relative;
-  height: 150px;
-  clear:both;
-  padding-top:20px;
+#footer {
+  height: 100px;
+  background:green;
 }
