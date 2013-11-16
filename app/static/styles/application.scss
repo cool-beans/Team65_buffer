@@ -19,6 +19,7 @@ h1,h2,h3,h4,h5,h6{
 }
 .navbar{
    background-image:none;
+   box-shadow:none;
   h1{
      margin:0 10% 0 50%;
   }
@@ -42,7 +43,10 @@ h1,h2,h3,h4,h5,h6{
      }
   }
 }
-
+.content{
+   position:relative;
+   top:65px;//20px;
+}
 #footer {
   height: 100px;
 }
