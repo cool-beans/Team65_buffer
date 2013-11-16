@@ -30,3 +30,10 @@ $(window).bind("load", function() {
                .resize(positionFooter)
 
 });
+/* Homepage */
+//script to initalize the carousel
+$(document).ready(function(){
+    $('.carousel').carousel({
+      interval: 2000
+   });
+});

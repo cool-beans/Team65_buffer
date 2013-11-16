@@ -1,3 +1,4 @@
+{% load base_extra_tags %}
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
@@ -13,13 +14,12 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-       <li class="active"><a href="{% url 'home' %}">Home</a></li>
-       <li class="active"><a href="{% url 'about' %}">About Us</a></li>
-       <li><a href="{% url 'programs' %}">Programs</a></li>
+       <li class="{% get_nav_page_class request 'home' %}"><a href="{% url 'home' %}">Home</a></li>
+       <li class="{% get_nav_page_class request 'about' %}"><a href="{% url 'about' %}">About Us</a></li>
+       <li class="{% get_nav_page_class request 'programs' %}"><a href="{% url 'programs' %}">Programs</a></li>
        {% if user.is_authenticated %}
-       <li><a href="{% url 'members' %}">Members</a></li>
+       <li class="{% get_nav_page_class request 'members' %}"><a href="{% url 'members' %}">Members</a></li>
        {% endif %}
-       <li><a href="{% url 'member_profile' 1 %}">Members</a></li>
     </ul>
   </div><!-- /.navbar-collapse -->
 </div>
