@@ -1,0 +1,72 @@
+/* Color Variables */
+$text_color: #666;
+$light_grey: #F5F5F5;
+$medium_grey: #D0D0D0;
+$green: #7AEC74;
+$pink: #F1B2A3;
+$blue: #BCDFFA;
+$yellow: #FFF377;
+
+
+html, body {
+  height: 100%;
+  font-family: "Comfortaa";
+  color:$text_color;
+}
+
+h1,h2,h3,h4,h5,h6{
+   font-family:"Iceland";
+}
+.navbar{
+   background-image:none;
+  h1{
+     margin:0 10% 0 50%;
+  }
+  .navbar-brand{
+     padding:0;
+  }
+  .navbar-nav{
+     .active{
+        a{
+            background-image:none;
+            background-repeat:none;
+            box-shadow:none;
+         }
+     }
+     a{
+        margin:0 50% 0 0;
+         &:hover{
+            background-image: linear-gradient(to bottom, #EBEBEB 0%, #F3F3F3 100%);
+         }
+
+     }
+  }
+}
+
+#footer {
+  height: 100px;
+}
+
+#Color1, #Color2, #Color3, #Color4, #Color5{
+   height:200px;
+   width:100px;
+   display:inline-block;
+}
+#Color0{
+   background-color:$light_grey;
+}
+#Color1{
+   background-color:$green;//#3FC380;
+}
+#Color2{
+   background-color:$pink;//#F1C3B8;//#F1B2A3;//#E28181;
+}
+#Color3{
+   background-color:$blue;//#87C3F6;
+}
+#Color4{
+   background-color:$yellow;//#FFCA4A;
+}
+#Color5{
+   background-color:$medium_grey;
+}

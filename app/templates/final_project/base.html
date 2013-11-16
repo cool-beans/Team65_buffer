@@ -17,9 +17,6 @@
 <body>
    <div class="header">
       <div class="row">
-         <div class=pull-left">
-            <h1>Application Header</h1>
-         </div>
          <div class="pull-right">
             {% include 'final_project/partials/login.html' %}
          </div>
@@ -29,7 +26,9 @@
       <div class="navigation">
          <div class="row">
             <div class="col-lg-12">
-               {% include 'final_project/partials/navigation.html' %}
+               <div class="pull-left">
+                  {% include 'final_project/partials/navigation.html' %}
+               </div>
                <!--with page={% block page %}None{% endblock %}-->
             </div>
          </div>

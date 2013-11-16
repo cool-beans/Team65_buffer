@@ -1,37 +1,49 @@
+/* Color Variables */
 html, body {
   height: 100%;
   font-family: "Comfortaa";
-  color:#666;
-}
+  color: #666666; }
 
-h1,h2,h3,h4,h5,h6{
-   font-family:"Iceland";
-}
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Iceland"; }
+
+.navbar {
+  background-image: none; }
+  .navbar h1 {
+    margin: 0 10% 0 50%; }
+  .navbar .navbar-brand {
+    padding: 0; }
+  .navbar .navbar-nav .active a {
+    background-image: none;
+    background-repeat: none;
+    box-shadow: none; }
+  .navbar .navbar-nav a {
+    margin: 0 50% 0 0; }
+    .navbar .navbar-nav a:hover {
+      background-image: linear-gradient(to bottom, #ebebeb 0%, #f3f3f3 100%); }
 
 #footer {
-  height: 100px;
-}
+  height: 100px; }
 
-#Color1, #Color2, #Color3, #Color4, #Color5{
-   height:200px;
-   width:100px;
-   display:inline-block;
-}
-#Color0{
-   background-color:#F5F5F5;
-}
-#Color1{
-   background-color:#7AEC74;//#3FC380;
-}
-#Color2{
-   background-color:#F1B2A3;//#F1C3B8;//#F1B2A3;//#E28181;
-}
-#Color3{
-   background-color:#BCDFFA;//#87C3F6;
-}
-#Color4{
-   background-color:#FFF377;//#FFCA4A;
-}
-#Color5{
-   background-color:#D0D0D0;
-}
+#Color1, #Color2, #Color3, #Color4, #Color5 {
+  height: 200px;
+  width: 100px;
+  display: inline-block; }
+
+#Color0 {
+  background-color: whitesmoke; }
+
+#Color1 {
+  background-color: #7aec74; }
+
+#Color2 {
+  background-color: #f1b2a3; }
+
+#Color3 {
+  background-color: #bcdffa; }
+
+#Color4 {
+  background-color: #fff377; }
+
+#Color5 {
+  background-color: #d0d0d0; }
