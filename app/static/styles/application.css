@@ -1,4 +1,5 @@
 /* Color Variables */
+/*Global Styles*/
 html, body {
   height: 100%;
   font-family: "Comfortaa";
@@ -7,9 +8,11 @@ html, body {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Iceland"; }
 
+/*Navigation Bar Styles */
 .navbar {
   background-image: none;
-  box-shadow: none; }
+  box-shadow: none;
+  background-color: whitesmoke; }
   .navbar h1 {
     margin: 0 10% 0 50%; }
   .navbar .navbar-brand {
@@ -17,7 +20,8 @@ h1, h2, h3, h4, h5, h6 {
   .navbar .navbar-nav .active a {
     background-image: none;
     background-repeat: none;
-    box-shadow: none; }
+    box-shadow: none;
+    background-color: #e7e7e7; }
   .navbar .navbar-nav a {
     margin: 0 50% 0 0; }
     .navbar .navbar-nav a:hover {
@@ -39,6 +43,7 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     height: 300px; }
 
+/*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5 {
   height: 200px;
   width: 100px;
@@ -60,4 +65,4 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #fff377; }
 
 #Color5 {
-  background-color: #d0d0d0; }
+  background-color: #e7e7e7; }

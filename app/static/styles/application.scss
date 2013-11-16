@@ -1,13 +1,14 @@
 /* Color Variables */
 $text_color: #666;
 $light_grey: #F5F5F5;
-$medium_grey: #D0D0D0;
+$medium_grey: #E7E7E7;
+$dark_grey: #D0D0D0;
 $green: #7AEC74;
 $pink: #F1B2A3;
 $blue: #BCDFFA;
 $yellow: #FFF377;
 
-
+/*Global Styles*/
 html, body {
   height: 100%;
   font-family: "Comfortaa";
@@ -17,9 +18,11 @@ html, body {
 h1,h2,h3,h4,h5,h6{
    font-family:"Iceland";
 }
+/*Navigation Bar Styles */
 .navbar{
    background-image:none;
    box-shadow:none;
+   background-color:$light_grey;
   h1{
      margin:0 10% 0 50%;
   }
@@ -32,6 +35,7 @@ h1,h2,h3,h4,h5,h6{
             background-image:none;
             background-repeat:none;
             box-shadow:none;
+            background-color:$medium_grey;
          }
      }
      a{
@@ -45,7 +49,7 @@ h1,h2,h3,h4,h5,h6{
 }
 .content{
    position:relative;
-   top:65px;//20px;
+   top:65px;
 }
 #footer {
   height: 100px;
@@ -60,6 +64,7 @@ h1,h2,h3,h4,h5,h6{
       height:300px;
    }
 }
+/*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5{
    height:200px;
    width:100px;
