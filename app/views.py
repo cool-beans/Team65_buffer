@@ -131,11 +131,13 @@ def filter_members (request, program_id):
     context = {}
     user = request.user
     members = []
-    if program_id == 0:
-        members = Member.objects.all()
-    else:
+    try:
         program = Program.objects.get(id=program_id)
         members = Member.objects.filter(program=program).order_by('first_name')
+    except Program.DoesNotExist:
+        members = Member.objects.all()
+
+
     context['user'] = user
     context['members'] = members
     context['programs'] = Program.objects.all()
