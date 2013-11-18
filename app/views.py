@@ -190,56 +190,68 @@ def member_profile(request, member_id):
 def member_edit(request, member_id):
     context = {}
     user = request.user
-    member = None
-
+    member = Member.objects.get(id=member_id)
+    errors = []
     # If simply getting the page to edit
     if request.method == 'GET':
+        in_program = [ prog for prog in Program.objects.all() \
+                              if len(prog.members.filter(id=member.id)) != 0]
+        not_in_program = [ prog for prog in Program.objects.all() \
+                              if len(prog.members.filter(id=member.id)) == 0]
+        print not_in_program
+
+        context['in_program'] = in_program
+        context['not_in_program'] = not_in_program
         member = Member.objects.get(id=member_id)
 
     # If trying to save changes to member
     elif request.method == 'POST':
         # Gigantic if statement checking if form is valid and fields are
         # not blank
-        if not 'pass1' in request.POST or not request.POST['pass1']\
-            or not 'pass2' in request.POST or not request.POST['pass2']\
-            or not 'first_name' in request.POST or not request.POST['first_name']\
-            or not 'last_name' in request.POST or not request.POST['last_name']\
-            or not 'birthday' in request.POST or not request.POST['birthday']\
-            or not 'phone' in request.POST or not request.POST['phone']\
-            or not 'email' in request.POST or not request.POST['email']:
-
-            errors.append('Missing a field.')
-
-        # Check to make sure passwords match
-        elif request.POST['pass1'] != request.POST['pass2']:
-            errors.append('Passwords do not match.')
-
-        # Check to make sure phone is 10 digits
-        elif len(request.POST['phone']) != 10:
-            errors.append('Phone must be 10 digits.')
 
         # Data was all clean, can modify and save old_user and old_member
         # Then redirect to member_profile.html
+        form = MemberEdit(request.POST)
+
+        if not form.is_valid():
+            errors.append('Error, bad form data')
+            context = {'user':user,'member':member,
+                       'errors':errors}
+            return render(request,'final_project/member_edit.html',context)
         else:
             old_member = Member.objects.get(id=member_id)
             old_user = old_member.user
 
-            # Change the password of the old_user and save the old_user.
-            old_user.password = request.POST['pass1']
-            old_user.save()
-
             # Change first_name, last_name, birthday, phone, and email
             # of the old_member and save the old_member
-            old_member.first_name = request.POST['first_name']
-            old_member.last_name = request.POST['last_name']
-            old_member.birthday = request.POST['birthday']
-            old_member.phone = request.POST['phone']
-            old_member.email = request.POST['email']
+            if form.cleaned_data['first_name'] is not None:
+                old_member.first_name = request.POST['first_name']
+            if form.cleaned_data['last_name'] is not None:
+                old_member.last_name = request.POST['last_name']
+            if form.cleaned_data['birthday'] is not None:
+                old_member.birthday = request.POST['birthday']
+            if form.cleaned_data['phone'] is not None:
+                old_member.phone = request.POST['phone']
+            if form.cleaned_data['email'] is not None:
+                old_member.email = request.POST['email']
             old_member.save()
+            context['user'] = user
+            context['member'] = old_member
+            context['errors'] = errors
+            for prog in Program.object.all():
+                name = prog.name
+                if name in request.POST and request.POST[name]:
+                    if name == 'remove':
+                        prog.members.remove(member)
+                    elif name == 'add':
+                        prog.members.add(member)
+                    prog.save()
+
             return redirect('/final_project/member_profile/' + member_id)
 
     context['user'] = user
     context['member'] = member
+    context['errors'] = errors
     return render(request, 'final_project/member_edit.html', context)
 
 
@@ -305,6 +317,13 @@ def program_edit(request, program_id):
 @login_required
 def program_add_staff(request,program_id):
     # Add a staff member to a program.
+    member = Member.objects.get(user=request.user)
+    try:
+        staff = Staff.objects.get(member=member)
+    except:
+        programs = Program.objects.all()
+        context = {'programs':programs,'user':request.user}
+        return render('final_project/programs.html',context)
     program = Program.objects.get(id=program_id)
     if not 'staff_id' in request.POST or not request.POST['staff_id']:
         context = {'errors':['Error, did not select a valid staff member.'],'user':request.user,

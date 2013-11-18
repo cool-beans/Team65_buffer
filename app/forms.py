@@ -10,6 +10,16 @@ class ProgramCreation(forms.ModelForm):
 
 
 class ProgramMod(forms.Form):
-    name = models.CharField(max_length=20)
-    description = models.CharField(max_length=500)
+    name = forms.CharField(max_length=20)
+    description = forms.CharField(max_length=500)
+
+
+
+class MemberEdit(forms.Form):
+    first_name = forms.CharField(max_length=100,required=False)
+    last_name = forms.CharField(max_length=100,required=False)
+    birthday = forms.DateField(required=False)
+
+    phone = forms.CharField(max_length=10,required=False)
+    email = forms.CharField(max_length=30,required=False)
 
