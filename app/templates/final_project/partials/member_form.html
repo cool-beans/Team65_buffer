@@ -18,13 +18,13 @@
       <input type="password" name="pass2"><br />
    {% endif %}
    Add Programs<br />
-   {% for program in in_programs %}
+   {% for program in in_program %}
       <input type="checkbox" name="{{ program.name }}" value="add">
    {% endfor %}
    <br />
    Remove Programs<br />
-   {% for program in not_in_programs %}
-      <input type="checkbox" name="{{ program.name }}" value="remove">
+   {% for program in not_in_program %}
+   <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
    {% endfor %}
    <br />
    <input type="submit" value="Submit" />
