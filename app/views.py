@@ -108,8 +108,6 @@ def register(request):
                                 creation_date=datetime.now(),\
                                 )
             new_member.save()
-            staff = Staff(member=new_member)
-            staff.save()
             # Logs in new user and redirects to their member_profile page
             new_user = authenticate(username=request.POST['username'], \
                                     password=request.POST['pass1'])
@@ -142,11 +140,18 @@ def members(request):
 def filter_members (request, program_id):
     context = {}
     user = request.user
-    program = Program.objects.get(id=program_id)
-    members = Member.objects.filter(program=program).order_by('first_name')
+    members = []
+    if program_id == 0:
+        members = Member.objects.all()
+    else:
+        program = Program.objects.get(id=program_id)
+        members = Member.objects.filter(program=program).order_by('first_name')
     context['user'] = user
     context['members'] = members
+    context['programs'] = Program.objects.all()
     return render(request, 'final_project/members.html', context)
+
+
 
 #TODO: make member_profile not accessible except by staff and the member themselves.
 @login_required
@@ -189,22 +194,6 @@ def member_profile(request, member_id):
 #	- birthday
 #	- phone
 #	- email
-
-@login_required
-def member_filter(request):
-    member = Member.objects.egt(user=request.user)
-    try:
-        st = Staff.objects.get(member=member)
-    except Staff.DoesNotExist:
-        context = {'user':request.user,'member':member,'errors':['Error, must be Staff.']}
-        return render(request,'final_project/index.html',context)
-    context = {}
-    for program in Program.objects.all():
-        context[program.name] = program.members.all()
-    context['all'] = Program.objects.all()
-    context['user'] = request.user
-    context['member'] = member
-    return render(request,'final_project/member_filter.html',context)
 
 
 
@@ -339,45 +328,5 @@ def program_edit(request, program_id):
     program.save()
     context = {'user':request.user,
                'program':program}
-    return render(request,'final_project/program_profile.html',context)
-
-@login_required
-def program_add_staff(request,program_id):
-    # Add a staff member to a program.
-    member = Member.objects.get(user=request.user)
-    try:
-        staff = Staff.objects.get(member=member)
-    except:
-        programs = Program.objects.all()
-        context = {'programs':programs,'user':request.user}
-        return render('final_project/programs.html',context)
-    program = Program.objects.get(id=program_id)
-    if not 'staff_id' in request.POST or not request.POST['staff_id']:
-        context = {'errors':['Error, did not select a valid staff member.'],'user':request.user,
-                   'program':program}
-        return render('final_project/program_profile.html',context)
-    try:
-        staffMember = Staff.objects.get(id=request.POST['staff_id'])
-        program.staff.add(staffMember)
-        program.save()
-        context = {'user':request.user,'program':program}
-        return render(request,'final_project/program_profile.html',context)
-    except Staff.DoesNotExist:
-        context = {'errors':['Error, did not select a valid staff member.'],'user':request.user,
-                   'program':program}
-        return render('final_project/program_profile.html',context)
-
-@login_required
-def program_add_member(request,program_id):
-    # Add a Member to a program.
-    program = Program.objects.get(id=program_id)
-    if not 'member_id' in request.POST or not request.POST['member_id']:
-        context = {'errors':['Error, did not select a valid member.'],'user':request.user,
-                   'program':program}
-        return render('final_project/program_profile.html',context)
-    member = Member.objects.get(id=request.POST['member_id'])
-    program.members.add(member)
-    program.save()
-    context = {'user':request.user,'program':program}
     return render(request,'final_project/program_profile.html',context)
 
