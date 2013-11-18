@@ -171,9 +171,12 @@ def member_profile(request, member_id):
     except Member.DoesNotExist:
         member = Member.objects.get(user=request.user)
 
+    in_program = [ prog for prog in Program.objects.all() \
+                       if len(prog.members.filter(id=member.id)) != 0]
 
     context['user'] = user
     context['member'] = member
+    context['programs'] = in_program
     return render(request, 'final_project/member_profile.html', context)
 
 # member_edit(request, member_id)
@@ -186,6 +189,25 @@ def member_profile(request, member_id):
 #	- birthday
 #	- phone
 #	- email
+
+@login_required
+def member_filter(request):
+    member = Member.objects.egt(user=request.user)
+    try:
+        st = Staff.objects.get(member=member)
+    except Staff.DoesNotExist:
+        context = {'user':request.user,'member':member,'errors':['Error, must be Staff.']}
+        return render(request,'final_project/index.html',context)
+    context = {}
+    for program in Program.objects.all():
+        context[program.name] = program.members.all()
+    context['all'] = Program.objects.all()
+    context['user'] = request.user
+    context['member'] = member
+    return render(request,'final_project/member_filter.html',context)
+
+
+
 @login_required
 def member_edit(request, member_id):
     context = {}
@@ -202,7 +224,7 @@ def member_edit(request, member_id):
 
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
-        member = Member.objects.get(id=member_id)
+
 
     # If trying to save changes to member
     elif request.method == 'POST':
@@ -238,12 +260,17 @@ def member_edit(request, member_id):
             context['user'] = user
             context['member'] = old_member
             context['errors'] = errors
-            for prog in Program.object.all():
+            print "CHECKING THROUGH ADD"
+            for prog in Program.objects.all():
                 name = prog.name
+                print name
                 if name in request.POST and request.POST[name]:
-                    if name == 'remove':
+                    print "IT IS HERE"
+                    print request.POST[name]
+                    if request.POST[name] == 'remove':
                         prog.members.remove(member)
-                    elif name == 'add':
+                    elif request.POST[name] == 'add':
+                        print "ADD", request.POST[name]
                         prog.members.add(member)
                     prog.save()
 
