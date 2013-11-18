@@ -43,6 +43,8 @@ def program_profile(request,program_id):
 
 def about(request):
     context = {}
+    if request.user is not None:
+        context['user'] = request.user
     return render(request, 'final_project/about.html', context)
 
 #def login(request):
