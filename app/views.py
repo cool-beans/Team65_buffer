@@ -16,6 +16,8 @@ from app.models import *
 # Action for the default shared-todo-list/ route.
 def home(request):
     context = {}
+    if request.user is not None:
+        context['user'] = request.user
     return render(request, 'final_project/index.html', context)
 
 def programs(request):
@@ -28,11 +30,13 @@ def programs(request):
 def program_profile(request,program_id):
     try:
         program = Program.objects.get(id=program_id)
-        context = {'program':program}
+        members = program.members
+        staff = program.staff
+        context = {'user':request.user,'program':program}
         return render(request, 'final_project/program_profile.html', context)
     except Program.DoesNotExist:
         programs = Program.objects.all()
-        context = {'programs':programs,
+        context = {'programs':programs,'user':request.user,
                    'errors':['Error, bad program id']}
         return render(request, 'final_project/programs.html',context)
 
@@ -102,7 +106,8 @@ def register(request):
                                 creation_date=datetime.now(),\
                                 )
             new_member.save()
-
+            staff = Staff(member=new_member)
+            staff.save()
             # Logs in new user and redirects to their member_profile page
             new_user = authenticate(username=request.POST['username'], \
                                     password=request.POST['pass1'])
@@ -146,22 +151,24 @@ def filter_members (request, program_id):
 def member_profile(request, member_id):
     context = {}
     user = request.user
-    member = None
+    member = Member.objects.get(user=user)
 
     print "IN MEMBER_PROFILE!"
     print user.username + "'s member_id: " + str(user.member.id)
     print "Is trying to access member_id: " + str(member_id)
 
-    # If request was a GET, means it got redirected here from the register
-    # page. Or the user wanted to view their own profile.
-    # Which means should just display the current user's own profile
-    if request.method == 'GET':
-        member = user.member
 
-    # If the request was a POST, means it is a staff member trying to
-    # view a specific member's profile
-    elif request.method == 'POST':
+    # Are they staff? If so then let them see whoever
+    try:
+        staff_member = Staff.objects.get(member=member)
         member = Member.objects.get(id=member_id)
+
+    # They are not staff. Only let them see their own profile.
+    except Staff.DoesNotExist:
+        member = Member.objects.get(user=request.user)
+    except Member.DoesNotExist:
+        member = Member.objects.get(user=request.user)
+
 
     context['user'] = user
     context['member'] = member
