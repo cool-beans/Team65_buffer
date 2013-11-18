@@ -22,22 +22,11 @@
       <input type="checkbox" name="{{ program.name }}" value="add"> {{program.name}}
    {% endfor %}
    <br />
-   <label>Remove-Programs</label>
+   <label>Remove Programs</label>
    <br />
    {% for program in in_program %}
    <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
    {% endfor %}
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
    {% csrf_token %}
