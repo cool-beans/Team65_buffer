@@ -17,35 +17,15 @@
       <label>Confirm Password:</label>
       <input type="password" name="pass2"><br />
    {% endif %}
-   <label>Add-Programs</label><br />
-
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
+   <label>Add Programs</label><br />
    {% for program in not_in_program %}
-      <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
+      <input type="checkbox" name="{{ program.name }}" value="add"> {{program.name}}
    {% endfor %}
    <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
-   <br />
    <label>Remove-Programs</label>
+   <br />
    {% for program in in_program %}
-   <input type="checkbox" name="{{ program.name }}" value="add">{{program.name}}
+   <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
    {% endfor %}
    <br />
    <br />
