@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^register/$', 'app.views.register', name='register'),
    # Programs
     url(r'^program_profile/$', 'app.views.program_profile', name='program_profile'),#should be the individual program
+    url(r'^program_create/$', 'app.views.program_create', name='program_create'),#should be the individual program
 
    # Members
     url(r'^members/$', 'app.views.members', name='members'),

@@ -1,12 +1,13 @@
 {% extends "final_project/base.html" %}
 {% block content %}
+{% include "final_project/partials/alert.html" with type="danger" message="Default" %}
 <div class="row">
       <div class="span12">
-         <form action="{% url 'login' %}" method="post">
-            {{ form.username.label_tag }}
+         <form action="{% url 'login' %}" method="post" id="login">
+            <label>Username:</label>
             <input type="text" name="username"><br />
-            {{ form.password.label_tag }}
-            <input type="password" name="password">
+            <label>Password:</label>
+            <input type="password" name="password"><br />
             <input type="submit" value="login" />
             <input type="hidden" name="next" value="{{ next }}" />
             {% csrf_token %}

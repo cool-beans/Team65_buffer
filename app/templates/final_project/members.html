@@ -15,9 +15,11 @@
    <div class="col-lg-10">
       <table class="table table-striped table-bordered table-hover">
          <tr>
-            <th>Member First Name</th>
+            <th style="background-color:green;">Member First Name</th>
             <th>Member Last Name</th>
             <th>Email</th>
+            <th>Phone</th>
+            <th>Date Account was Created</th>
             <th>Profie</th>
          </tr>
          {% for member in members %}
@@ -25,7 +27,9 @@
             <td>{{ member.first_name }}</td>
             <td>{{ member.last_name }}</td>
             <td>{{ member.email }}</td>
-            <td><button type="button" class="btn btn-primary">View Profile</button></td>
+            <td>{{ member.phone }}</td>
+            <td>{{ member.creation_date }}</td>
+            <td><a type="button" class="btn btn-primary" href="/final_project/member_profile/{{member.id}}">View Profile</a></td>
          </tr>
          {% endfor %}
                   <!-- end forloop -->

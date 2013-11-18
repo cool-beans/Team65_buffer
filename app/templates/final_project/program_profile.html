@@ -1,0 +1,14 @@
+{% extends "final_project/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Program Create{% endblock %}
+
+{% block content %}
+<div class="row">
+   <div class="col-lg-12">
+      Name:{{program.name}}<br />
+      Description{{program.description}}<br />
+      Staff:{{program.staff}}<br />
+      Member:{{program.members}}<br />
+   </div>
+</div><!--row-->
+{% endblock %}
