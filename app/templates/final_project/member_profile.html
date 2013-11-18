@@ -11,6 +11,7 @@
   <div class="panel-body">
      <div class="row">
       <div class="col-lg-12">
+         <a type="button" class="btn btn-primary" href="{% url 'member_edit' user.id %}">Edit Profile</a>
       <ul class="list-group">
          <li class="list-group-item">
             Birthday: {{ member.birthday }}
