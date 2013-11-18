@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
     url(r'^register/$', 'app.views.register', name='register'),
    # Programs
-    url(r'^program_profile/$', 'app.views.program_profile', name='program_profile'),#should be the individual program
+    url(r'^program_profile/(?P<program_id>\d+)$', 'app.views.program_profile', name='program_profile'),#should be the individual program
     url(r'^program_create/$', 'app.views.program_create', name='program_create'),
     url(r'^program_edit/(?P<program_id>\d+)$', 'app.views.program_edit', name='program_edit'),
     url(r'^program_add_staff/(?P<program_id>\d+)$', 'app.views.program_add_staff', name='program_add_staff'),
