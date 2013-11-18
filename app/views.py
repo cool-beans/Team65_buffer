@@ -228,8 +228,9 @@ def program_create(request):
     # Create a new program.
     user = request.user
     member = Member.objects.get(user=request.user)
+    staff_member = Staff.objects.get(member=member)
     # Make sure that the currently logged in user is a staff member
-    if (Staff.objects.get(member=member) is None):
+    if (staff_member is None):
         context = {'error':'This page requires Staff login.',
                    'user':user,
                    'programs':Program.objects.all()}
@@ -253,8 +254,9 @@ def program_edit(request, program_id):
     user = request.user
     member = Member.objects.get(user=request.user)
     program = Program.objects.get(id=program_id)
+    staff_member = Staff.objects.get(member=member)
     # Make sure that the currently logged in user is a staff member
-    if (Staff.objects.get(member=member) is None):
+    if (staff_member is None):
         context = {'error':'This page requires Staff login.',
                    'user':user,
                    'programs':Program.objects.all()}
