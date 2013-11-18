@@ -17,13 +17,12 @@
       <label>Confirm Password:</label>
       <input type="password" name="pass2"><br />
    {% endif %}
-   <label>Add Programs</label><br />
+   Add Programs<br />
    {% for program in not_in_program %}
       <input type="checkbox" name="{{ program.name }}" value="add"> {{program.name}}
    {% endfor %}
    <br />
-   <label>Remove Programs</label>
-   <br />
+   Remove Programs<br />
    {% for program in in_program %}
    <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
    {% endfor %}
