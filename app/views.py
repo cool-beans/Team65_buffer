@@ -121,19 +121,9 @@ def register(request):
 @login_required
 def members(request):
     context = {}
-    user = request.user
-    members = []
-
-    # If simply requesting members page, no filtering
-    if request.method == 'GET':
-        members = Member.objects.all().order_by('first_name')
-
-    # Should never be 'POST'
-    elif request.method == 'POST':
-        pass
-
-    context['user'] = user
-    context['members'] = members
+    context['user'] = request.user
+    context['members'] = Member.objects.all()
+    context['programs'] = Program.objects.all()
     return render(request, 'final_project/members.html', context)
 
 @login_required
