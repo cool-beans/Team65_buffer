@@ -25,7 +25,7 @@
       </div>
       <div class="content">
          {% for error in errors %}
-            {% include "final_project/partials/alert.html" with type="danger" message="{{error}}" %}
+            {% include "final_project/partials/alert.html" with type="danger" message=error %}
          {% endfor %}
          {% block content %}{% endblock %}
          {% include 'final_project/partials/color_pallet.html' %}
@@ -33,7 +33,7 @@
    <div id="footer">
       <div class="row">
          <div class="col-lg-12">
-            Footer
+            <
          </div>
       </div>
    </div><!--footer-->
