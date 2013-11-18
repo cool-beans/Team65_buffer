@@ -7,7 +7,10 @@ PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__)) + '/'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
 LOGIN_REDIRECT_URL='/final_project/member_profile/0'
+LOGOUT_URL='/final_project/login'
+LOGIN_URL='/final_project/login'
 
 ADMINS = (
     ('Lauryn Brown', 'laurynb@andrew.cmu.edu'),
