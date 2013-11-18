@@ -7,8 +7,14 @@
    <div class="col-lg-12">
       Name:{{program.name}}<br />
       Description{{program.description}}<br />
-      Staff:{{program.staff}}<br />
-      Member:{{program.members}}<br />
+      Staff<br />
+      {% for member in program.staff %}
+         {{member.first_name}} {{member.last_name}} <br />
+      {% endfor %}
+      Members<br />
+      {% for member in program.members %}
+         {{member.first_name}} {{member.last_name}} <br />
+      {% endfor %}
    </div>
 </div><!--row-->
 {% endblock %}

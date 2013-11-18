@@ -27,7 +27,7 @@
             <td>{{ program.description }}</td>
             <td>{{ program.visible }}</td>
             <td>{{ program.members.count }}</td>
-            <td><button type="button" class="btn btn-primary">View Program</button></td>
+            <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{program.id}}">View Profile</a></td>
          </tr>
          {% endfor %}
          <!-- end forloop -->
