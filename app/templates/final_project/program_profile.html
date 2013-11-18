@@ -8,11 +8,11 @@
       Name:{{program.name}}<br />
       Description{{program.description}}<br />
       Staff<br />
-      {% for member in program.staff %}
+      {% for member in program.staff.all %}
          {{member.first_name}} {{member.last_name}} <br />
       {% endfor %}
       Members<br />
-      {% for member in program.members %}
+      {% for member in program.members.all %}
          {{member.first_name}} {{member.last_name}} <br />
       {% endfor %}
    </div>
