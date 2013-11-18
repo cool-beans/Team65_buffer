@@ -21,6 +21,8 @@ def home(request):
 def programs(request):
     programs = Program.objects.all()
     context = {'programs':programs}
+    if request.user is not None:
+        context['user'] = request.user
     return render(request, 'final_project/programs.html', context)
 
 def program_profile(request,program_id):
