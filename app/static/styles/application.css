@@ -75,6 +75,10 @@ form {
 th {
   background-color: blue; }
 
+/* Member/Programs */
+.panel {
+  box-shadow: none; }
+
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5 {
   height: 200px;

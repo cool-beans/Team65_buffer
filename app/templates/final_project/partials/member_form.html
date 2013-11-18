@@ -11,10 +11,12 @@
    <input type="text" name="phone" value="{{ member.phone }}"><br />
    <label>Email:</label>
    <input type="text" name="email" value="{{ member.email }}"><br />
-   <label>Password:</label>
-   <input type="password" name="pass1"><br />
-   <label>Confirm Password:</label>
-   <input type="password" name="pass2"><br />
+   {% if user.authenticated %}
+      <label>Password:</label>
+      <input type="password" name="pass1"><br />
+      <label>Confirm Password:</label>
+      <input type="password" name="pass2"><br />
+   {% endif %}
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
    {% csrf_token %}

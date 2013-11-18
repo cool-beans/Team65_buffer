@@ -16,7 +16,7 @@
          <tr>
             <th>Program Name</th>
             <th>Instructor</th>
-            <th>Visible</th>
+            <!--  <th>Visible</th> -->
             <th>Number of Members</th>
             <th>View Profile</th>
          </tr>
@@ -25,7 +25,7 @@
          <tr>
             <td>{{ program.name }}</td>
             <td>{{ program.description }}</td>
-            <td>{{ program.visible }}</td>
+            <!-- <td>{{ program.visible }}</td> -->
             <td>{{ program.members.count }}</td>
             <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{program.id}}">View Profile</a></td>
          </tr>
