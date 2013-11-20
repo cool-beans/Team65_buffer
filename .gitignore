@@ -51,7 +51,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-.db
+*.db
 
 # Sublime project files
 *.sublime-project
@@ -59,3 +59,9 @@ nosetests.xml
 
 # Vim
 *.swp
+
+# Emacs
+\#*
+*~ 
+.#
+*.pyc
