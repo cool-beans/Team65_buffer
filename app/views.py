@@ -31,7 +31,6 @@ def program_profile(request,program_id):
     try:
         program = Program.objects.get(id=program_id)
         members = program.members
-        staff = program.staff
         context = {'user':request.user,'program':program}
         return render(request, 'final_project/program_profile.html', context)
     except Program.DoesNotExist:
@@ -158,14 +157,13 @@ def member_profile(request, member_id):
 
 
     # Are they staff? If so then let them see whoever
-    try:
-        staff_member = Staff.objects.get(member=member)
-        member = Member.objects.get(id=member_id)
-
+    if member.staff:
+        try:
+            member = Member.objects.get(id=member_id)
+        except Member.DoesNotExist:
+            member = Member.objects.get(user=user)
     # They are not staff. Only let them see their own profile.
-    except Staff.DoesNotExist:
-        member = Member.objects.get(user=request.user)
-    except Member.DoesNotExist:
+    else:
         member = Member.objects.get(user=request.user)
 
     in_program = [ prog for prog in Program.objects.all() \
@@ -269,9 +267,7 @@ def program_create(request):
     user = request.user
     member = Member.objects.get(user=request.user)
 
-    try:
-        staff_member = Staff.objects.get(member=member)
-    except Staff.DoesNotExist:
+    if not member.staff:
         # Make sure that the currently logged in user is a staff member
         context = {'errors':['This page requires Staff login.'],
                    'user':user,
@@ -297,22 +293,19 @@ def program_edit(request, program_id):
     user = request.user
     member = Member.objects.get(user=request.user)
     program = Program.objects.get(id=program_id)
-    try:
-        staff_member = Staff.objects.get(member=member)
-    except Staff.DoesNotExist:
+    if not member.staff:
         # Make sure that the currently logged in user is a staff member
-        if (staff_member is None):
-            context = {'errors':['This page requires Staff login.'],
-                       'user':user,
-                       'programs':Program.objects.all()}
-            return render(request, 'final_project/programs.html',context)
+        context = {'errors':['This page requires Staff login.'],
+                   'user':user,
+                   'programs':Program.objects.all()}
+        return render(request, 'final_project/programs.html',context)
     if (request.method == 'GET'):
         context = {'user':request.user}
         return render(request, 'final_project/program_edit.html',context)
     form = ProgramMod(request.POST)
     if not form.is_valid():
         context = {'user':request.user,'errors':['Bad name or description provided.']}
-        return rendder(request,'final_project/program_edit.html',context)
+        return render(request,'final_project/program_edit.html',context)
     if (form.cleaned_data['name']):
         program.name = form.cleaned_data['name']
     if (form.cleaned_data['description']):

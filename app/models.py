@@ -27,6 +27,8 @@ class Member(models.Model):
     phone = models.CharField(max_length=10)
     email = models.CharField(max_length=30)
 
+    staff = models.BooleanField(default=False)
+
     creation_date = models.DateField()
     membership = models.ForeignKey(Membership, null=True, blank=True)
     membership_exp_date = models.DateField(null=True, blank=True)
@@ -36,19 +38,12 @@ class Member(models.Model):
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
-class Staff(models.Model):
-    # Many staff in many Events, EventTypes and Programs
-    member = models.OneToOneField(Member)
-
-    def __unicode__(self):
-        return self.member.first_name + " " + self.member.last_name
 
 
 class Program(models.Model):
     # Many EventTypes in one Program
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
-    staff = models.ManyToManyField(Staff)
     members = models.ManyToManyField(Member)
 
     def __unicode__(self):
@@ -77,7 +72,6 @@ class EventType(models.Model):
     end = models.TimeField()
     recurrence = models.OneToOneField(Recurrence)
     allowed_memberships = models.ManyToManyField(Membership)
-    staff = models.ManyToManyField(Staff)
 
     def __unicode__(self):
         return self.name
@@ -92,7 +86,6 @@ class Event(models.Model):
     date = models.DateField()
     start = models.TimeField()
     end = models.TimeField()
-    staff = models.ManyToManyField(Staff)
     attendees = models.ManyToManyField(Member)
     event_type = models.ForeignKey(EventType)
 
