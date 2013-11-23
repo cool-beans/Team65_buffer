@@ -1,0 +1,9 @@
+<form  method="post" class="event_form">
+   <label>Name:</label>
+   <input type="text" name="name" value="{{ event.name }}"><br />
+   <label>Description:</label>
+   <input type="textarea" name="description" value="{{ event.description }}"><br />
+   <input type="submit" value="Submit" />
+   <input type="hidden" name="next" value="{{ next }}" />
+   {% csrf_token %}
+</form>
