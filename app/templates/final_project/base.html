@@ -14,10 +14,12 @@
    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
    <script type="text/javascript" src="{% static 'js/bootstrap-carousel.js' %}"></script>
    <script type="text/javascript" src="{% static 'js/garand-sticky-c199302/jquery.sticky.js' %}"></script>
+   <script type="text/javascript" src="{% static 'js/maratbn-EZ-Sticky-Footer-fe789dd/jquery.ez-sticky-footer-0.0.2-min.js' %}"></script>
    <link href='http://fonts.googleapis.com/css?family=Comfortaa|Iceland' rel='stylesheet' type='text/css'>
    <script src="//use.edgefonts.net/wire-one;josefin-sans.js"></script>
 </head>
 <body>
+    <div class='jq-ez-sticky-footer-page-container'>
       <div class="navigation">
          <div class="row">
             <div class="col-lg-12">
@@ -31,11 +33,16 @@
          {% endfor %}
          {% block content %}{% endblock %}
       </div><!--content-->
+      <div class='jq-ez-sticky-footer-content-expander'></div>
+      </div>
+   <div class='jq-ez-sticky-footer-page-footer'>
+
    <div id="footer">
       <div class="row">
          <div class="col-lg-12">
          </div>
       </div>
    </div><!--footer-->
+      </div>
 </body>
 </html>
