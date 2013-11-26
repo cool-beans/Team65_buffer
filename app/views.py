@@ -459,6 +459,7 @@ def events(request):
     latest_date = date.today()
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
+        pass
         
     elif request.method == 'POST':
         # If the latest_date from the last access is provided
@@ -542,6 +543,7 @@ def event_edit(request):
         return render(request, 'final_project/event_edit.html', context)
 
     elif request.method == 'POST':
+        return render(request, 'final_project/event_edit.html', context)
         # If name, start_time, and date are there
         # If event already exists, just change the fields that are not None and save
 

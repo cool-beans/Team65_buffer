@@ -135,18 +135,22 @@ class Event(models.Model):
 
     # Given name, date, start_time of an event,
     # find the specified event if it exists (or create a temp one)
-    # and return it. If no EventType matches, (don't forget to check
-    # Events.objects as well!!!) then return None
+    # and return it. 
+    # First check Events.objects, if no such event exists, 
+    # Second, find proper EventType and create a temp Event
+    # Third, if no EventType matches, then return None
     def getEvent(self, name, date, start_time):
-        eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
+        
         event = None
         found_event = None
         new_event = None
         event = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
-        if :
-            pass
+        if event and len(event)==1:
+            return event[0]
+        
+        eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
         for eventtype in eventtypes:
-            # If the event started before or on date
+            # If the event started before or on date and either has no 
             if eventtype.recurrence.start_date <= date:
                 weekday = date.weekday
                 # If event's weekday was in eventtype's weekdays
