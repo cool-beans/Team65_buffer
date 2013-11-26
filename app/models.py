@@ -168,7 +168,7 @@ class Event(models.Model):
                             date=new_eventtype.recurrence.start_date,
                             start_time=new_eventtype.start_time,
                             end_time=new_eventtype.end_time,
-                            note=new_eventtype.note,
+                            description=new_eventtype.description,
                             event_type = new_eventtype)
                         break
         return event
