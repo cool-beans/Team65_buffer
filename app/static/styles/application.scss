@@ -8,6 +8,8 @@ $pink: #F1B2A3;
 $blue: #BCDFFA;
 $yellow: #FFF377;
 
+/*Positioning Constants*/
+$infinity: 9000;
 /*Fonts*/
 $header_font:"Comfortaa";
 $content_font:"Comfortaa";
@@ -48,6 +50,10 @@ h2{
 }
 #nav-container{
  background-color:$light_grey;
+ z-index:$infinity;
+}
+.navbar-brand{
+   font-size:1.5em;
 }
 .content{
    position:relative;

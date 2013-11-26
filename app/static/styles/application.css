@@ -1,4 +1,5 @@
 /* Color Variables */
+/*Positioning Constants*/
 /*Fonts*/
 /*Global Styles*/
 th {
@@ -32,7 +33,11 @@ h2 {
   margin-left: 440px; }
 
 #nav-container {
-  background-color: whitesmoke; }
+  background-color: whitesmoke;
+  z-index: 9000; }
+
+.navbar-brand {
+  font-size: 1.5em; }
 
 .content {
   position: relative;
