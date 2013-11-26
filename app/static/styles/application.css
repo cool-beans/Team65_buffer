@@ -124,8 +124,12 @@ html, body {
 .wrapper {
   min-height: 100%;
   height: auto !important;
-  height: 100%; }
+  height: 100%;
+  padding: 0 auto -4em; }
 
 .footer, .push {
   height: 4em;
   clear: both; }
+
+.footer {
+  border-top: whitesmoke; }
