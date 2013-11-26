@@ -138,7 +138,7 @@ class Event(models.Model):
     # First check Events.objects, if no such event exists, 
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
-    def getEvent(self, name, date, start_time):
+    def getEvent(name, date, start_time):
         
         event = None
 
@@ -146,7 +146,7 @@ class Event(models.Model):
         events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
         if events and len(events)==1:
             event = events[0]
-        # Second, look for the proper EventType and create a temp Event
+        # If no events exist, look for the proper EventType and create a temp Event
         else:
             eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
 
