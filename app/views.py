@@ -379,8 +379,8 @@ def event_create(request):
             return render(request,'final_project/event_create.html', context)
 
         # Check if any such events/eventTypes exist already, if so, don't save form.
-        if Event.getEvent(name=new_eventtype.name, 
-                          date=new_eventtype.recurrence.start_date, 
+        if Event.getEvent(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
                           start_time=new_eventtype.start_time):
             errors.append('Event with same day and start time and name already exists.')
             context['user'] = user

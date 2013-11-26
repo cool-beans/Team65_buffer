@@ -1,19 +1,20 @@
 {% load base_extra_tags %}
-<div class="" role="navigation">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-	<span class="sr-only">Toggle navigation</span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand" href="{% url 'home' %}"><h1>Application Header</h1></a>
-  </div>
+   <div class="row">
+      <div class="col-lg-12">
+         <h2 class="text-center"  id="left-sub">Our Teachers</h2>
+      </div>
+      <div class="col-lg-12">
+         <a href="{% url 'home' %}"><h1 class="text-center">Guitar Studio</h1></a>
+      </div>
+      <div class="col-lg-12">
+         <h2 class="text-center" id="right-sub">Your Talent</h2>
+      </div>
+   </div> <!--row-->
 
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <ul class="nav navbar-nav">
+<div class="row">
+  <div class="col-lg-12" id="nav-container">
+     <a class="navbar-brand" href="#">GS</a>
+    <ul class="nav navbar-nav navbar-right">
 	 <li class="{% get_nav_page_class request 'home' %}"><a href="{% url 'home' %}">Home</a></li>
 	 <li class="{% get_nav_page_class request 'about' %}"><a href="{% url 'about' %}">About Us</a></li>
 	 <li class="{% get_nav_page_class request 'programs' %}"><a href="{% url 'programs' %}">Programs</a></li>
@@ -30,5 +31,5 @@
 
 	 {% endif %}
     </ul>
-  </div><!-- /.navbar-collapse -->
-</div>
+  </div>
+  </div>

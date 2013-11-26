@@ -36,4 +36,9 @@ $(document).ready(function(){
     $('.carousel').carousel({
       interval: 2000
    });
+/* Navigation */
+//script to make the navigationbar sticky
+ $(window).load(function(){
+      $("#nav-container").sticky({ topSpacing: 0 });
+   });
 });
