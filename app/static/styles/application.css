@@ -8,12 +8,15 @@ html, body {
   height: 100%;
   font-family: "Comfortaa";
   color: #666666; }
+  html a, body a {
+    color: #666666; }
   html a:hover, body a:hover {
     text-decoration: none; }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Comfortaa"; }
 
+/* Navigation */
 h1 {
   font-size: 6em;
   color: #666666; }
@@ -27,6 +30,9 @@ h2 {
 
 #right-sub {
   margin-left: 440px; }
+
+#nav-container {
+  background-color: whitesmoke; }
 
 .content {
   position: relative;

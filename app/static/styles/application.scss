@@ -20,6 +20,9 @@ html, body {
   height: 100%;
   font-family: $content_font;
   color:$text_color;
+  a{
+     color:$text_color;
+  }
   a:hover {
       text-decoration:none;
   }
@@ -28,6 +31,7 @@ html, body {
 h1,h2,h3,h4,h5,h6{
    font-family:$header_font;
 }
+/* Navigation */
 h1{
      font-size: 6em;
      color:$text_color;
@@ -41,6 +45,9 @@ h2{
 }
 #right-sub{
    margin-left:440px;
+}
+#nav-container{
+ background-color:$light_grey;
 }
 .content{
    position:relative;

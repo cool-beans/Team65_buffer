@@ -8,6 +8,7 @@ Got help From
 #############################################
 - All fonts are generated from Google Fonts.
 - Twitterbootstrap and Jquery were used.
+- Utilized the stick plugin for jquery. I got that from http://stickyjs.com/
 
 #############################################
 # Tutorials that were followed

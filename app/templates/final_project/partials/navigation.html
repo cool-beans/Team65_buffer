@@ -14,6 +14,8 @@
    </div>
 
   <div>
+<div class="row">
+  <div class="col-lg-12" id="nav-container">
     <ul class="nav navbar-nav navbar-right">
 	 <li class="{% get_nav_page_class request 'home' %}"><a href="{% url 'home' %}">Home</a></li>
 	 <li class="{% get_nav_page_class request 'about' %}"><a href="{% url 'about' %}">About Us</a></li>
@@ -31,5 +33,6 @@
 
 	 {% endif %}
     </ul>
+  </div>
   </div>
 </div>
