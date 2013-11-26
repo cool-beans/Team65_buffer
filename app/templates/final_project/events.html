@@ -20,6 +20,8 @@
             <th>Number of Members Attending</th>
             <th>Associated Program</th>
             <th>View Profile</th>
+            <th>View Profile</th>
+            <th>View Profile</th>
          </tr>
 
       {% for event in events %}
@@ -29,6 +31,9 @@
             <!-- <td>{{ event.visible }}</td> -->
             <td>{{ event.members.count }}</td>
             <td>{{ event.program }}</td>
+            <td>{{ event.start_time }}</td>
+            <td>{{ event.end_time }}</td>
+            <td>{{ event.start_date }}</td>
             <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{event.id}}">View Profile</a></td>
          </tr>
          {% endfor %}
