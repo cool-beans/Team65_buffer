@@ -169,7 +169,7 @@ class Event(models.Model):
                             end_time=new_eventtype.end_time,
                             note=new_eventtype.note,
                             event_type = new_eventtype)
-                            break
+                        break
         return event
 
 class Attendance(models.Model):
