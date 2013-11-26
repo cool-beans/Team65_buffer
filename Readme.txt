@@ -8,7 +8,10 @@ Got help From
 #############################################
 - All fonts are generated from Google Fonts.
 - Twitterbootstrap and Jquery were used.
-- Utilized the stick plugin for jquery. I got that from http://stickyjs.com/
+- Utilized the sticky plugin for jquery.
+  I got that from http://stickyjs.com/
+- Utilized the EZ-Sticky-Footer plugin for jquery.
+  I got that from http://plugins.jquery.com/ez-sticky-footer/
 
 #############################################
 # Tutorials that were followed
