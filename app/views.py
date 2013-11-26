@@ -321,7 +321,7 @@ def event_create(request):
     user = request.user
     member = Member.objects.get(user=user)
     programs = Program.objects.all()
-    context = []
+    context = {}
     errors = []
 
     if (request.method == 'GET'):
@@ -349,8 +349,8 @@ def event_create(request):
             context['errors'] = errors
             context['programs'] = programs
             return render(request, 'final_project/event_create.html', context)
-        
-        new_recurrence.start_date = request.POST['start_date']        
+
+        new_recurrence.start_date = request.POST['start_date']
 
         # If end date is specified, save it in recurrence info.
         # It's ok to not have an end date (recurrs forever)
@@ -365,7 +365,7 @@ def event_create(request):
         for program in programs:
             if program.name in request.POST:
                 new_eventtype.programs_set.add(program)
-        
+
         eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
 
         if not eventtype_form.is_valid():
