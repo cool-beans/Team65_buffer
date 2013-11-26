@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime, date, timedelta
+from datetime import *#datetime, date, timedelta
 
 # Decorator to use built-in authentication system
 from django.contrib.auth.decorators import login_required
