@@ -156,20 +156,21 @@ class Event(models.Model):
                 # either has no end_recurrence or an end_recurrence >= date, 
                 # then event may exist in this EventType! Check!
                 if (eventtype.recurrence.start_date <= date and \
-                    (not eventtype.recurrence.end_recurrence | \
+                    (not eventtype.recurrence.end_recurrence or \
                     eventtype.recurrence.end_recurrence >= date)):
-
-                    weekday = date.weekday
+                    print "WEEKDAY: " + str(date.weekday())
+                    weekday = date.weekday()
+                    print "eventtype weekday: " + str(eventtype.recurrence.start_date.weekday())
                     # If event's weekday was in eventtype's weekdays
-                    if weekday in eventtype.recurrence.getDays():
+                    if weekday in eventtype.recurrence.getDays() or weekday == eventtype.recurrence.start_date.weekday():
                         # Create an event! 
                         # (if we got this far, means no Event already exists)
-                        event = Event(name=new_eventtype.name,
-                            date=new_eventtype.recurrence.start_date,
-                            start_time=new_eventtype.start_time,
-                            end_time=new_eventtype.end_time,
-                            description=new_eventtype.description,
-                            event_type = new_eventtype)
+                        event = Event(name=eventtype.name,
+                            date=eventtype.recurrence.start_date,
+                            start_time=eventtype.start_time,
+                            end_time=eventtype.end_time,
+                            description=eventtype.description,
+                            event_type = eventtype)
                         break
         return event
 
