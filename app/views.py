@@ -480,11 +480,11 @@ def events(request):
         # along with either a button = 'prev' or 'next', calculate
         # appropriate latest_date
         if 'latest_date' in request.GET and request.GET['latest_date']:
-            if 'button' in request.GET and request.GET['button']:
-                if request.GET['button'] == 'prev':
-                    latest_date = date.today() - timedelta(days=7)
-                elif request.GET['button'] == 'next':
-                    latest_date = date.today() + timedelta(days=7)
+            if 'timeframe' in request.GET and request.GET['timeframe']:
+                if request.GET['timeframe'] == 'prev':
+                    latest_date = request.GET['latest_date'] - timedelta(days=7)
+                elif request.GET['timeframe'] == 'next':
+                    latest_date = request.GET['latest_date'] + timedelta(days=7)
 
     events = []
     dates = []
