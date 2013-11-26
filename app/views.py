@@ -357,6 +357,7 @@ def event_create(request):
         if ('end_date' in request.POST and request.POST['end_date']):
             new_recurrence.end_recurrence = request.POST['end_date']
 
+        new_recurrence.save()
         # Now Recurrence should be set, create event!
         new_eventtype = EventType(recurrence=new_recurrence)
 
@@ -369,8 +370,8 @@ def event_create(request):
         eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
 
         if not eventtype_form.is_valid():
-            errors.append('Bad information given. Must include start and '\
-                          'end date, event name, and programs associated '\
+            errors.append('Bad information given. Must include start date and '\
+                          'event start/end time, event name, and programs associated '\
                           'with this event.')
             context['user'] = user
             context['errors'] = errors
