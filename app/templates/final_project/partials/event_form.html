@@ -1,0 +1,25 @@
+<form  method="post" class="event_form">
+   <label>Name:</label>
+   <input type="text" name="name"><br />
+   <label>Description:</label>
+   <input type="textarea" name="description"><br />
+   <label>Repeat on:</label>
+   <input type="checkbox" name="Sunday"> S
+   <input type="checkbox" name="Monday"> M
+   <input type="checkbox" name="Tuesday"> T
+   <input type="checkbox" name="Wednesday"> W
+   <input type="checkbox" name="Thursday"> T
+   <input type="checkbox" name="Friday"> F
+   <input type="checkbox" name="Saturday"> S
+   <br />
+   <label>Start Date:</label>
+   <input type="date" name="start_date"><br />
+   <label>End Repeating:</label>
+   <input type="date" name="end_recurrence"><br />
+   <label> Start time: </label> <input type="time" name="start_time"><br />
+   <label> End time:</label> <input type="time" name="end_time"><br />
+   {% include 'final_project/partials/add_remove_program_form_partial.html' %}
+   <input type="submit" value="Submit" />
+   <input type="hidden" name="next" value="{{ next }}" />
+   {% csrf_token %}
+</form>

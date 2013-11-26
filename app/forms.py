@@ -13,7 +13,10 @@ class ProgramMod(forms.Form):
     name = forms.CharField(max_length=20)
     description = forms.CharField(max_length=500)
 
-
+class EventTypeCreation(forms.ModelForm):
+    class Meta:
+        model = EventType
+        fields = ['name', 'start_time', 'end_time', 'description',]
 
 class MemberEdit(forms.Form):
     first_name = forms.CharField(max_length=100,required=False)

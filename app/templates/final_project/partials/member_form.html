@@ -16,16 +16,9 @@
       <input type="password" name="pass1"><br />
       <label>Confirm Password:</label>
       <input type="password" name="pass2"><br />
-   {% endif %}
-   Add Programs<br />
-   {% for program in not_in_program %}
-      <input type="checkbox" name="{{ program.name }}" value="add"> {{program.name}}
-   {% endfor %}
-   <br />
-   Remove Programs<br />
-   {% for program in in_program %}
-   <input type="checkbox" name="{{ program.name }}" value="remove">{{program.name}}
-   {% endfor %}
+   {% else %}
+      {% include 'final_project/partials/add_remove_program_form_partial.html' %}
+  {% endif %}
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
    {% csrf_token %}

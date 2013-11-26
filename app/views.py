@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
+from datetime import *#datetime, date, timedelta
 
 # Decorator to use built-in authentication system
 from django.contrib.auth.decorators import login_required
@@ -31,7 +31,6 @@ def program_profile(request,program_id):
     try:
         program = Program.objects.get(id=program_id)
         members = program.members
-        staff = program.staff
         context = {'user':request.user,'program':program}
         return render(request, 'final_project/program_profile.html', context)
     except Program.DoesNotExist:
@@ -158,14 +157,13 @@ def member_profile(request, member_id):
 
 
     # Are they staff? If so then let them see whoever
-    try:
-        staff_member = Staff.objects.get(member=member)
-        member = Member.objects.get(id=member_id)
-
+    if member.staff:
+        try:
+            member = Member.objects.get(id=member_id)
+        except Member.DoesNotExist:
+            member = Member.objects.get(user=user)
     # They are not staff. Only let them see their own profile.
-    except Staff.DoesNotExist:
-        member = Member.objects.get(user=request.user)
-    except Member.DoesNotExist:
+    else:
         member = Member.objects.get(user=request.user)
 
     in_program = [ prog for prog in Program.objects.all() \
@@ -269,9 +267,7 @@ def program_create(request):
     user = request.user
     member = Member.objects.get(user=request.user)
 
-    try:
-        staff_member = Staff.objects.get(member=member)
-    except Staff.DoesNotExist:
+    if not member.staff:
         # Make sure that the currently logged in user is a staff member
         context = {'errors':['This page requires Staff login.'],
                    'user':user,
@@ -297,22 +293,19 @@ def program_edit(request, program_id):
     user = request.user
     member = Member.objects.get(user=request.user)
     program = Program.objects.get(id=program_id)
-    try:
-        staff_member = Staff.objects.get(member=member)
-    except Staff.DoesNotExist:
+    if not member.staff:
         # Make sure that the currently logged in user is a staff member
-        if (staff_member is None):
-            context = {'errors':['This page requires Staff login.'],
-                       'user':user,
-                       'programs':Program.objects.all()}
-            return render(request, 'final_project/programs.html',context)
+        context = {'errors':['This page requires Staff login.'],
+                   'user':user,
+                   'programs':Program.objects.all()}
+        return render(request, 'final_project/programs.html',context)
     if (request.method == 'GET'):
         context = {'user':request.user}
         return render(request, 'final_project/program_edit.html',context)
     form = ProgramMod(request.POST)
     if not form.is_valid():
         context = {'user':request.user,'errors':['Bad name or description provided.']}
-        return rendder(request,'final_project/program_edit.html',context)
+        return render(request,'final_project/program_edit.html',context)
     if (form.cleaned_data['name']):
         program.name = form.cleaned_data['name']
     if (form.cleaned_data['description']):
@@ -321,4 +314,263 @@ def program_edit(request, program_id):
     context = {'user':request.user,
                'program':program}
     return render(request,'final_project/program_profile.html',context)
+
+@login_required
+def event_create(request):
+    # Create a new event
+    user = request.user
+    member = Member.objects.get(user=user)
+    programs = Program.objects.all()
+    context = {}
+    errors = []
+
+    if (request.method == 'GET'):
+        context['user'] = user
+        context['errors'] = errors
+        context['programs'] = programs
+        return render(request,'final_project/event_create.html',context)
+
+    elif (request.method == 'POST'):
+        new_recurrence = Recurrence()
+        isRecurring = False
+        for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+            if day in request.POST:
+                isRecurring = True
+                new_recurrence.setDayRecurrence(day, isRecurring)
+
+        if isRecurring:
+            new_recurrence.isRecurring = True
+
+        # If start date is not specified for recurring/non-recurring event,
+        # return with error
+        if ('start_date' not in request.POST or not request.POST['start_date']):
+            errors.append('Must include start date.')
+            context['user'] = user
+            context['errors'] = errors
+            context['programs'] = programs
+            return render(request, 'final_project/event_create.html', context)
+
+        new_recurrence.start_date = request.POST['start_date']
+
+        # If end date is specified, save it in recurrence info.
+        # It's ok to not have an end date (recurrs forever)
+        if ('end_date' in request.POST and request.POST['end_date']):
+            new_recurrence.end_recurrence = request.POST['end_date']
+
+        new_recurrence.save()
+        # Now Recurrence should be set, create event!
+        new_eventtype = EventType(recurrence=new_recurrence)
+
+        # For all programs, check if they are in POST,
+        # if so, add them to the new EventType's programs_set
+        for program in programs:
+            if program.name in request.POST:
+                new_eventtype.programs_set.add(program)
+
+        eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
+
+        if not eventtype_form.is_valid():
+            errors.append('Bad information given. Must include start date and '\
+                          'event start/end time, event name, and programs associated '\
+                          'with this event.')
+            context['user'] = user
+            context['errors'] = errors
+            context['programs'] = programs
+            return render(request,'final_project/event_create.html', context)
+
+        # Check if any such events/eventTypes exist already, if so, don't save form.
+        if Event.getEvent(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
+                          start_time=new_eventtype.start_time):
+            errors.append('Event with same day and start time and name already exists.')
+            context['user'] = user
+            context['errors'] = errors
+            context['programs'] = programs
+            return render(request, 'final_project/event_create.html', context)
+
+        # Create new event with
+        new_event = Event(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
+                          start_time=new_eventtype.start_time,
+                          end_time=new_eventtype.end_time,
+                          description=new_eventtype.description,
+                          event_type = new_eventtype)
+
+        new_eventtype = eventtype_form.save()
+
+        # Just create the event to display, no need to actually save it yet.
+        #new_event.save()
+
+        context['user'] = user
+        context['event'] = new_event
+        context['eventtype'] = new_eventtype
+        return render(request,'final_project/event_profile.html', context)
+
+def event_profile(request):
+    user = request.user
+    context = {}
+    errors = []
+
+    if request.method == 'GET':
+        errors.append('Go to schedule view page and select event to view.')
+        context['user'] = user
+        context['errors'] = errors
+        return redirect('final_project/events')
+
+    elif request.method == 'POST':
+        if 'name' not in request.POST or not request.POST['name']:
+            errors.append('No event name info given in POST')
+        if 'date' not in request.POST or not request.POST['date']:
+            errors.append('No event date info given in POST')
+        if 'start_time' not in request.POST or not request.POST['start_time']:
+            errors.append('No event start_time info given in POST')
+        if errors:
+            return redirect('final_project/events')
+
+        name = request.POST['name']
+        start_date = request.POST['start_date']
+        start_time = request.POST['start_time']
+        # If all needed info (name, date, start_time) is there, get Event
+        event = Event.getEvent(name=name, start_date=start_date, start_time=start_time)
+        eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
+        event = None
+        date = request.POST['date']
+        for eventtype in eventtypes:
+            # If the event started before or on date
+            if eventtype.recurrence.start_date <= date:
+                weekday = date.weekday
+                # If event's weekday was in eventtype's weekdays
+                if weekday in eventtype.recurrence.getDays():
+                    found_event = eventtype.event_set.filter(date=request.POST['date'])
+                    # If eventtype already had an event that exactly matched, set event
+                    if found_event:
+                        event = found_event
+                        break
+                    # Otherwise, create an event
+                    else:
+                        event = Event(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
+                          start_time=new_eventtype.start_time,
+                          end_time=new_eventtype.end_time,
+                          note=new_eventtype.note,
+                          event_type = new_eventtype)
+                        break
+
+        # If cannot find recurrence that matches event, redirect to events
+        if not event:
+            errors.append("Could not locate event, given name, start_time, date.")
+            return redirect('final_project/events')
+
+        context['user'] = user
+        context['event'] = event
+        return render(request, 'final_project/event_profile.html', context)
+
+@login_required
+def events(request):
+    user = request.user
+    context = {}
+    errors = []
+
+    # Default: set latest_date to today
+    latest_date = date.today()
+    if request.method == 'GET':
+        # If navigating to page, just return view of current week.
+
+        # If the latest_date from the last access is provided
+        # along with either a button = 'prev' or 'next', calculate
+        # appropriate latest_date
+        if 'latest_date' in request.GET and request.GET['latest_date']:
+            if 'timeframe' in request.GET and request.GET['timeframe']:
+                if request.GET['timeframe'] == 'prev':
+                    latest_date = request.GET['latest_date'] - timedelta(days=7)
+                elif request.GET['timeframe'] == 'next':
+                    latest_date = request.GET['latest_date'] + timedelta(days=7)
+
+    print "LATEST_DATE: "
+    print latest_date
+    events = []
+    dates = []
+    day_to_date = {}
+    events_on_days = {}
+
+    # Build list of dates in current week
+    for i in range(0, 7):
+        date_to_get = latest_date - timedelta(days=i)
+        # Set the day of the week (0=Monday, 6=Sunday) as key to date
+        day_to_date[date_to_get.weekday()] = date_to_get
+
+        dates.append(date_to_get)
+
+        # Initialize each day of the week to an empty list
+        events_on_days[i] = []
+    print "dates[6]:"
+    print dates[6]
+    # Grab all recurrences that started at least a week ago
+    recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
+
+    for recurrence in recurrences:
+        print "RECURRENCE: "
+        print recurrence
+        for day in recurrence.getDays():
+            event_date = day_to_date[day]
+            eventtype = recurrence.eventtype
+
+            # If event already exists,
+            # append it to the proper day of the week
+            event = eventtype.event_set.filter(date=event_date)
+            if event:
+                events_on_days[day].append(event)
+
+            # Otherwise, make an event (don't save) and append
+            else:
+                new_event = Event(name=eventtype.name,
+                          date=eventtype.recurrence.start_date,
+                          start_time=eventtype.start_time,
+                          end_time=eventtype.end_time,
+                          description=eventtype.description,
+                          event_type = eventtype)
+                events_on_days[day].append(new_event)
+
+    for i in range(0, 7):
+        events += events_on_days[i]
+
+    context['user'] = user
+    context['latest_date'] = latest_date
+    context['events'] = events
+    return render(request, 'final_project/events.html', context)
+
+
+
+# If POST, expects event's original:
+#  -name (string)
+#  -start_time (timefield)
+#  -end_time (timefield)
+# Changes can include:
+#  -name
+#  -start_time
+#  -end_time
+#  -date
+#  -description
+#  -delete
+#  -change_this_event
+#  -change_following_events
+@login_required
+def event_edit(request):
+    # Check if editing one-time or for all following events!
+    user = request.user
+    context = {}
+    errors = []
+
+    if request.method == 'GET':
+        context['user'] = user
+        return render(request, 'final_project/event_edit.html', context)
+
+    elif request.method == 'POST':
+        return render(request, 'final_project/event_edit.html', context)
+        # If name, start_time, and date are there
+        # If event already exists, just change the fields that are not None and save
+        context['user'] = user
+        return render(request, 'final_project/event_edit.html', context)
+
+        # If event does not exist, make sure all fields are there.
 

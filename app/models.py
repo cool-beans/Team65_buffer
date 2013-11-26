@@ -27,6 +27,8 @@ class Member(models.Model):
     phone = models.CharField(max_length=10)
     email = models.CharField(max_length=30)
 
+    staff = models.BooleanField(default=False)
+
     creation_date = models.DateField()
     membership = models.ForeignKey(Membership, null=True, blank=True)
     membership_exp_date = models.DateField(null=True, blank=True)
@@ -36,48 +38,78 @@ class Member(models.Model):
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
-class Staff(models.Model):
-    # Many staff in many Events, EventTypes and Programs
-    member = models.OneToOneField(Member)
-
-    def __unicode__(self):
-        return self.member.first_name + " " + self.member.last_name
-
-
 class Program(models.Model):
-    # Many EventTypes in one Program
+    # Many EventTypes in many Programs
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
-    staff = models.ManyToManyField(Staff)
     members = models.ManyToManyField(Member)
 
     def __unicode__(self):
         return self.name
 
-
 class Recurrence(models.Model):
     # Associated with one EventType
-    onSundays = models.BooleanField()
-    onMondays = models.BooleanField()
-    onTuesdays = models.BooleanField()
-    onWednesdays = models.BooleanField()
-    onThursdays = models.BooleanField()
-    onFridays = models.BooleanField()
-    onSaturdays = models.BooleanField()
-    oneTime_date = models.DateField(null=True, blank=True)
+    onSundays = models.BooleanField(default=False)
+    onMondays = models.BooleanField(default=False)
+    onTuesdays = models.BooleanField(default=False)
+    onWednesdays = models.BooleanField(default=False)
+    onThursdays = models.BooleanField(default=False)
+    onFridays = models.BooleanField(default=False)
+    onSaturdays = models.BooleanField(default=False)
+
+    isRecurring = models.BooleanField(default=False)
+
+    start_date = models.DateField()
+    end_recurrence = models.DateField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.EventType.name + "'s Recurrence"
+        return self.eventtype.name + "'s Recurrence"
+
+    def setDayRecurrence(self, day, isRecurring):
+        if day == 'Monday':
+            self.onMondays = isRecurring
+        elif day == 'Tuesday':
+            self.onTuesdays = isRecurring
+        elif day == 'Wednesday':
+            self.onWednesdays = isRecurring
+        elif day == 'Thursday':
+            self.onThursdays = isRecurring
+        elif day == 'Friday':
+            self.onFridays = isRecurring
+        elif day == 'Saturday':
+            self.onSaturdays = isRecurring
+        elif day == 'Sunday':
+            self.onSundays = isRecurring
+
+    def getDays(self):
+        days = []
+
+        if self.onMondays:
+            days.append(0)
+        if self.onTuesdays:
+            days.append(1)
+        if self.onWednesdays:
+            days.append(2)
+        if self.onThursdays:
+            days.append(3)
+        if self.onFridays:
+            days.append(4)
+        if self.onSaturdays:
+            days.append(5)
+        if self.onSundays:
+            days.append(6)
+
+        return days
 
 class EventType(models.Model):
     # Has many Events associated with one EventType
     name = models.CharField(max_length=20)
-    program = models.ForeignKey(Program)
-    start = models.TimeField()
-    end = models.TimeField()
+    programs = models.ManyToManyField(Program)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    description = models.CharField(max_length=500, blank=True)
     recurrence = models.OneToOneField(Recurrence)
-    allowed_memberships = models.ManyToManyField(Membership)
-    staff = models.ManyToManyField(Staff)
+    #allowed_memberships = models.ManyToManyField(Membership)
 
     def __unicode__(self):
         return self.name
@@ -90,14 +122,56 @@ class Event(models.Model):
     # Events are associated with an EventType
     name = models.CharField(max_length=20)
     date = models.DateField()
-    start = models.TimeField()
-    end = models.TimeField()
-    staff = models.ManyToManyField(Staff)
-    attendees = models.ManyToManyField(Member)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    description = models.CharField(max_length=500, blank=True)
+    attendees = models.ManyToManyField(Member, null=True, blank=True)
     event_type = models.ForeignKey(EventType)
+    is_cancelled = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
+
+    # Given name, date, start_time of an event,
+    # find the specified event if it exists (or create a temp one)
+    # and return it. 
+    # First check Events.objects, if no such event exists, 
+    # Second, find proper EventType and create a temp Event
+    # Third, if no EventType matches, then return None
+    @staticmethod
+    def getEvent(name, date, start_time):
+        
+        event = None
+
+        # First, check Events.objects for an event that fits given info
+        events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
+        if events and len(events)==1:
+            event = events[0]
+        # If no events exist, look for the proper EventType and create a temp Event
+        else:
+            eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
+
+            for eventtype in eventtypes:
+                # If the event started before or on date and 
+                # either has no end_recurrence or an end_recurrence >= date, 
+                # then event may exist in this EventType! Check!
+                if (eventtype.recurrence.start_date <= date and \
+                    (not eventtype.recurrence.end_recurrence | \
+                    eventtype.recurrence.end_recurrence >= date)):
+
+                    weekday = date.weekday
+                    # If event's weekday was in eventtype's weekdays
+                    if weekday in eventtype.recurrence.getDays():
+                        # Create an event! 
+                        # (if we got this far, means no Event already exists)
+                        event = Event(name=new_eventtype.name,
+                            date=new_eventtype.recurrence.start_date,
+                            start_time=new_eventtype.start_time,
+                            end_time=new_eventtype.end_time,
+                            description=new_eventtype.description,
+                            event_type = new_eventtype)
+                        break
+        return event
 
 class Attendance(models.Model):
     member = models.ForeignKey(Member)
