@@ -321,7 +321,7 @@ def event_create(request):
     user = request.user
     member = Member.objects.get(user=user)
     programs = Program.objects.all()
-    context = []
+    context = {}
     errors = []
 
     if (request.method == 'GET'):
@@ -405,7 +405,7 @@ def event_create(request):
 
 def event_profile(request):
     user = request.user
-    context = []
+    context = {}
     errors = []
 
     if request.method == 'GET':
@@ -548,7 +548,7 @@ def events(request):
 def event_edit(request):
     # Check if editing one-time or for all following events!
     user = request.user
-    context = []
+    context = {}
     errors = []
 
     if request.method == 'GET':
