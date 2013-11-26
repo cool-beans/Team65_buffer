@@ -60,26 +60,25 @@ class Recurrence(models.Model):
     isRecurring = models.BooleanField(default=False)
 
     start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
+    end_recurrence = models.DateField(null=True, blank=True)
 
     def __unicode__(self):
         return self.EventType.name + "'s Recurrence"
 
     def setDayRecurrence(self, day, isRecurring):
-
-        if day == 0:
+        if day == 'Monday':
             self.onMondays = isRecurring
-        elif day == 1:
+        elif day == 'Tuesday':
             self.onTuesdays = isRecurring
-        elif day == 2:
+        elif day == 'Wednesday':
             self.onWednesdays = isRecurring
-        elif day == 3:
+        elif day == 'Thursday':
             self.onThursdays = isRecurring
-        elif day == 4:
+        elif day == 'Friday':
             self.onFridays = isRecurring
-        elif day == 5:
+        elif day == 'Saturday':
             self.onSaturdays = isRecurring
-        elif day == 6:
+        elif day == 'Sunday':
             self.onSundays = isRecurring
 
     def getDays(self):
@@ -108,7 +107,7 @@ class EventType(models.Model):
     programs = models.ManyToManyField(Program)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    note = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=500, blank=True)
     recurrence = models.OneToOneField(Recurrence)
     #allowed_memberships = models.ManyToManyField(Membership)
 
@@ -125,7 +124,7 @@ class Event(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    note = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=500, blank=True)
     attendees = models.ManyToManyField(Member, null=True, blank=True)
     event_type = models.ForeignKey(EventType)
     is_cancelled = models.BooleanField(default=False)
@@ -144,30 +143,28 @@ class Event(models.Model):
         event = None
         found_event = None
         new_event = None
-        event = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
 
+        # First, check Events.objects for an event that fits given info
+        event = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
         if event and len(event)==1:
             return event[0]
         
+        # Second, look for the proper EventType and create a temp Event
         eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
 
         for eventtype in eventtypes:
             # If the event started before or on date and 
-            # either has no end_date or an end_date >= date, then event may exist in this
-            # EventType! Check!
+            # either has no end_recurrence or an end_recurrence >= date, 
+            # then event may exist in this EventType! Check!
             if (eventtype.recurrence.start_date <= date and \
-                (not eventtype.recurrence.end_date | eventtype.recurrence.end_date >= date)):
+                (not eventtype.recurrence.end_recurrence | \
+                    eventtype.recurrence.end_recurrence >= date)):
 
                 weekday = date.weekday
                 # If event's weekday was in eventtype's weekdays
                 if weekday in eventtype.recurrence.getDays():
-                    found_event = eventtype.event_set.filter(date=date)
-                    # If eventtype already had an event that exactly matched, set event
-                    if found_event:
-                        event = found_event
-                        break
-                    # Otherwise, create an event
-                    else:
+                    # Create an event! (if we got this far, means no Event already exists)
+                    
                         new_event = Event(name=new_eventtype.name,
                           date=new_eventtype.recurrence.start_date,
                           start_time=new_eventtype.start_time,
@@ -175,7 +172,6 @@ class Event(models.Model):
                           note=new_eventtype.note,
                           event_type = new_eventtype)
                         break
-
 
 class Attendance(models.Model):
     member = models.ForeignKey(Member)

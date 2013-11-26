@@ -16,7 +16,7 @@ class ProgramMod(forms.Form):
 class EventTypeCreation(forms.ModelForm):
     class Meta:
         model = EventType
-        fields = ['name', 'programs', 'start_time', 'end_time', 'note',]
+        fields = ['name', 'start_time', 'end_time', 'description',]
 
 class MemberEdit(forms.Form):
     first_name = forms.CharField(max_length=100,required=False)

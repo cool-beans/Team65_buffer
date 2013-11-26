@@ -320,19 +320,21 @@ def event_create(request):
     # Create a new event
     user = request.user
     member = Member.objects.get(user=user)
+    programs = Program.objects.all()
     context = []
     errors = []
 
     if (request.method == 'GET'):
         context['user'] = user
         context['errors'] = errors
+        context['programs'] = programs
         return render(request,'final_project/event_create.html',context)
 
     elif (request.method == 'POST'):
         new_recurrence = Recurrence()
         isRecurring = False
-        for day in range(0, 7):
-            if str(day) in request.POST and request.POST[str(day)]:
+        for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+            if day in request.POST:
                 isRecurring = True
                 new_recurrence.setDayRecurrence(day, isRecurring)
 
@@ -345,17 +347,25 @@ def event_create(request):
             errors.append('Must include start date.')
             context['user'] = user
             context['errors'] = errors
+            context['programs'] = programs
             return render(request, 'final_project/event_create.html', context)
-        else:
-            new_recurrence.start_date = request.POST['start_date']
+        
+        new_recurrence.start_date = request.POST['start_date']        
 
         # If end date is specified, save it in recurrence info.
         # It's ok to not have an end date (recurrs forever)
         if ('end_date' in request.POST and request.POST['end_date']):
-            new_recurrence.end_date = request.POST['end_date']
+            new_recurrence.end_recurrence = request.POST['end_date']
 
         # Now Recurrence should be set, create event!
         new_eventtype = EventType(recurrence=new_recurrence)
+
+        # For all programs, check if they are in POST,
+        # if so, add them to the new EventType's programs_set
+        for program in programs:
+            if program.name in request.POST:
+                new_eventtype.programs_set.add(program)
+        
         eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
 
         if not eventtype_form.is_valid():
@@ -364,17 +374,15 @@ def event_create(request):
                           'with this event.')
             context['user'] = user
             context['errors'] = errors
+            context['programs'] = programs
             return render(request,'final_project/event_create.html', context)
 
-        # Check if any such events exist already, if so, don't save form.
-        # Don't want to save when:
-        # - there already exists an Event that has the same name and start_time and
-        #   is in between the start_date and end_date
-        # - overlaps with another EventType that has the same start_time and name
+        # Check if any such events/eventTypes exist already, if so, don't save form.
         if Event.getEvent(name=name, date=date, start_time=start_time):
             errors.append('Event with same day and start time and name already exists.')
             context['user'] = user
             context['errors'] = errors
+            context['programs'] = programs
             return render(request, 'final_project/event_create.html', context)
 
         # Create new event with
@@ -416,6 +424,11 @@ def event_profile(request):
         if errors:
             return redirect('final_project/events')
 
+        name = request.POST['name']
+        start_date = request.POST['start_date']
+        start_time = request.POST['start_time']
+        # If all needed info (name, date, start_time) is there, get Event
+        event = Event.getEvent(name=name, start_date=start_date, start_time=start_time)
         eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
         event = None
         date = request.POST['date']
