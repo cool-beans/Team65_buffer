@@ -138,6 +138,7 @@ class Event(models.Model):
     # First check Events.objects, if no such event exists, 
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
+    @staticmethod
     def getEvent(name, date, start_time):
         
         event = None
