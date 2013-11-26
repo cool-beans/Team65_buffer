@@ -3,7 +3,7 @@
 {% block page %}Members{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
+{% if user.is_authenticated and user.staff %}
 <div class="row">
    <div class="col-lg-12">
       <a type="button" class="btn btn-primary" href="{% url 'program_create' %}">
