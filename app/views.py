@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from datetime import *#datetime, date, timedelta
 
 # Decorator to use built-in authentication system
@@ -491,7 +492,6 @@ def events(request):
     events = []
     dates = []
     day_to_date = {}
-    events_on_days = {}
 
     # Build list of dates in current week
     for i in range(0, 7):
@@ -500,26 +500,48 @@ def events(request):
         day_to_date[date_to_get.weekday()] = date_to_get
 
         dates.append(date_to_get)
+    
+    earliest_date = latest_date - timedelta(days=6)
 
-        # Initialize each day of the week to an empty list
-        events_on_days[i] = []
-    print "dates[6]:"
-    print dates[6]
-    # Grab all recurrences that started at least a week ago
+    # Grab all recurrences that started at least by the latest_date
     recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
+    recurrences = recurrences.filter(Q(end_recurrence__gte=latest_date) | Q(end_recurrence__isnull=True))
 
     for recurrence in recurrences:
         print "RECURRENCE: "
         print recurrence
-        for day in recurrence.getDays():
+        days = recurrence.getDays()
+        eventtype = recurrence.eventtype
+
+        # If no recurring days and date is 
+        if not days and (recurrence.start_date >= earliest_date):
+            print "NOT DAYS:"
+            print recurrence
+            day = recurrence.start_date.weekday()
+            event = eventtype.event_set.filter(date=recurrence.start_date)
+
+            # If an Event already exists for this one-time event, just append.
+            if event:
+                events.append(event)
+
+            # Otherwise, make an Event (don't save) and append
+            else:
+                new_event = Event(name=eventtype.name,
+                          date=eventtype.recurrence.start_date,
+                          start_time=eventtype.start_time,
+                          end_time=eventtype.end_time,
+                          description=eventtype.description,
+                          event_type = eventtype)
+                events.append(new_event)
+
+        for day in days:
             event_date = day_to_date[day]
-            eventtype = recurrence.eventtype
 
             # If event already exists,
             # append it to the proper day of the week
             event = eventtype.event_set.filter(date=event_date)
             if event:
-                events_on_days[day].append(event)
+                events.append(event)
 
             # Otherwise, make an event (don't save) and append
             else:
@@ -529,11 +551,10 @@ def events(request):
                           end_time=eventtype.end_time,
                           description=eventtype.description,
                           event_type = eventtype)
-                events_on_days[day].append(new_event)
+                events.append(new_event)
 
-    for i in range(0, 7):
-        events += events_on_days[i]
-
+    # Lambda function to sort the list of grumbls in place by timestamp (most recent first)
+    events.sort(key=lambda event: event.date, reverse=True)
     context['user'] = user
     context['latest_date'] = latest_date
     context['events'] = events
