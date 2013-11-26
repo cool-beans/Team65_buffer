@@ -152,8 +152,12 @@ class Event(models.Model):
         eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
 
         for eventtype in eventtypes:
-            # If the event started before or on date and either has no 
-            if eventtype.recurrence.start_date <= date:
+            # If the event started before or on date and 
+            # either has no end_date or an end_date >= date, then event may exist in this
+            # EventType! Check!
+            if (eventtype.recurrence.start_date <= date and \
+                (not eventtype.recurrence.end_date | eventtype.recurrence.end_date >= date)):
+
                 weekday = date.weekday
                 # If event's weekday was in eventtype's weekdays
                 if weekday in eventtype.recurrence.getDays():
