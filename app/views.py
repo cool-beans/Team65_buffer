@@ -452,7 +452,7 @@ def event_profile(request):
 @login_required
 def events(request):
     user = request.user
-    context = []
+    context = {}
     errors = []
 
     # Default: set latest_date to today
