@@ -141,37 +141,36 @@ class Event(models.Model):
     def getEvent(self, name, date, start_time):
         
         event = None
-        found_event = None
-        new_event = None
 
         # First, check Events.objects for an event that fits given info
-        event = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
-        if event and len(event)==1:
-            return event[0]
-        
+        events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
+        if events and len(events)==1:
+            event = events[0]
         # Second, look for the proper EventType and create a temp Event
-        eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
+        else:
+            eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
 
-        for eventtype in eventtypes:
-            # If the event started before or on date and 
-            # either has no end_recurrence or an end_recurrence >= date, 
-            # then event may exist in this EventType! Check!
-            if (eventtype.recurrence.start_date <= date and \
-                (not eventtype.recurrence.end_recurrence | \
+            for eventtype in eventtypes:
+                # If the event started before or on date and 
+                # either has no end_recurrence or an end_recurrence >= date, 
+                # then event may exist in this EventType! Check!
+                if (eventtype.recurrence.start_date <= date and \
+                    (not eventtype.recurrence.end_recurrence | \
                     eventtype.recurrence.end_recurrence >= date)):
 
-                weekday = date.weekday
-                # If event's weekday was in eventtype's weekdays
-                if weekday in eventtype.recurrence.getDays():
-                    # Create an event! (if we got this far, means no Event already exists)
-                    
-                        new_event = Event(name=new_eventtype.name,
-                          date=new_eventtype.recurrence.start_date,
-                          start_time=new_eventtype.start_time,
-                          end_time=new_eventtype.end_time,
-                          note=new_eventtype.note,
-                          event_type = new_eventtype)
-                        break
+                    weekday = date.weekday
+                    # If event's weekday was in eventtype's weekdays
+                    if weekday in eventtype.recurrence.getDays():
+                        # Create an event! 
+                        # (if we got this far, means no Event already exists)
+                        event = Event(name=new_eventtype.name,
+                            date=new_eventtype.recurrence.start_date,
+                            start_time=new_eventtype.start_time,
+                            end_time=new_eventtype.end_time,
+                            note=new_eventtype.note,
+                            event_type = new_eventtype)
+                            break
+        return event
 
 class Attendance(models.Model):
     member = models.ForeignKey(Member)
