@@ -413,54 +413,33 @@ def event_profile(request):
     errors = []
 
     if request.method == 'GET':
-        errors.append('Go to schedule view page and select event to view.')
-        context['user'] = user
-        context['errors'] = errors
-        return redirect('final_project/events')
+     #   errors.append('Go to schedule view page and select event to view.')
+      #  context['user'] = user
+       # context['errors'] = errors
+        #return redirect('/final_project/events')
 
-    elif request.method == 'POST':
-        if 'name' not in request.POST or not request.POST['name']:
-            errors.append('No event name info given in POST')
-        if 'date' not in request.POST or not request.POST['date']:
-            errors.append('No event date info given in POST')
-        if 'start_time' not in request.POST or not request.POST['start_time']:
-            errors.append('No event start_time info given in POST')
+    #elif request.method == 'POST':
+        if 'event_name' not in request.GET or not request.GET['event_name']:
+            errors.append('No event name info given in GET')
+        if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
+            errors.append('No event_start_date info given in GET')
+        if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
+            errors.append('No event_start_time info given in GET')
         if errors:
-            return redirect('final_project/events')
+            return redirect('/final_project/events')
 
-        name = request.POST['name']
-        start_date = request.POST['start_date']
-        start_time = request.POST['start_time']
+        name = request.GET['event_name']
+        
+        # date is now in format "Nov. 3, 2013"
+        start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
+        start_time = request.GET['event_start_time']
         # If all needed info (name, date, start_time) is there, get Event
-        event = Event.getEvent(name=name, start_date=start_date, start_time=start_time)
-        eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
-        event = None
-        date = request.POST['date']
-        for eventtype in eventtypes:
-            # If the event started before or on date
-            if eventtype.recurrence.start_date <= date:
-                weekday = date.weekday
-                # If event's weekday was in eventtype's weekdays
-                if weekday in eventtype.recurrence.getDays():
-                    found_event = eventtype.event_set.filter(date=request.POST['date'])
-                    # If eventtype already had an event that exactly matched, set event
-                    if found_event:
-                        event = found_event
-                        break
-                    # Otherwise, create an event
-                    else:
-                        event = Event(name=new_eventtype.name,
-                          date=new_eventtype.recurrence.start_date,
-                          start_time=new_eventtype.start_time,
-                          end_time=new_eventtype.end_time,
-                          note=new_eventtype.note,
-                          event_type = new_eventtype)
-                        break
-
+        event = Event.getEvent(name=name, date=start_date, start_time=start_time)
+        
         # If cannot find recurrence that matches event, redirect to events
         if not event:
             errors.append("Could not locate event, given name, start_time, date.")
-            return redirect('final_project/events')
+            return redirect('/final_project/events')
 
         context['user'] = user
         context['event'] = event
@@ -487,8 +466,6 @@ def events(request):
                 elif request.GET['timeframe'] == 'next':
                     latest_date = request.GET['latest_date'] + timedelta(days=7)
 
-    print "LATEST_DATE: "
-    print latest_date
     events = []
     dates = []
     day_to_date = {}
@@ -508,15 +485,11 @@ def events(request):
     recurrences = recurrences.filter(Q(end_recurrence__gte=latest_date) | Q(end_recurrence__isnull=True))
 
     for recurrence in recurrences:
-        print "RECURRENCE: "
-        print recurrence
         days = recurrence.getDays()
         eventtype = recurrence.eventtype
 
         # If no recurring days and date is 
         if not days and (recurrence.start_date >= earliest_date):
-            print "NOT DAYS:"
-            print recurrence
             day = recurrence.start_date.weekday()
             event = eventtype.event_set.filter(date=recurrence.start_date)
 
