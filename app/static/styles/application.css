@@ -7,7 +7,7 @@ th {
 
 html, body {
   height: 100%;
-  font-family: "Comfortaa";
+  font-family: Lucida Console;
   color: #666666; }
   html a, body a {
     color: #666666; }
@@ -48,12 +48,46 @@ h2 {
 
 /* Homepage */
 #homepage_carousel {
-  position: relative;
-  left: 25%;
-  width: 50%; }
+  width: 100%; }
   #homepage_carousel img {
     width: 100%;
     height: 300px; }
+
+.caption-image img {
+  width: 600px;
+  height: 500px;
+  position: relative;
+  left: 50%; }
+
+.caption-image h3 {
+  z-index: 2;
+  position: absolute;
+  top: 20%;
+  left: 20%;
+  font-size: 2.5em; }
+
+.caption-image p {
+  z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  font-size: 1em;
+  line-height: 2em; }
+
+.text-wrapper {
+  position: relative;
+  right: 200px;
+  top: 200px;
+  background-color: #bcdffa;
+  display: inline-block;
+  width: 400px;
+  height: 400px; }
+
+.caption-text {
+  background-color: #7aec74;
+  display: inline-block;
+  width: 400px;
+  height: 400px; }
 
 form {
   position: relative;
@@ -65,22 +99,9 @@ form {
   form label {
     width: 10%;
     margin-bottom: 1%; }
-  form input[type=checkbox] {
-    width: 0;
-    height: 0; }
-  form input[type=submit], form input[type='text'] {
-    width: 15%;
-    height: 30px;
-    margin-bottom: 1%;
-    border: none;
-    background-color: whitesmoke;
-    padding: 5px;
-    font-family: Arial; }
   form input[type=submit] {
     position: relative;
     left: 4%; }
-  form input[type=submit]:hover {
-    background-color: #e7e7e7; }
 
 /* Member/Programs Tables */
 th {
