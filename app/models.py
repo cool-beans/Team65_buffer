@@ -66,7 +66,7 @@ class Recurrence(models.Model):
         return self.EventType.name + "'s Recurrence"
 
     def setDayRecurrence(self, day, isRecurring):
-        
+
         if day == 0:
             self.onMondays = isRecurring
         elif day == 1:
@@ -84,7 +84,7 @@ class Recurrence(models.Model):
 
     def getDays(self):
         days = []
-        
+
         if self.onMondays:
             days.append(0)
         if self.onTuesdays:
@@ -143,8 +143,6 @@ class Event(models.Model):
         found_event = None
         new_event = None
         event = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
-        if :
-            pass
         for eventtype in eventtypes:
             # If the event started before or on date
             if eventtype.recurrence.start_date <= date:

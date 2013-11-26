@@ -322,7 +322,7 @@ def event_create(request):
     member = Member.objects.get(user=user)
     context = []
     errors = []
-    
+
     if (request.method == 'GET'):
         context['user'] = user
         context['errors'] = errors
@@ -335,7 +335,7 @@ def event_create(request):
             if str(day) in request.POST and request.POST[str(day)]:
                 isRecurring = True
                 new_recurrence.setDayRecurrence(day, isRecurring)
-        
+
         if isRecurring:
             new_recurrence.isRecurring = True
 
@@ -377,7 +377,7 @@ def event_create(request):
             context['errors'] = errors
             return render(request, 'final_project/event_create.html', context)
 
-        # Create new event with 
+        # Create new event with
         new_event = Event(name=new_eventtype.name,
                           date=new_eventtype.recurrence.start_date,
                           start_time=new_eventtype.start_time,
@@ -389,7 +389,7 @@ def event_create(request):
 
         # Just create the event to display, no need to actually save it yet.
         #new_event.save()
-    
+
         context['user'] = user
         context['event'] = new_event
         context['eventtype'] = new_eventtype
@@ -459,7 +459,7 @@ def events(request):
     latest_date = date.today()
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
-        
+      pass
     elif request.method == 'POST':
         # If the latest_date from the last access is provided
         # along with either a button = 'prev' or 'next', calculate
@@ -489,13 +489,13 @@ def events(request):
 
     # Grab all recurrences that started at least a week ago
     recurrences = Recurrence.objects.filter(start_date__lte=dates[6])
-        
+
     for recurrence in recurrences:
         for day in recurrence.getDays():
             date = day_to_date[day]
             eventtype = recurrence.eventtype
-                
-            # If event already exists, 
+
+            # If event already exists,
             # append it to the proper day of the week
             event = eventtype.event_set.filter(date=date)
             if event:
@@ -515,7 +515,7 @@ def events(request):
     context['latest_date'] = latest_date
     return render(request, 'final_project/events.html', context)
 
-    
+
 
 # If POST, expects event's original:
 #  -name (string)
@@ -544,7 +544,8 @@ def event_edit(request):
     elif request.method == 'POST':
         # If name, start_time, and date are there
         # If event already exists, just change the fields that are not None and save
-
+        context['user'] = user
+        return render(request, 'final_project/event_edit.html', context)
 
         # If event does not exist, make sure all fields are there.
 
