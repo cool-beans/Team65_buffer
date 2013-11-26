@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime, date, timedelta
+from datetime import *#datetime, date, timedelta
 
 # Decorator to use built-in authentication system
 from django.contrib.auth.decorators import login_required
@@ -492,12 +492,12 @@ def events(request):
 
     for recurrence in recurrences:
         for day in recurrence.getDays():
-            date = day_to_date[day]
+            event_date = day_to_date[day]
             eventtype = recurrence.eventtype
 
             # If event already exists,
             # append it to the proper day of the week
-            event = eventtype.event_set.filter(date=date)
+            event = eventtype.event_set.filter(date=event_date)
             if event:
                 events_on_days[day].append(event)
 
