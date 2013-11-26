@@ -9,7 +9,7 @@ $blue: #BCDFFA;
 $yellow: #FFF377;
 
 /*Fonts*/
-$header_font:"Iceland";
+$header_font:"Comfortaa";
 $content_font:"Comfortaa";
 /*Global Styles*/
 th{
@@ -20,39 +20,27 @@ html, body {
   height: 100%;
   font-family: $content_font;
   color:$text_color;
+  a:hover {
+      text-decoration:none;
+  }
 }
 
 h1,h2,h3,h4,h5,h6{
    font-family:$header_font;
 }
-/*Navigation Bar Styles */
-.navbar{
-   background-image:none;
-   box-shadow:none;
-   background-color:$light_grey;
-  h1{
-     margin:0 10% 0 50%;
+h1{
+     font-size: 6em;
+     color:$text_color;
   }
-  .navbar-brand{
-     padding:0;
-  }
-  .navbar-nav{
-     .active{
-        a{
-            background-image:none;
-            background-repeat:none;
-            box-shadow:none;
-            background-color:$medium_grey;
-         }
-     }
-     a{
-        margin:0 50% 0 0;
-         &:hover{
-            background-image: linear-gradient(to bottom, #EBEBEB 0%, #F3F3F3 100%);
-         }
-
-     }
-  }
+h2{
+   font-size:2em;
+   font-family:"Wire-one";
+}
+#left-sub{
+   margin-right:440px;
+}
+#right-sub{
+   margin-left:440px;
 }
 .content{
    position:relative;
