@@ -459,12 +459,7 @@ def events(request):
     latest_date = date.today()
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
-<<<<<<< HEAD
-        pass
-        
-=======
       pass
->>>>>>> 249f82f230fc77e575005e279c4e43c9fcca03ae
     elif request.method == 'POST':
         # If the latest_date from the last access is provided
         # along with either a button = 'prev' or 'next', calculate
