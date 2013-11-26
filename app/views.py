@@ -475,17 +475,15 @@ def events(request):
     latest_date = date.today()
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
-        pass
 
-    elif request.method == 'POST':
         # If the latest_date from the last access is provided
         # along with either a button = 'prev' or 'next', calculate
         # appropriate latest_date
-        if 'latest_date' in request.POST and request.POST['latest_date']:
-            if 'button' in request.POST and request.POST['button']:
-                if request.POST['button'] == 'prev':
+        if 'latest_date' in request.GET and request.GET['latest_date']:
+            if 'button' in request.GET and request.GET['button']:
+                if request.GET['button'] == 'prev':
                     latest_date = date.today() - timedelta(days=7)
-                elif request.POST['button'] == 'next':
+                elif request.GET['button'] == 'next':
                     latest_date = date.today() + timedelta(days=7)
 
     events = []
@@ -526,10 +524,14 @@ def events(request):
                           end_time=new_eventtype.end_time,
                           note=new_eventtype.note,
                           event_type = new_eventtype)
-                events_on_days[day].append(event)
+                events_on_days[day].append(new_event)
+
+    for i in range(0, 7):
+        events += events_on_days[i]
 
     context['user'] = user
     context['latest_date'] = latest_date
+    context['events'] = events
     return render(request, 'final_project/events.html', context)
 
 
