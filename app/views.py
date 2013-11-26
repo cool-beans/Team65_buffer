@@ -486,6 +486,8 @@ def events(request):
                 elif request.GET['timeframe'] == 'next':
                     latest_date = request.GET['latest_date'] + timedelta(days=7)
 
+    print "LATEST_DATE: "
+    print latest_date
     events = []
     dates = []
     day_to_date = {}
@@ -501,11 +503,14 @@ def events(request):
 
         # Initialize each day of the week to an empty list
         events_on_days[i] = []
-
+    print "dates[6]:"
+    print dates[6]
     # Grab all recurrences that started at least a week ago
-    recurrences = Recurrence.objects.filter(start_date__lte=dates[6])
+    recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
 
     for recurrence in recurrences:
+        print "RECURRENCE: "
+        print recurrence
         for day in recurrence.getDays():
             event_date = day_to_date[day]
             eventtype = recurrence.eventtype
@@ -518,12 +523,12 @@ def events(request):
 
             # Otherwise, make an event (don't save) and append
             else:
-                new_event = Event(name=new_eventtype.name,
-                          date=new_eventtype.recurrence.start_date,
-                          start_time=new_eventtype.start_time,
-                          end_time=new_eventtype.end_time,
-                          note=new_eventtype.note,
-                          event_type = new_eventtype)
+                new_event = Event(name=eventtype.name,
+                          date=eventtype.recurrence.start_date,
+                          start_time=eventtype.start_time,
+                          end_time=eventtype.end_time,
+                          description=eventtype.description,
+                          event_type = eventtype)
                 events_on_days[day].append(new_event)
 
     for i in range(0, 7):

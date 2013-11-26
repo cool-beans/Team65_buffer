@@ -63,7 +63,7 @@ class Recurrence(models.Model):
     end_recurrence = models.DateField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.EventType.name + "'s Recurrence"
+        return self.eventtype.name + "'s Recurrence"
 
     def setDayRecurrence(self, day, isRecurring):
         if day == 'Monday':
