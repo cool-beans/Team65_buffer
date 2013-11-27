@@ -21,4 +21,11 @@ urlpatterns = patterns('',
     url(r'^member_profile/(?P<member_id>\d+)$', 'app.views.member_profile', name='member_profile'),
     url(r'^filter_members/(?P<program_id>\d+)$', 'app.views.filter_members', name='filter_members'),
     url(r'^member_edit/(?P<member_id>\d+)$', 'app.views.member_edit', name='member_edit'),
+
+   # Events
+    url(r'^events/$','app.views.events', name='events'),
+    url(r'^event_profile/$', 'app.views.event_profile', name='event_profile'),
+    url(r'^event_create/$', 'app.views.event_create', name='event_create'),
+#    url(r'^filter_events/(?P<event_id>\d+)$', 'app.views.filter_events', name='filter_events'),
+    url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.event_edit', name='event_edit'),
 )
