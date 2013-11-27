@@ -235,21 +235,18 @@ def member_edit(request, member_id):
                 old_member.phone = request.POST['phone']
             if form.cleaned_data['email'] is not None:
                 old_member.email = request.POST['email']
+            if 'make_staff' in request.POST and member.staff:
+                old_member.staff = True
             old_member.save()
             context['user'] = user
             context['member'] = old_member
             context['errors'] = errors
-            print "CHECKING THROUGH ADD"
             for prog in Program.objects.all():
                 name = prog.name
-                print name
                 if name in request.POST and request.POST[name]:
-                    print "IT IS HERE"
-                    print request.POST[name]
                     if request.POST[name] == 'remove':
                         prog.members.remove(member)
                     elif request.POST[name] == 'add':
-                        print "ADD", request.POST[name]
                         prog.members.add(member)
                     prog.save()
 
@@ -314,4 +311,61 @@ def program_edit(request, program_id):
     context = {'user':request.user,
                'program':program}
     return render(request,'final_project/program_profile.html',context)
+
+
+@login_required
+def book_event(request):
+    user = request.user
+    member = Member.objects.get(user=request.user)
+    context = {'user':user,'member':member}
+    if (request.method == 'GET'):
+        return render(request,'final_project/book_event.html',context)
+
+    form = BookEvent(request.POST)
+    if not form.is_valid():
+        context['errors'] = ['Error, bad form data.']
+        return render(request,'final_project/book_event.html',context)
+
+    e_type = EventType.objects.get(name=form.cleaned_data['type'])
+    event = Event.objects.get_or_create(name=form.cleaned_data['name'],
+                                        date=form.cleaned_data['date'],
+                                        start=form.cleaned_data['start'],
+                                        end=form.cleaned_data['end'],
+                                        event_type=e_type)
+    event.attendees.add(member)
+    event.save()
+    context['event'] = event
+    return render(request,'final_project/event_profile.html',context)
+
+
+@login_required
+def buy_membership(request):
+    user = request.user
+    member = Member.objects.get(user=request.user)
+    context = {'user':user,'member':member}
+    if request.method == 'GET':
+        return render(request, 'final_project/buy_membership.html',context)
+
+    if not 'membership' in request.POST or not request.POST['membership']:
+        context['errors'] = ['Error: Could not find membership.']
+        return render(request,'final_project/buy_membership.html',context)
+    try:
+        memb = Membership.get(name=request.POST['name'])
+    except Membership.DoesNotExist:
+        context['errors'] = ['Error: Could not find membership.']
+        return render(request,'final_project/buy_membership.html',context)
+    if 'exp_date' in request.POST and request.POST['exp_date']:
+        member.membership_exp_date = request.POST['exp_date']
+    member.membership = memb
+    member.save()
+    return render(request,'final_project/receipt.html', context)
+
+
+
+
+
+
+
+
+
 
