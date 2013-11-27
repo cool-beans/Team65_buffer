@@ -29,7 +29,14 @@
             <!-- <td>{{ event.visible }}</td> -->
             <td>{{ event.members.count }}</td>
             <td>{{ event.program }}</td>
-            <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{event.id}}">View Profile</a></td>
+            <td>
+               <form action="{% url 'event_profile' %}">
+                  <input type="hidden" name="event_name" value="{{ event.name }}">
+                  <input type="hidden" name="event_start_date" value="{{ event.date }}">
+                  <input type="hidden" name="event_start_time" value="{{ event.start_time }}">
+                  <input type="submit" class="btn btn-primary" value="View Profile">
+               </form>
+            </td>
          </tr>
          {% endfor %}
          <!-- end forloop -->
