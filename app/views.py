@@ -378,8 +378,8 @@ def event_create(request):
             return render(request,'final_project/event_create.html', context)
 
         # Check if any such events/eventTypes exist already, if so, don't save form.
-        if Event.getEvent(name=new_eventtype.name, 
-                          date=new_eventtype.recurrence.start_date, 
+        if Event.getEvent(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
                           start_time=new_eventtype.start_time):
             errors.append('Event with same day and start time and name already exists.')
             context['user'] = user
@@ -427,13 +427,13 @@ def event_profile(request):
             return redirect('/final_project/events')
 
         name = request.GET['event_name']
-        
+
         # date is now in format "Nov. 3, 2013"
         start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
         start_time = request.GET['event_start_time']
         # If all needed info (name, date, start_time) is there, get Event
         event = Event.getEvent(name=name, date=start_date, start_time=start_time)
-        
+
         # If cannot find recurrence that matches event, redirect to events
         if not event:
             errors.append("Could not locate event, given name, start_time, date.")
@@ -475,7 +475,7 @@ def events(request):
         day_to_date[date_to_get.weekday()] = date_to_get
 
         dates.append(date_to_get)
-    
+
     earliest_date = latest_date - timedelta(days=6)
 
     # Grab all recurrences that started at least by the latest_date
@@ -486,7 +486,7 @@ def events(request):
         days = recurrence.getDays()
         eventtype = recurrence.eventtype
 
-        # If no recurring days and date is 
+        # If no recurring days and date is
         if not days and (recurrence.start_date >= earliest_date):
             day = recurrence.start_date.weekday()
             event = eventtype.event_set.filter(date=recurrence.start_date)
@@ -565,4 +565,52 @@ def event_edit(request):
         return render(request, 'final_project/event_edit.html', context)
 
         # If event does not exist, make sure all fields are there.
+
+
+@login_required
+def book_event(request):
+    user = request.user
+    member = Member.objects.get(user=request.user)
+    context = {'user':user,'member':member}
+    if (request.method == 'GET'):
+        return render(request,'final_project/book_event.html',context)
+
+    form = BookEvent(request.POST)
+    if not form.is_valid():
+        context['errors'] = ['Error, bad form data.']
+        return render(request,'final_project/book_event.html',context)
+
+    e_type = EventType.objects.get(name=form.cleaned_data['type'])
+    event = Event.objects.get_or_create(name=form.cleaned_data['name'],
+                                        date=form.cleaned_data['date'],
+                                        start=form.cleaned_data['start'],
+                                        end=form.cleaned_data['end'],
+                                        event_type=e_type)
+    event.attendees.add(member)
+    event.save()
+    context['event'] = event
+    return render(request,'final_project/event_profile.html',context)
+
+
+@login_required
+def buy_membership(request):
+    user = request.user
+    member = Member.objects.get(user=request.user)
+    context = {'user':user,'member':member}
+    if request.method == 'GET':
+        return render(request, 'final_project/buy_membership.html',context)
+
+    if not 'membership' in request.POST or not request.POST['membership']:
+        context['errors'] = ['Error: Could not find membership.']
+        return render(request,'final_project/buy_membership.html',context)
+    try:
+        memb = Membership.get(name=request.POST['name'])
+    except Membership.DoesNotExist:
+        context['errors'] = ['Error: Could not find membership.']
+        return render(request,'final_project/buy_membership.html',context)
+    if 'exp_date' in request.POST and request.POST['exp_date']:
+        member.membership_exp_date = request.POST['exp_date']
+    member.membership = memb
+    member.save()
+    return render(request,'final_project/receipt.html', context)
 
