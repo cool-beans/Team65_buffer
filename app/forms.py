@@ -22,4 +22,11 @@ class MemberEdit(forms.Form):
 
     phone = forms.CharField(max_length=10,required=False)
     email = forms.CharField(max_length=30,required=False)
+    make_staff = forms.BooleanField(required=False)
+
+class BookEvent(forms.Form):
+    name = forms.CharField(max_length=20)
+    date = forms.DateField()
+    start = models.TimeField()
+    end = models.TimeField()
 
