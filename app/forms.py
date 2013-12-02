@@ -33,3 +33,7 @@ class BookEvent(forms.Form):
     start = models.TimeField()
     end = models.TimeField()
 
+class MembershipTypeCreate(forms.ModelForm):
+    class Meta:
+        model = MembershipType
+        fields = ['name','description','allowed_freq','visible']
