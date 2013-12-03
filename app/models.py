@@ -242,6 +242,19 @@ class Event(models.Model):
 
         return t_out
 
+    # Given a date, return the date of the Sunday of that week!
+    @staticmethod
+    def getSundayDate(date):
+        SUNDAY = 6
+        sunday_date = None
+        # Loop through possible dates from given date through date + 6
+        for i in range(0, 7):
+            checking_date = date + timedelta(days=i)
+            if checking_date.weekday == SUNDAY:
+                sunday_date = checking_date
+                break
+        return sunday_date
+
     #@staticmethod
     #def convertDate():
     # TODO: toy with idea of making convertTime/convertDate simply return datetime.time/datetime.date objects

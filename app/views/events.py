@@ -98,10 +98,7 @@ def event_create(request):
                 new_eventtype.programs_set.add(program)
 
         eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
-        print "REQUEST.POST DICTIONARY**********************"
-        pprint(request.POST)
-        print eventtype_form.errors
-        #TODO: figure out why form is not valid when selecting multiple recurring days
+
         if not eventtype_form.is_valid():
             errors.append('Bad information given. Must include start date and '\
                           'event start/end time, event name, and programs associated '\
@@ -121,18 +118,11 @@ def event_create(request):
             context['programs'] = programs
             return render(request, 'final_project/event_create.html', context)
 
-        # Create new event with
-        new_event = Event(name=new_eventtype.name,
-                          date=new_eventtype.recurrence.start_date,
-                          start_time=new_eventtype.start_time,
-                          end_time=new_eventtype.end_time,
-                          description=new_eventtype.description,
-                          event_type = new_eventtype)
-
+        # Save new EventType
         new_eventtype = eventtype_form.save()
 
-        # Just create the event to display, no need to actually save it yet.
-        #new_event.save()
+        # Create new event with new EventType
+        new_event = Event.eventFromType(new_eventtype)
 
         context['user'] = user
         context['event'] = new_event
@@ -167,7 +157,7 @@ def event_profile(request):
 
         #start_time = datetime.strptime(request.GET['event_start_time'], '%I:%M %p').time()
         start_time = Event.convertTime(request.GET['event_start_time'])
-        print "\nstart_time before datetime.strptime: " + start_time
+        
         # start_time now in format HH:MM (AM|PM)
         start_time = datetime.strptime(start_time, '%I:%M %p').time()
 
@@ -176,16 +166,6 @@ def event_profile(request):
         print "\tdate: " + str(start_date)
         print "\ttime: " + str(start_time)
         print "\n\n"
-
-        for event in EventType.objects.all():
-            print "name: " + event.name
-            print "start_date: " + str(event.recurrence.start_date)
-            print "end_recurrence: " + str(event.recurrence.end_recurrence)
-            print "start_time: " + str(event.start_time)
-            print "days: " + str(event.recurrence.getDays())
-            print "--------------------------------------"
-
-        event = None
 
         # If all needed info (name, date, start_time) is there, get Event
         event = Event.getEvent(name=name, date=start_date, start_time=start_time)
@@ -210,8 +190,11 @@ def events(request):
     context = {}
     errors = []
 
-    # Default: set latest_date to today
-    latest_date = date.today()
+    today = date.today()
+
+    # Default: set latest_date to Sunday of this week
+    latest_date = Event.getSundayDate(today)
+    
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
 
@@ -285,10 +268,22 @@ def events(request):
     # Lambda function to sort the list of grumbls in place by timestamp (most recent first)
     events.sort(key=lambda event: event.date, reverse=True)
 
+    print "***************EVENT TYPES START***************"
+    for event in EventType.objects.all():
+        print "name: " + event.name
+        print "start_date: " + str(event.recurrence.start_date)
+        print "end_recurrence: " + str(event.recurrence.end_recurrence)
+        print "start_time: " + str(event.start_time)
+        print "days: " + str(event.recurrence.getDays())
+        print "--------------------------------------"
+    print "***************EVENT TYPES END***************\n\n"
+
+    print "***************EVENTS IN WEEK START****************"
     for e in events:
         print "EVENT: " + e.name
         print "\tdate: " + str(e.date)
         print "\tdesc: " + e.description
+    print "***************EVENTS IN WEEK END****************"
 
     context['user'] = user
     context['latest_date'] = latest_date
