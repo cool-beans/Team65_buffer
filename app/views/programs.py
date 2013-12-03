@@ -71,6 +71,7 @@ def program_edit(request, program_id):
     member = Member.objects.get(user=request.user)
     context = {'user':user,'member':member,'programs':Program.objects.all()}
     program = Program.objects.get(id=program_id)
+    context['program'] = program
     if not member.staff:
         # Make sure that the currently logged in user is a staff member
         context['errors'] =['This page requires Staff login.']
