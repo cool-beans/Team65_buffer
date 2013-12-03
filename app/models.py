@@ -1,18 +1,33 @@
 from django.db import models
+import re
 
 # User class for built-in authentication module
 from django.contrib.auth.models import User
+class MembershipType(models.Model):
+    # Membership Types for members
+    # These contain the name, description, and programs.
+    # These are what we display to the users.
 
-class Membership(models.Model):
-    # Many members with a Membership
-    # Many Memberships are allowed in many events
     name = models.CharField(max_length=20)
-    #allowed_events = models.ManyToManyField(Event)
+    description = models.CharField(max_length=500)
+#    programs = models.ManyToManyField(Program)
     allowed_freq = models.IntegerField()
-    price = models.DecimalField(max_digits=7, decimal_places=2)
-
+    default_price = models.IntegerField()
+    visible = models.BooleanField()
     def __unicode__(self):
         return self.name
+
+class Membership(models.Model):
+    # This is the membership that we sell to the individual member.
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    mem_type = models.OneToOneField(MembershipType)
+    exp_date = models.DateField(null=True, blank=True)
+    creation_date = models.DateField()
+    cancelled = models.BooleanField()
+    cancelled_date = models.DateField(null=True,blank=True)
+    def __unicode__(self):
+        return self.price
+
 
 class Member(models.Model):
     # Members can be Staff
@@ -30,8 +45,9 @@ class Member(models.Model):
     staff = models.BooleanField(default=False)
 
     creation_date = models.DateField()
-    membership = models.ForeignKey(Membership, null=True, blank=True)
-    membership_exp_date = models.DateField(null=True, blank=True)
+    memberships = models.ManyToManyField(Membership)
+
+
     #programs = models.ManyToManyField(Program)
     #events = models.ManyToManyField(Event)
 
@@ -103,7 +119,7 @@ class Recurrence(models.Model):
 
 class EventType(models.Model):
     # Has many Events associated with one EventType
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     programs = models.ManyToManyField(Program)
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -120,7 +136,7 @@ class EventType(models.Model):
 # for just one day?
 class Event(models.Model):
     # Events are associated with an EventType
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -132,15 +148,27 @@ class Event(models.Model):
     def __unicode__(self):
         return self.name
 
+    # Given an EventType, fills required fields with EventType info
+    # and returns an Event
+    @staticmethod
+    def eventFromType(eventtype):
+        event = Event(name=eventtype.name,
+                      date=eventtype.recurrence.start_date,
+                      start_time=eventtype.start_time,
+                      end_time=eventtype.end_time,
+                      description=eventtype.description,
+                      event_type = eventtype)
+        return event
+
     # Given name, date, start_time of an event,
     # find the specified event if it exists (or create a temp one)
-    # and return it. 
-    # First check Events.objects, if no such event exists, 
+    # and return it.
+    # First check Events.objects, if no such event exists,
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
     @staticmethod
     def getEvent(name, date, start_time):
-        
+
         event = None
 
         # First, check Events.objects for an event that fits given info
@@ -149,11 +177,25 @@ class Event(models.Model):
             event = events[0]
         # If no events exist, look for the proper EventType and create a temp Event
         else:
+            print 'getEvent: looking through EventTypes'
+            print 'name: ' + name
+            print 'date: ' + str(date)
+            print 'time: ' + str(start_time)
+
             eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
 
             for eventtype in eventtypes:
+                print "EVENTTYPE----------------------------"
+                print "name: " + eventtype.name
+                print "date: " + str(eventtype.recurrence.start_date)
+                print "time: " + str(eventtype.start_time)
+                print "--------------------------------------\n"
                 # If the event started before or on date and 
                 # either has no end_recurrence or an end_recurrence >= date, 
+
+                # If the event started before or on date and
+                # either has no end_recurrence or an end_recurrence >= date,
+
                 # then event may exist in this EventType! Check!
                 if (eventtype.recurrence.start_date <= date and \
                     (not eventtype.recurrence.end_recurrence or \
@@ -163,16 +205,46 @@ class Event(models.Model):
                     print "eventtype weekday: " + str(eventtype.recurrence.start_date.weekday())
                     # If event's weekday was in eventtype's weekdays
                     if weekday in eventtype.recurrence.getDays() or weekday == eventtype.recurrence.start_date.weekday():
+
+                        print "EVENT CREATED!"
                         # Create an event! 
+
+                        # Create an event!
+
                         # (if we got this far, means no Event already exists)
-                        event = Event(name=eventtype.name,
-                            date=eventtype.recurrence.start_date,
-                            start_time=eventtype.start_time,
-                            end_time=eventtype.end_time,
-                            description=eventtype.description,
-                            event_type = eventtype)
+                        event = eventFromType(eventtype)
                         break
         return event
+
+    @staticmethod
+    def convertTime(t_in):
+        t_out = ''
+        t_temp = t_in.replace('.', "")
+        pattern = r"(?P<hr>\d+)(:)?(?(2)(?P<min>\d{2})) (?P<ampm>am|pm)"
+
+        match = re.search(pattern, t_temp)
+        # Check for a match
+        if match:
+            d = match.groupdict()
+            # Check for hour, min, am|pm and format them
+            if ('hr' in d.keys() and 'min' in d.keys() and \
+                'ampm' in d.keys()):
+                hr = d['hr']
+                min = d['min']
+                ampm = d['ampm']
+                # Format hour 'HH'
+                if len(hr) == 1:
+                    hr = '0' + hr
+                # Format minute 'MM'
+                if not min:
+                    min = '00'
+                t_out = hr + ':' + min + ' ' + ampm
+
+        return t_out
+
+    #@staticmethod
+    #def convertDate():
+    # TODO: toy with idea of making convertTime/convertDate simply return datetime.time/datetime.date objects
 
 class Attendance(models.Model):
     member = models.ForeignKey(Member)
