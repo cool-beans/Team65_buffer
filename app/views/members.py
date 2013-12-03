@@ -152,8 +152,16 @@ def member_profile(request, member_id):
 def member_edit(request, member_id):
     context = {}
     user = request.user
-    member = Member.objects.get(id=member_id)
+    member = Member.objects.get(user=user)
     errors = []
+
+    try:
+        old_member = Member.objects.get(id=member_id)
+    except Member.DoesNotExist:
+        context['errors'] = ['Error: Could not find member to edit']
+        context['members'] = Member.objects.all()
+        return render(request,'final_project/members.html',context)
+
     # If simply getting the page to edit
     if request.method == 'GET':
         in_program = [ prog for prog in Program.objects.all() \
@@ -180,7 +188,6 @@ def member_edit(request, member_id):
                        'errors':errors}
             return render(request,'final_project/Members/member_edit.html',context)
         else:
-            old_member = Member.objects.get(id=member_id)
             old_user = old_member.user
 
             # Change first_name, last_name, birthday, phone, and email
@@ -197,6 +204,8 @@ def member_edit(request, member_id):
                 old_member.email = request.POST['email']
             if 'make_staff' in request.POST and member.staff:
                 old_member.staff = True
+            if 'remove_staff' in request.POST and member.staff:
+                old_member.staff = False
             old_member.save()
             context['user'] = user
             context['member'] = old_member
@@ -214,5 +223,6 @@ def member_edit(request, member_id):
 
     context['user'] = user
     context['member'] = member
+    context['member_to_edit'] = old_member
     context['errors'] = errors
     return render(request, 'final_project/Members/member_edit.html', context)

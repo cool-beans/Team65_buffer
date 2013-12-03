@@ -1,22 +1,31 @@
 <form  method="post" class="user_form">
    <label>Username:</label>
-   <input type="text" name="username" value="{{ member.user.username }}"><br />
+   <input type="text" name="username" value="{{ member_to_edit.user.username }}"><br />
    <label>First Name:</label>
-   <input type="text" name="first_name" value="{{ member.first_name }}"><br />
+   <input type="text" name="first_name" value="{{ member_to_edit.first_name }}"><br />
    <label>Last Name:</label>
-   <input type="text" name="last_name" value="{{ member.last_name }}"><br />
+   <input type="text" name="last_name" value="{{ member_to_edit.last_name }}"><br />
    <label>Birthday:</label>
-   <input type="date" name="birthday" value="{{ member.birthday }}"><br />
+   <input type="date" name="birthday" value="{{ member_to_edit.birthday }}"><br />
    <label>Phone:</label>
-   <input type="text" name="phone" value="{{ member.phone }}"><br />
+   <input type="text" name="phone" value="{{ member_to_edit.phone }}"><br />
    <label>Email:</label>
-   <input type="text" name="email" value="{{ member.email }}"><br />
+   <input type="text" name="email" value="{{ member_to_edit.email }}"><br />
    {% if not user.is_authenticated %}
       <label>Password:</label>
       <input type="password" name="pass1"><br />
       <label>Confirm Password:</label>
       <input type="password" name="pass2"><br />
    {% else %}
+      {% if user.member.staff %}
+      {% if member_to_edit.staff %}
+      <label>Remove from Staff</label>
+      <input type="checkbox" name="remove_staff" value="remove_staff"><br />
+      {% else %}
+      <label>Make Staff</label>
+      <input type="checkbox" name="make_staff" value="make_staff"><br />
+      {% endif %}
+      {% endif %}
       {% include 'final_project/Programs/partials/add_remove_program_form_partial.html' %}
   {% endif %}
    <input type="submit" value="Submit" />
