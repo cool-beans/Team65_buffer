@@ -212,7 +212,7 @@ class Event(models.Model):
                         # Create an event!
 
                         # (if we got this far, means no Event already exists)
-                        event = eventFromType(eventtype)
+                        event = Event.eventFromType(eventtype)
                         break
         return event
 

@@ -23,9 +23,9 @@ urlpatterns = patterns('',
     url(r'^member_edit/(?P<member_id>\d+)$', 'app.views-members.member_edit', name='member_edit'),
 
    # Events
-    url(r'^events/$','app.views.events', name='events'),
-    url(r'^event_profile/$', 'app.views.event_profile', name='event_profile'),
-    url(r'^event_create/$', 'app.views.event_create', name='event_create'),
+    url(r'^events/$','app.views-events.events', name='events'),
+    url(r'^event_profile/$', 'app.views-events.event_profile', name='event_profile'),
+    url(r'^event_create/$', 'app.views-events.event_create', name='event_create'),
 #    url(r'^filter_events/(?P<event_id>\d+)$', 'app.views.filter_events', name='filter_events'),
-    url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.event_edit', name='event_edit'),
+    url(r'^event_edit/(?P<event_id>\d+)$', 'app.views-events.event_edit', name='event_edit'),
 )
