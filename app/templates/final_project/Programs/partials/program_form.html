@@ -1,12 +1,13 @@
 <form  method="post" class="program_form">
    <label>Name:</label>
-   <input type="text" name="name"><br />
+   <input type="text" name="name" value="{{program.name}}"><br />
    <label>Description:</label>
-   <input type="text" name="description"><br />
-   <label>Staff:</label>
+   <input type="text" name="description" value="{{ program.description }}"><br />
+   <!-- Removed, because we are not sure we'll have time to finish. -->
+<!--   <label>Staff:</label>
    <input type="text" name="staff"><br />
    <label>Members:</label>
-   <input type="text" name="members"><br />
+   <input type="text" name="members"><br /> -->
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
    {% csrf_token %}
