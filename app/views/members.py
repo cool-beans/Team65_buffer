@@ -76,7 +76,7 @@ def register(request):
                                     password=request.POST['pass1'])
             login(request, new_user)
 
-            return redirect('/final_project/Members/member_profile/' + str(new_user_id))
+            return redirect('/final_project/member_profile/' + str(new_user_id))
 
     context['errors'] = errors
     return render(request, 'final_project/Members/register.html', context)
@@ -210,7 +210,7 @@ def member_edit(request, member_id):
                         prog.members.add(member)
                     prog.save()
 
-            return redirect('/final_project/Members/member_profile/' + member_id)
+            return redirect('/final_project/member_profile/' + member_id)
 
     context['user'] = user
     context['member'] = member
