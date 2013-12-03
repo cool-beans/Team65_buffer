@@ -115,9 +115,6 @@ def member_profile(request, member_id):
     user = request.user
     member = Member.objects.get(user=user)
 
-    print "IN MEMBER_PROFILE!"
-    print user.username + "'s member_id: " + str(user.member.id)
-    print "Is trying to access member_id: " + str(member_id)
 
 
     # Are they staff? If so then let them see whoever
@@ -163,7 +160,6 @@ def member_edit(request, member_id):
                               if len(prog.members.filter(id=member.id)) != 0]
         not_in_program = [ prog for prog in Program.objects.all() \
                               if len(prog.members.filter(id=member.id)) == 0]
-        print not_in_program
 
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
@@ -211,7 +207,6 @@ def member_edit(request, member_id):
                     if request.POST[name] == 'remove':
                         prog.members.remove(member)
                     elif request.POST[name] == 'add':
-                        print "ADD", request.POST[name]
                         prog.members.add(member)
                     prog.save()
 
