@@ -1,0 +1,39 @@
+{% extends "final_project/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Members{% endblock %}
+
+{% block content %}
+<div class="row">
+   <div class="col-lg-2">
+      <div class="list-group">
+         <a href="{% url 'filter_members' 0 %}" class="list-group-item">All<!--<span class="badge"></span>--></a>
+          {% for program in programs %}
+          <a href="{% url 'filter_members' program.id %}" class="list-group-item">{{program.name}}<span class="badge">{{program.members.count}}</span></a>
+          {% endfor %}
+      </div>
+   </div>
+   <div class="col-lg-10">
+      <table class="table table-striped table-bordered table-hover">
+         <tr>
+            <th>Member First Name</th>
+            <th>Member Last Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Date Account was Created</th>
+            <th>Profie</th>
+         </tr>
+         {% for member in members %}
+         <tr>
+            <td>{{ member.first_name }}</td>
+            <td>{{ member.last_name }}</td>
+            <td>{{ member.email }}</td>
+            <td>{{ member.phone }}</td>
+            <td>{{ member.creation_date }}</td>
+            <td><a type="button" class="btn btn-primary" href="/final_project/member_profile/{{member.id}}">View Profile</a></td>
+         </tr>
+         {% endfor %}
+                  <!-- end forloop -->
+      </table>
+   </div>
+</div><!--row-->
+{% endblock %}

@@ -1,0 +1,9 @@
+<form  method="post" class="program_form">
+   <label>Name:</label>
+   <input type="text" name="name" value="{{ program.name }}"><br />
+   <label>Description:</label>
+   <input type="textarea" name="description" value="{{ program.description }}"><br />
+   <input type="submit" value="Submit" />
+   <input type="hidden" name="next" value="{{ next }}" />
+   {% csrf_token %}
+</form>

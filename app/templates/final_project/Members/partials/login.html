@@ -1,0 +1,10 @@
+<div class="">
+   <ul class="list-inline">
+      {% if user.is_authenticated %}
+         <li><a href="{% url 'logout' %}">Login</a></li>
+       {% else %}
+         <li><a href="{% url 'login' %}">Login</a></li>
+       {% endif %}
+      <li><a href="{% url 'register' %}">Sign Up!</a></li>
+   </ul>
+</div>

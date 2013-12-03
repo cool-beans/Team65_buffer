@@ -1,0 +1,11 @@
+{% extends "final_project/base.html" %}
+{% block content %}
+<div class="row">
+      <div class="span12">
+         <form action="{url 'login' %}" method="post">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+         </form>
+      </div>
+</div>
+{% endblock %}
