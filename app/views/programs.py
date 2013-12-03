@@ -53,6 +53,10 @@ def program_create(request):
     if not form.is_valid():
         context = {'errors':['Bad name or description provided.']}
         return render(request,'final_project/Programs/program_create.html',context)
+    if Program.objects.filter(name=form.cleaned_data['name']):
+        context = {'errors':['Program name already taken.']}
+        return render(request,'final_project/Programs/program_create.html',context)
+
     form.save()
     program = Program.objects.get(name=form.cleaned_data['name'])
     context = {'user':request.user,
