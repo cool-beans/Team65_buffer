@@ -3,17 +3,31 @@ import re
 
 # User class for built-in authentication module
 from django.contrib.auth.models import User
+class MembershipType(models.Model):
+    # Membership Types for members
+    # These contain the name, description, and programs.
+    # These are what we display to the users.
 
-class Membership(models.Model):
-    # Many members with a Membership
-    # Many Memberships are allowed in many events
     name = models.CharField(max_length=20)
-    #allowed_events = models.ManyToManyField(Event)
+    description = models.CharField(max_length=500)
+#    programs = models.ManyToManyField(Program)
     allowed_freq = models.IntegerField()
-    price = models.DecimalField(max_digits=7, decimal_places=2)
-
+    default_price = models.IntegerField()
+    visible = models.BooleanField()
     def __unicode__(self):
         return self.name
+
+class Membership(models.Model):
+    # This is the membership that we sell to the individual member.
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    mem_type = models.OneToOneField(MembershipType)
+    exp_date = models.DateField(null=True, blank=True)
+    creation_date = models.DateField()
+    cancelled = models.BooleanField()
+    cancelled_date = models.DateField(null=True,blank=True)
+    def __unicode__(self):
+        return self.price
+
 
 class Member(models.Model):
     # Members can be Staff
@@ -31,8 +45,9 @@ class Member(models.Model):
     staff = models.BooleanField(default=False)
 
     creation_date = models.DateField()
-    membership = models.ForeignKey(Membership, null=True, blank=True)
-    membership_exp_date = models.DateField(null=True, blank=True)
+    memberships = models.ManyToManyField(Membership)
+
+
     #programs = models.ManyToManyField(Program)
     #events = models.ManyToManyField(Event)
 
@@ -147,13 +162,13 @@ class Event(models.Model):
 
     # Given name, date, start_time of an event,
     # find the specified event if it exists (or create a temp one)
-    # and return it. 
-    # First check Events.objects, if no such event exists, 
+    # and return it.
+    # First check Events.objects, if no such event exists,
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
     @staticmethod
     def getEvent(name, date, start_time):
-        
+
         event = None
 
         # First, check Events.objects for an event that fits given info
@@ -177,6 +192,10 @@ class Event(models.Model):
                 print "--------------------------------------\n"
                 # If the event started before or on date and 
                 # either has no end_recurrence or an end_recurrence >= date, 
+
+                # If the event started before or on date and
+                # either has no end_recurrence or an end_recurrence >= date,
+
                 # then event may exist in this EventType! Check!
                 if (eventtype.recurrence.start_date <= date and \
                     (not eventtype.recurrence.end_recurrence or \
@@ -186,8 +205,12 @@ class Event(models.Model):
                     print "eventtype weekday: " + str(eventtype.recurrence.start_date.weekday())
                     # If event's weekday was in eventtype's weekdays
                     if weekday in eventtype.recurrence.getDays() or weekday == eventtype.recurrence.start_date.weekday():
+
                         print "EVENT CREATED!"
                         # Create an event! 
+
+                        # Create an event!
+
                         # (if we got this far, means no Event already exists)
                         event = eventFromType(eventtype)
                         break
