@@ -69,11 +69,13 @@ def event_create(request):
         
         # If end date is specified and event is recurring, save it in recurrence info.
         # It's ok to not have an end date (recurrs forever)
-        if (isRecurring and 'end_date' in request.POST and request.POST['end_date']):
+        if (isRecurring and 'end_recurrence' in request.POST and request.POST['end_recurrence']):
 
+            # Date is now in format YYYY-MM-DD
+            end_recurrence = datetime.strptime(request.POST['end_recurrence'], '%Y-%m-%d').date()
             # If requested end date is either before the first time event
             # can recurr or before the start date: error
-            if request.POST['end_date'] < new_recurrence.start_date:
+            if end_recurrence <= new_recurrence.start_date:
                 errors.append('Invalid end date: either must be after ' \
                               'start date or after first recurrence of '\
                               'a recurring event.'  )
@@ -81,9 +83,9 @@ def event_create(request):
                 context['errors'] = errors
                 context['programs'] = programs
                 return render(request, 'final_project/event_create.html', context)
-            # If valid end date, set new_recurrence's end_date
+            # If valid end date, set new_recurrence's end_recurrence
             else:
-                new_recurrence.end_recurrence = request.POST['end_date']
+                new_recurrence.end_recurrence = request.POST['end_recurrence']
 
         new_recurrence.save()
         # Now Recurrence should be set, create event!
@@ -177,8 +179,10 @@ def event_profile(request):
 
         for event in EventType.objects.all():
             print "name: " + event.name
-            print "date: " + str(event.recurrence.start_date)
-            print "time: " + str(event.start_time)
+            print "start_date: " + str(event.recurrence.start_date)
+            print "end_recurrence: " + str(event.recurrence.end_recurrence)
+            print "start_time: " + str(event.start_time)
+            print "days: " + str(event.recurrence.getDays())
             print "--------------------------------------"
         
         event = None
@@ -237,11 +241,11 @@ def events(request):
 
     # Grab all recurrences that started at least by the latest_date
     recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
-    recurrences = recurrences.filter(Q(end_recurrence__gte=latest_date) | Q(end_recurrence__isnull=True))
 
     for recurrence in recurrences:
         days = recurrence.getDays()
         eventtype = recurrence.eventtype
+        print "Checking EventType: " + eventtype.name
 
         # If not a recurring event and date is within the past week, show event 
         if not days and (recurrence.start_date >= earliest_date):
@@ -260,21 +264,32 @@ def events(request):
         # For each day the event recurrs on, attach the event to list of events
         for day in days:
             event_date = day_to_date[day]
+            print "\tevent_date: " + str(event_date)
+            # If recurrence has an end_recurrence, make sure event_date is not after it!
+            # Otherwise, just ignore that particular day.
+            if (not recurrence.end_recurrence or 
+                event_date <= recurrence.end_recurrence):            
+                print "\tevent was appended!"
+                # If event already exists,
+                # append it to the proper day of the week
+                event = eventtype.event_set.filter(date=event_date)
+                if event:
+                    events.append(event)
 
-            # If event already exists,
-            # append it to the proper day of the week
-            event = eventtype.event_set.filter(date=event_date)
-            if event:
-                events.append(event)
-
-            # Otherwise, make an event (don't save) and append
-            else:
-                new_event = Event.eventFromType(eventtype)
-                new_event.date = event_date
-                events.append(new_event)
+                # Otherwise, make an event (don't save) and append
+                else:
+                    new_event = Event.eventFromType(eventtype)
+                    new_event.date = event_date
+                    events.append(new_event)
 
     # Lambda function to sort the list of grumbls in place by timestamp (most recent first)
     events.sort(key=lambda event: event.date, reverse=True)
+
+    for e in events:
+        print "EVENT: " + e.name
+        print "\tdate: " + str(e.date)
+        print "\tdesc: " + e.description
+
     context['user'] = user
     context['latest_date'] = latest_date
     context['events'] = events
