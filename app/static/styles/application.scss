@@ -8,9 +8,11 @@ $pink: #F1B2A3;
 $blue: #BCDFFA;
 $yellow: #FFF377;
 
+/*Positioning Constants*/
+$infinity: 9000;
 /*Fonts*/
-$header_font:"Iceland";
-$content_font:"Comfortaa";
+$header_font:"Comfortaa";
+$content_font:Lucida Console;
 /*Global Styles*/
 th{
    background-color:blue;
@@ -20,39 +22,38 @@ html, body {
   height: 100%;
   font-family: $content_font;
   color:$text_color;
+  a{
+     color:$text_color;
+  }
+  a:hover {
+      text-decoration:none;
+  }
 }
 
 h1,h2,h3,h4,h5,h6{
    font-family:$header_font;
 }
-/*Navigation Bar Styles */
-.navbar{
-   background-image:none;
-   box-shadow:none;
-   background-color:$light_grey;
-  h1{
-     margin:0 10% 0 50%;
+/* Navigation */
+h1{
+     font-size: 6em;
+     color:$text_color;
   }
-  .navbar-brand{
-     padding:0;
-  }
-  .navbar-nav{
-     .active{
-        a{
-            background-image:none;
-            background-repeat:none;
-            box-shadow:none;
-            background-color:$medium_grey;
-         }
-     }
-     a{
-        margin:0 50% 0 0;
-         &:hover{
-            background-image: linear-gradient(to bottom, #EBEBEB 0%, #F3F3F3 100%);
-         }
-
-     }
-  }
+h2{
+   font-size:2em;
+   font-family:"Wire-one";
+}
+#left-sub{
+   margin-right:440px;
+}
+#right-sub{
+   margin-left:440px;
+}
+#nav-container{
+ background-color:$light_grey;
+ z-index:$infinity;
+}
+.navbar-brand{
+   font-size:1.5em;
 }
 .content{
    position:relative;
@@ -63,13 +64,47 @@ h1,h2,h3,h4,h5,h6{
 }
 /* Homepage */
 #homepage_carousel{
-   position:relative;
-   left:25%;
-   width:50%;
+   width:100%;
    img{
       width:100%;
       height:300px;
    }
+}
+.caption-image img{
+   width:600px;//100%;
+   height:500px;//50%;
+   position:relative;
+   left:50%;
+}
+.caption-image h3{
+   z-index:2;
+   position:absolute;
+   top:20%;
+   left:20%;
+   font-size:2.5em;
+}
+.caption-image p{
+   z-index:2;
+   position:absolute;
+   top:50%;
+   left:20%;
+   font-size:1em;
+   line-height:2em;
+}
+.text-wrapper{
+   position:relative;
+   right:200px;
+   top:200px;
+   background-color: $blue;
+   display:inline-block;
+   width:400px;
+   height:400px;
+}
+.caption-text{
+   background-color: $green;
+   display:inline-block;
+   width:400px;
+   height:400px;
 }
 
 form{//#login{
@@ -86,27 +121,9 @@ form{//#login{
          width:10%;
          margin-bottom:1%;
       }
- input[type=checkbox] {
-   width:0;
-   height:0;
-  }
-
-
-      input[type=submit],input[type='text']{
-      width:15%;
-      height:30px;
-      margin-bottom:1%;
-      border: none;
-      background-color:$light_grey;
-      padding:5px;
-      font-family:Arial;
-   }
    input[type=submit]{
       position:relative;
       left: 4%;
-   }
-   input[type=submit]:hover{
-      background-color:$medium_grey;
    }
   }
 
@@ -141,4 +158,24 @@ form{//#login{
 }
 #Color5{
    background-color:$medium_grey;
+}
+/*Sticky Footer*/
+* {
+margin: 0;
+}
+html, body {
+height: 100%;
+}
+.wrapper {
+min-height: 100%;
+height: auto !important;
+height: 100%;
+padding: 0 auto -4em;
+}
+.footer, .push {
+height: 4em;
+clear:both;
+}
+.footer{
+border-top:$light_grey;
 }

@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!-- Carousel
 ================================================== -->
 <div id="{{ carousel_id }}_carousel" class="carousel slide">
@@ -9,7 +10,7 @@
   </ol>
   <div class="carousel-inner">
     <div class="item active">
-      <img src="http://rexlai.org/wp-content/uploads/2011/10/dojo.jpg">
+       <img src="{% static 'images\Guitar_Girl.jpg' %}">
       <div class="container">
         <div class="carousel-caption">
           <h1>Bootstrap 3 Carousel Layout</h1>
