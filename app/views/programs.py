@@ -37,30 +37,30 @@ def program_profile(request,program_id):
 @login_required
 def program_create(request):
     # Create a new program.
+    context = {}
     user = request.user
     member = Member.objects.get(user=request.user)
+    context['user'] = user
+    context['member'] = member
 
     if not member.staff:
         # Make sure that the currently logged in user is a staff member
-        context = {'errors':['This page requires Staff login.'],
-                   'user':user,
-                   'programs':Program.objects.all()}
+        context['errors'] = ['This page requires Staff login.']
+        context['programs'] = Program.objects.all()
         return render(request, 'final_project/Programs/programs.html',context)
     if (request.method == 'GET'):
-        context = {'user': request.user}
         return render(request,'final_project/Programs/program_create.html',context)
     form = ProgramCreation(request.POST)
     if not form.is_valid():
-        context = {'errors':['Bad name or description provided.']}
+        context['errors'] = ['Bad name or description provided.']
         return render(request,'final_project/Programs/program_create.html',context)
     if Program.objects.filter(name=form.cleaned_data['name']):
-        context = {'errors':['Program name already taken.']}
+        context['errors'] =['Program name already taken.']
         return render(request,'final_project/Programs/program_create.html',context)
 
     form.save()
     program = Program.objects.get(name=form.cleaned_data['name'])
-    context = {'user':request.user,
-               'program':program}
+    context['program'] = program
     return render(request,'final_project/Programs/program_profile.html',context)
 
 
