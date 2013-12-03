@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import *
 import re
 
 # User class for built-in authentication module
@@ -250,7 +251,7 @@ class Event(models.Model):
         # Loop through possible dates from given date through date + 6
         for i in range(0, 7):
             checking_date = date + timedelta(days=i)
-            if checking_date.weekday == SUNDAY:
+            if checking_date.weekday() == SUNDAY:
                 sunday_date = checking_date
                 break
         return sunday_date
