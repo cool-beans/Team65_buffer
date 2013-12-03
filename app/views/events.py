@@ -16,7 +16,7 @@ from app.models import *
 from pprint import pprint
 
 @login_required
-def event_create(request):
+def create(request):
     # Create a new event
     user = request.user
     member = Member.objects.get(user=user)
@@ -129,7 +129,7 @@ def event_create(request):
         context['eventtype'] = new_eventtype
         return render(request,'final_project/Events/event_profile.html', context)
 
-def event_profile(request):
+def profile(request):
     user = request.user
     context = {}
     errors = []
@@ -157,7 +157,7 @@ def event_profile(request):
 
         #start_time = datetime.strptime(request.GET['event_start_time'], '%I:%M %p').time()
         start_time = Event.convertTime(request.GET['event_start_time'])
-        
+
         # start_time now in format HH:MM (AM|PM)
         start_time = datetime.strptime(start_time, '%I:%M %p').time()
 
@@ -185,7 +185,7 @@ def event_profile(request):
         context['event'] = event
         return render(request, 'final_project/Events/event_profile.html', context)
 
-def events(request):
+def all(request):
     user = request.user
     context = {}
     errors = []
@@ -194,7 +194,7 @@ def events(request):
 
     # Default: set latest_date to Sunday of this week
     latest_date = Event.getSundayDate(today)
-    
+
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
 
@@ -306,7 +306,7 @@ def events(request):
 #  -change_this_event
 #  -change_following_events
 @login_required
-def event_edit(request):
+def edit(request):
     # Check if editing one-time or for all following events!
     # Given name, start_date, start_time
     # Try to getEvent() for the given info.

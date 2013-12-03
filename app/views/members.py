@@ -82,7 +82,7 @@ def register(request):
     return render(request, 'final_project/Members/register.html', context)
 
 @login_required
-def members(request):
+def all(request):
     context = {}
     context['user'] = request.user
     context['members'] = Member.objects.all()
@@ -90,7 +90,7 @@ def members(request):
     return render(request, 'final_project/Members/members.html', context)
 
 @login_required
-def filter_members (request, program_id):
+def filter (request, program_id):
     context = {}
     user = request.user
     members = []
@@ -110,7 +110,7 @@ def filter_members (request, program_id):
 
 #TODO: make member_profile not accessible except by staff and the member themselves.
 @login_required
-def member_profile(request, member_id):
+def profile(request, member_id):
     context = {}
     user = request.user
     member = Member.objects.get(user=user)
@@ -149,7 +149,7 @@ def member_profile(request, member_id):
 
 
 @login_required
-def member_edit(request, member_id):
+def edit(request, member_id):
     context = {}
     user = request.user
     member = Member.objects.get(user=user)

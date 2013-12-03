@@ -16,7 +16,7 @@ from app.models import *
 
 
 @login_required
-def create_membership(request):
+def create(request):
     user = request.user
     member = Member.objects.get(user=request.user)
     context = {'user':user,'member':member}
@@ -49,7 +49,7 @@ def create_membership(request):
     return render(request,'final_project/receipt.html', context)
 
 @login_required
-def view_membership(request,membership_id):
+def view(request,membership_id):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
@@ -68,7 +68,7 @@ def view_membership(request,membership_id):
     return render(request,'final_project/membership_view.html',context)
 
 @login_required
-def cancel_membership(request,membership_id):
+def cancel(request,membership_id):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
@@ -90,7 +90,7 @@ def cancel_membership(request,membership_id):
     mem.save()
     return render(request,'final_project/member_profile.html',context)
 
-def memberships(request):
+def all(request):
     context = {}
     if request.user is not None:
         context['user'] = request.user
@@ -99,7 +99,7 @@ def memberships(request):
     return render(request,'final_projects/memberships.html',context)
 
 @login_required
-def create_membershiptype(request):
+def create_type(request):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
@@ -118,7 +118,7 @@ def create_membershiptype(request):
     return render(request,'final_projects/membershiptype_view.html',context)
 
 @login_required
-def view_membershiptype(request):
+def view_type(request):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
@@ -136,7 +136,7 @@ def view_membershiptype(request):
     return render(request,'final_project/view_membershiptype.html',context)
 
 @login_required
-def edit_memberhiptype(request,membership_id):
+def edit_type(request,membership_id):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}

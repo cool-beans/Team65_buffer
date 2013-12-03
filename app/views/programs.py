@@ -14,14 +14,14 @@ from app.forms import *
 from app.models import *
 
 
-def programs(request):
+def all(request):
     programs = Program.objects.all()
     context = {'programs':programs}
     if request.user is not None:
         context['user'] = request.user
     return render(request, 'final_project/Programs/programs.html', context)
 
-def program_profile(request,program_id):
+def profile(request,program_id):
     try:
         program = Program.objects.get(id=program_id)
         members = program.members
@@ -35,7 +35,7 @@ def program_profile(request,program_id):
 
 
 @login_required
-def program_create(request):
+def create(request):
     # Create a new program.
     context = {}
     user = request.user
@@ -65,7 +65,7 @@ def program_create(request):
 
 
 @login_required
-def program_edit(request, program_id):
+def edit(request, program_id):
     # Edit an existing program.
     user = request.user
     member = Member.objects.get(user=request.user)
