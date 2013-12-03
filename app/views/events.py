@@ -28,7 +28,7 @@ def event_create(request):
         context['user'] = user
         context['errors'] = errors
         context['programs'] = programs
-        return render(request,'final_project/event_create.html',context)
+        return render(request,'final_project/Events/event_create.html',context)
 
     elif (request.method == 'POST'):
         new_recurrence = Recurrence()
@@ -40,7 +40,7 @@ def event_create(request):
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request, 'final_project/event_create.html', context)
+            return render(request, 'final_project/Events/event_create.html', context)
         else:
             # Date is now in format YYYY-MM-DD
             start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d').date()
@@ -53,7 +53,7 @@ def event_create(request):
 
         if isRecurring:
             new_recurrence.isRecurring = True
-            
+
             # Look for repeating day of week closest to requested start_date
             for i in range(0, 7):
                 check_date = start_date + timedelta(days=i)
@@ -66,7 +66,7 @@ def event_create(request):
         # If not recurring, just set start date to date given
         else:
             new_recurrence.start_date = start_date
-        
+
         # If end date is specified and event is recurring, save it in recurrence info.
         # It's ok to not have an end date (recurrs forever)
         if (isRecurring and 'end_date' in request.POST and request.POST['end_date']):
@@ -80,7 +80,7 @@ def event_create(request):
                 context['user'] = user
                 context['errors'] = errors
                 context['programs'] = programs
-                return render(request, 'final_project/event_create.html', context)
+                return render(request, 'final_project/Events/event_create.html', context)
             # If valid end date, set new_recurrence's end_date
             else:
                 new_recurrence.end_recurrence = request.POST['end_date']
@@ -107,17 +107,17 @@ def event_create(request):
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request,'final_project/event_create.html', context)
+            return render(request,'final_project/Events/event_create.html', context)
 
         # Check if any such events/eventTypes exist already, if so, don't save form.
-        if Event.getEvent(name=new_eventtype.name, 
-                          date=new_eventtype.recurrence.start_date, 
+        if Event.getEvent(name=new_eventtype.name,
+                          date=new_eventtype.recurrence.start_date,
                           start_time=new_eventtype.start_time):
             errors.append('Event with same day and start time and name already exists.')
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request, 'final_project/event_create.html', context)
+            return render(request, 'final_project/Events/event_create.html', context)
 
         # Create new event with
         new_event = Event(name=new_eventtype.name,
@@ -135,7 +135,7 @@ def event_create(request):
         context['user'] = user
         context['event'] = new_event
         context['eventtype'] = new_eventtype
-        return render(request,'final_project/event_profile.html', context)
+        return render(request,'final_project/Events/event_profile.html', context)
 
 def event_profile(request):
     user = request.user
@@ -156,13 +156,13 @@ def event_profile(request):
         if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
             errors.append('No event_start_time info given in GET')
         if errors:
-            return redirect('/final_project/events')
+            return redirect('/final_project/Events/events')
 
         name = request.GET['event_name']
 
         # date is now in format "Nov. 3, 2013"
         start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
-        
+
         #start_time = datetime.strptime(request.GET['event_start_time'], '%I:%M %p').time()
         start_time = Event.convertTime(request.GET['event_start_time'])
         print "\nstart_time before datetime.strptime: " + start_time
@@ -180,12 +180,12 @@ def event_profile(request):
             print "date: " + str(event.recurrence.start_date)
             print "time: " + str(event.start_time)
             print "--------------------------------------"
-        
+
         event = None
 
         # If all needed info (name, date, start_time) is there, get Event
         event = Event.getEvent(name=name, date=start_date, start_time=start_time)
-        
+
         # If cannot find recurrence that matches event, redirect to events
         if not event:
             errors.append("Could not locate event, given name, start_time, date.")
@@ -195,11 +195,11 @@ def event_profile(request):
                 print "\tdate: " + str(start_date)
                 print "\ttime: " + str(start_time)
 
-            return redirect('/final_project/events')
+            return redirect('/final_project/Events/events')
 
         context['user'] = user
         context['event'] = event
-        return render(request, 'final_project/event_profile.html', context)
+        return render(request, 'final_project/Events/event_profile.html', context)
 
 def events(request):
     user = request.user
@@ -232,7 +232,7 @@ def events(request):
         day_to_date[date_to_get.weekday()] = date_to_get
 
         dates.append(date_to_get)
-    
+
     earliest_date = latest_date - timedelta(days=6)
 
     # Grab all recurrences that started at least by the latest_date
@@ -243,7 +243,7 @@ def events(request):
         days = recurrence.getDays()
         eventtype = recurrence.eventtype
 
-        # If not a recurring event and date is within the past week, show event 
+        # If not a recurring event and date is within the past week, show event
         if not days and (recurrence.start_date >= earliest_date):
             day = recurrence.start_date.weekday()
             event = eventtype.event_set.filter(date=recurrence.start_date)
@@ -278,7 +278,7 @@ def events(request):
     context['user'] = user
     context['latest_date'] = latest_date
     context['events'] = events
-    return render(request, 'final_project/events.html', context)
+    return render(request, 'final_project/Events/events.html', context)
 
 
 
@@ -303,7 +303,7 @@ def event_edit(request):
     # If Event does not exist:
         # error
     # If one-time change, change only event and save before return
-    # If recurring change, change event and save, 
+    # If recurring change, change event and save,
     # then change EventType, save.
     # Return to event_profile of requested event
 
@@ -338,13 +338,13 @@ def event_edit(request):
         if errors:
             context['user'] = user
             context['errors'] = errors
-            return redirect('final_project/events')
+            return redirect('final_project/Events/events')
 
-        # Otherwise, can assume event was located, so return event_edit 
+        # Otherwise, can assume event was located, so return event_edit
         # with event in context.
         context['user'] = user
         context['event'] = event
-        return render(request, 'final_project/event_edit.html', context)
+        return render(request, 'final_project/Events/event_edit.html', context)
 
     elif request.method == 'POST':
 # Check to make sure name, start_date, and start_time all included
@@ -375,11 +375,11 @@ def event_edit(request):
         if errors:
             context['user'] = user
             context['errors'] = errors
-            return redirect('final_project/events')
+            return redirect('final_project/Events/events')
 
         # Otherwise, can assume event was located, so proceed to edit!
-        
-        # If one-time change, 
+
+        # If one-time change,
         if 'change-series' not in request.POST:
             # Change event and save
             # Can change: name, date, start_time, end_time, description,
@@ -400,7 +400,7 @@ def event_edit(request):
                 event.description = description
             if 'is_cancelled' in request.POST:
                 event.is_cancelled = True
-        
+
             event.save()
 
         # If changing the following events as well, then change EventType, save.
@@ -429,11 +429,11 @@ def event_edit(request):
                 eventtype.description = description
             if 'is_cancelled' in request.POST:
                 event.is_cancelled = True
-        
+
             event.save()
             eventtype.save()
 
         # Return to event_profile of requested event
         context['user'] = user
         context['event'] = event
-        return render(request, 'final_project/event_profile.html', context)
+        return render(request, 'final_project/Events/event_profile.html', context)

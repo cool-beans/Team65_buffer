@@ -19,19 +19,19 @@ def programs(request):
     context = {'programs':programs}
     if request.user is not None:
         context['user'] = request.user
-    return render(request, 'final_project/programs.html', context)
+    return render(request, 'final_project/Programs/programs.html', context)
 
 def program_profile(request,program_id):
     try:
         program = Program.objects.get(id=program_id)
         members = program.members
         context = {'user':request.user,'program':program}
-        return render(request, 'final_project/program_profile.html', context)
+        return render(request, 'final_project/Programs/program_profile.html', context)
     except Program.DoesNotExist:
         programs = Program.objects.all()
         context = {'programs':programs,'user':request.user,
                    'errors':['Error, bad program id']}
-        return render(request, 'final_project/programs.html',context)
+        return render(request, 'final_project/Programs/programs.html',context)
 
 
 @login_required
