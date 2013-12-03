@@ -28,7 +28,7 @@ def event_create(request):
         context['user'] = user
         context['errors'] = errors
         context['programs'] = programs
-        return render(request,'final_project/event_create.html',context)
+        return render(request,'final_project/Events/event_create.html',context)
 
     elif (request.method == 'POST'):
         new_recurrence = Recurrence()
@@ -40,7 +40,7 @@ def event_create(request):
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request, 'final_project/event_create.html', context)
+            return render(request, 'final_project/Events/event_create.html', context)
         else:
             # Date is now in format YYYY-MM-DD
             start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d').date()
@@ -82,7 +82,7 @@ def event_create(request):
                 context['user'] = user
                 context['errors'] = errors
                 context['programs'] = programs
-                return render(request, 'final_project/event_create.html', context)
+                return render(request, 'final_project/Events/event_create.html', context)
             # If valid end date, set new_recurrence's end_recurrence
             else:
                 new_recurrence.end_recurrence = request.POST['end_recurrence']
@@ -106,7 +106,7 @@ def event_create(request):
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request,'final_project/event_create.html', context)
+            return render(request,'final_project/Events/event_create.html', context)
 
         # Check if any such events/eventTypes exist already, if so, don't save form.
         if Event.getEvent(name=new_eventtype.name,
@@ -116,7 +116,7 @@ def event_create(request):
             context['user'] = user
             context['errors'] = errors
             context['programs'] = programs
-            return render(request, 'final_project/event_create.html', context)
+            return render(request, 'final_project/Events/event_create.html', context)
 
         # Save new EventType
         new_eventtype = eventtype_form.save()
@@ -127,7 +127,7 @@ def event_create(request):
         context['user'] = user
         context['event'] = new_event
         context['eventtype'] = new_eventtype
-        return render(request,'final_project/event_profile.html', context)
+        return render(request,'final_project/Events/event_profile.html', context)
 
 def event_profile(request):
     user = request.user
@@ -183,7 +183,7 @@ def event_profile(request):
 
         context['user'] = user
         context['event'] = event
-        return render(request, 'final_project/event_profile.html', context)
+        return render(request, 'final_project/Events/event_profile.html', context)
 
 def events(request):
     user = request.user
@@ -446,4 +446,4 @@ def event_edit(request):
         # Return to event_profile of requested event
         context['user'] = user
         context['event'] = event
-        return render(request, 'final_project/event_profile.html', context)
+        return render(request, 'final_project/Events/event_profile.html', context)

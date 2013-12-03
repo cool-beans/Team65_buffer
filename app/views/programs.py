@@ -37,27 +37,31 @@ def program_profile(request,program_id):
 @login_required
 def program_create(request):
     # Create a new program.
+    context = {}
     user = request.user
     member = Member.objects.get(user=request.user)
+    context['user'] = user
+    context['member'] = member
 
     if not member.staff:
         # Make sure that the currently logged in user is a staff member
-        context = {'errors':['This page requires Staff login.'],
-                   'user':user,
-                   'programs':Program.objects.all()}
-        return render(request, 'final_project/programs.html',context)
+        context['errors'] = ['This page requires Staff login.']
+        context['programs'] = Program.objects.all()
+        return render(request, 'final_project/Programs/programs.html',context)
     if (request.method == 'GET'):
-        context = {'user': request.user}
-        return render(request,'final_project/program_create.html',context)
+        return render(request,'final_project/Programs/program_create.html',context)
     form = ProgramCreation(request.POST)
     if not form.is_valid():
-        context = {'errors':['Bad name or description provided.']}
-        return render(request,'final_project/program_create.html',context)
+        context['errors'] = ['Bad name or description provided.']
+        return render(request,'final_project/Programs/program_create.html',context)
+    if Program.objects.filter(name=form.cleaned_data['name']):
+        context['errors'] =['Program name already taken.']
+        return render(request,'final_project/Programs/program_create.html',context)
+
     form.save()
     program = Program.objects.get(name=form.cleaned_data['name'])
-    context = {'user':request.user,
-               'program':program}
-    return render(request,'final_project/program_profile.html',context)
+    context['program'] = program
+    return render(request,'final_project/Programs/program_profile.html',context)
 
 
 @login_required
@@ -65,27 +69,23 @@ def program_edit(request, program_id):
     # Edit an existing program.
     user = request.user
     member = Member.objects.get(user=request.user)
+    context = {'user':user,'member':member,'programs':Program.objects.all()}
     program = Program.objects.get(id=program_id)
     if not member.staff:
         # Make sure that the currently logged in user is a staff member
-        context = {'errors':['This page requires Staff login.'],
-                   'user':user,
-                   'programs':Program.objects.all()}
-        return render(request, 'final_project/programs.html',context)
+        context['errors'] =['This page requires Staff login.']
+        return render(request, 'final_project/Programs/programs.html',context)
     if (request.method == 'GET'):
-        context = {'user':request.user}
-        return render(request, 'final_project/program_edit.html',context)
+        return render(request, 'final_project/Programs/program_edit.html',context)
     form = ProgramMod(request.POST)
     if not form.is_valid():
-        context = {'user':request.user,'errors':['Bad name or description provided.']}
-        return render(request,'final_project/program_edit.html',context)
+        context['errors'] =['Bad name or description provided.']
+        return render(request,'final_project/Programs/program_edit.html',context)
     if (form.cleaned_data['name']):
         program.name = form.cleaned_data['name']
     if (form.cleaned_data['description']):
         program.description = form.cleaned_data['description']
     program.save()
-    context = {'user':request.user,
-               'program':program}
-    return render(request,'final_project/program_profile.html',context)
+    return render(request,'final_project/Programs/program_profile.html',context)
 
 

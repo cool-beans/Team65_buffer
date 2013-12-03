@@ -10,6 +10,15 @@
             <div class="panel-heading">
                <h1 class="text-center">{{ program.name }}</h1>
             </div>
+            {% if user.is_authenticated and user.member.staff %}
+               <div class="row">
+                  <div class="col-lg-12">
+                     <a type="button" class="btn btn-primary" href="{% url 'program_edit' program.id %}">
+                        Edit Program
+                     </a>
+                  </div>
+               </div>
+            {% endif %}
             Description: {{program.description}}<br />
             Staff<br />
             <table class="table table-striped table-bordered table-hover">
