@@ -18,7 +18,7 @@ def home(request):
     context = {}
     if request.user is not None:
         context['user'] = request.user
-    return render(request, 'final_project/index.html', context)
+    return render(request, 'final_project/Common/index.html', context)
 
 
 
@@ -26,4 +26,4 @@ def about(request):
     context = {}
     if request.user is not None:
         context['user'] = request.user
-    return render(request, 'final_project/about.html', context)
+    return render(request, 'final_project/Common/about.html', context)

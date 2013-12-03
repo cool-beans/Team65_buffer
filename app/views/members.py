@@ -21,7 +21,7 @@ def register(request):
     # If simply requesting the register page
     if request.method == 'GET':
         context['errors'] = errors
-        return render(request, 'final_project/register.html', context)
+        return render(request, 'final_project/Members/register.html', context)
 
     # If trying to register
     elif request.method == 'POST':
@@ -76,10 +76,10 @@ def register(request):
                                     password=request.POST['pass1'])
             login(request, new_user)
 
-            return redirect('/final_project/member_profile/' + str(new_user_id))
+            return redirect('/final_project/Members/member_profile/' + str(new_user_id))
 
     context['errors'] = errors
-    return render(request, 'final_project/register.html', context)
+    return render(request, 'final_project/Members/register.html', context)
 
 @login_required
 def members(request):
@@ -87,7 +87,7 @@ def members(request):
     context['user'] = request.user
     context['members'] = Member.objects.all()
     context['programs'] = Program.objects.all()
-    return render(request, 'final_project/members.html', context)
+    return render(request, 'final_project/Members/members.html', context)
 
 @login_required
 def filter_members (request, program_id):
@@ -104,7 +104,7 @@ def filter_members (request, program_id):
     context['user'] = user
     context['members'] = members
     context['programs'] = Program.objects.all()
-    return render(request, 'final_project/members.html', context)
+    return render(request, 'final_project/Members/members.html', context)
 
 
 
@@ -115,9 +115,6 @@ def member_profile(request, member_id):
     user = request.user
     member = Member.objects.get(user=user)
 
-    print "IN MEMBER_PROFILE!"
-    print user.username + "'s member_id: " + str(user.member.id)
-    print "Is trying to access member_id: " + str(member_id)
 
 
     # Are they staff? If so then let them see whoever
@@ -136,7 +133,7 @@ def member_profile(request, member_id):
     context['user'] = user
     context['member'] = member
     context['programs'] = in_program
-    return render(request, 'final_project/member_profile.html', context)
+    return render(request, 'final_project/Members/member_profile.html', context)
 
 # member_edit(request, member_id)
 #
@@ -163,7 +160,6 @@ def member_edit(request, member_id):
                               if len(prog.members.filter(id=member.id)) != 0]
         not_in_program = [ prog for prog in Program.objects.all() \
                               if len(prog.members.filter(id=member.id)) == 0]
-        print not_in_program
 
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
@@ -182,7 +178,7 @@ def member_edit(request, member_id):
             errors.append('Error, bad form data')
             context = {'user':user,'member':member,
                        'errors':errors}
-            return render(request,'final_project/member_edit.html',context)
+            return render(request,'final_project/Members/member_edit.html',context)
         else:
             old_member = Member.objects.get(id=member_id)
             old_user = old_member.user
@@ -211,13 +207,12 @@ def member_edit(request, member_id):
                     if request.POST[name] == 'remove':
                         prog.members.remove(member)
                     elif request.POST[name] == 'add':
-                        print "ADD", request.POST[name]
                         prog.members.add(member)
                     prog.save()
 
-            return redirect('/final_project/member_profile/' + member_id)
+            return redirect('/final_project/Members/member_profile/' + member_id)
 
     context['user'] = user
     context['member'] = member
     context['errors'] = errors
-    return render(request, 'final_project/member_edit.html', context)
+    return render(request, 'final_project/Members/member_edit.html', context)
