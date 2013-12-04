@@ -135,31 +135,42 @@ def profile(request):
     errors = []
 
     if request.method == 'GET':
-     #   errors.append('Go to schedule view page and select event to view.')
-      #  context['user'] = user
-       # context['errors'] = errors
-        #return redirect('/final_project/events')
+        name = ''
+        start_date = None
+        start_time = None
 
-    #elif request.method == 'POST':
+        # Check for valid:
+        # - event_name
+        # - event_start_date
+        # - event_start_time
+
+        # Check for valid event_name
         if 'event_name' not in request.GET or not request.GET['event_name']:
             errors.append('No event name info given in GET')
+        else:
+            name = request.GET['event_name']
+        
+        # Check for valid event_start_date
         if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
-            errors.append('No event_start_date info given in GET')
+            errors.append('No event_start_date given.')
+        else:
+            # date is now in format "Nov. 3, 2013"
+            start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
+            if not start_date:
+                errors.append('Invalid start_date given.')            
+
+        # Check for valid event_start_time
         if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
-            errors.append('No event_start_time info given in GET')
+            errors.append('No event_start_time given.')
+        else:
+            # convert time into a time object
+            start_time = Event.convertTime(request.GET['event_start_time'])
+            if not start_time:
+                errors.append('Invalid start_time given')
+        
+        # If errors exist, redirect to events
         if errors:
             return redirect('/final_project/events')
-
-        name = request.GET['event_name']
-
-        # date is now in format "Nov. 3, 2013"
-        start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
-
-        #start_time = datetime.strptime(request.GET['event_start_time'], '%I:%M %p').time()
-        start_time = Event.convertTime(request.GET['event_start_time'])
-
-        # start_time now in format HH:MM (AM|PM)
-        start_time = datetime.strptime(start_time, '%I:%M %p').time()
 
         print "GETTING EVENT: ---------------------"
         print "\tname: " + name
@@ -208,7 +219,15 @@ def all(request):
                     latest_date = request.GET['latest_date'] + timedelta(days=7)
 
     events = []
-    dates = []
+    monday_events = []
+    tuesday_events = []
+    wednesday_events = []
+    thursday_events = []
+    friday_events = []
+    saturday_events = []
+    sunday_events = []
+
+    dates_in_week = []
     day_to_date = {}
 
     # Build list of dates in current week
@@ -217,9 +236,13 @@ def all(request):
         # Set the day of the week (0=Monday, 6=Sunday) as key to date
         day_to_date[date_to_get.weekday()] = date_to_get
 
-        dates.append(date_to_get)
+        dates_in_week.append(date_to_get)
 
     earliest_date = latest_date - timedelta(days=6)
+
+    #def getEventsOnDate(date):
+
+
 
     # Grab all recurrences that started at least by the latest_date
     recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
@@ -258,7 +281,7 @@ def all(request):
                 event = eventtype.event_set.filter(date=event_date)
                 if event:
                     events.append(event)
-
+#TODO: make sure to take into account orig_date and actual date!
                 # Otherwise, make an event (don't save) and append
                 else:
                     new_event = eventtype.createEvent(event_date)
@@ -431,7 +454,7 @@ def edit(request):
                 eventttype.start_time = start_time
             if 'end_time' in request.POST and request.POST['end_time']:
                 end_time = Event.convertTime(request.POST['end_time'])
-                event.start_time = end_time
+                event.end_time = end_time
                 eventtype.end_time = end_time
             if 'description' in request.POST and request.POST['description']:
                 event.description = description

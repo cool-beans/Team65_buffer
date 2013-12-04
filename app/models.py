@@ -1,9 +1,12 @@
 from django.db import models
+from django.db.models import Q
+
 from datetime import *
 import re
 
 # User class for built-in authentication module
 from django.contrib.auth.models import User
+
 class MembershipType(models.Model):
     # Membership Types for members
     # These contain the name, description, and programs.
@@ -118,6 +121,22 @@ class Recurrence(models.Model):
 
         return days
 
+    # Given a date, Recurrence checks if the date is valid
+    # for the Recurrence. If valid, return True. Else: False
+    def isValidDate(self, date):
+        weekdays = self.getDays()
+
+        # Check date's weekday is one of the recurring weekdays
+        # and if start_date is before/on date
+        # and either no end_recurrence or end_recurrence is on/after date
+        if ( (date.weekday() in weekdays) and \
+             (self.start_date <= date) and \
+             ( (not end_recurrence) or (end_recurrence >= date) ) ):
+            # Is valid date!
+            return True
+        return False
+
+
 class EventType(models.Model):
     # Has many Events associated with one EventType
     name = models.CharField(max_length=100)
@@ -180,7 +199,7 @@ class Event(models.Model):
     def __unicode__(self):
         return self.name
 
-    # Given name, date, start_time of an event,
+    # Given actual name, date, start_time of an event (not original info)
     # find the specified event if it exists (or create a temp one)
     # and return it.
     # First check Events.objects, if no such event exists,
@@ -195,7 +214,17 @@ class Event(models.Model):
         events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
         if events and len(events)==1:
             event = events[0]
-        # If no events exist, look for the proper EventType and create a temp Event
+        
+        # If no events exist, first check for an event with matching 
+        # original data, if so, return null (don't check EventTypes!)
+        events = Event.objects.filter(Q(orig_name=name), \
+                                      Q(orig_date=date), \
+                                      Q(orig_start_time=start_time))
+        if events:
+            return null
+
+        # If you got here, no Event currently exists that is related to given info
+        # Look for the proper EventType and create a temp Event to return without saving
         else:
             print 'getEvent: looking through EventTypes'
             print 'name: ' + name
@@ -237,6 +266,7 @@ class Event(models.Model):
         t_out = ''
         t_temp = t_in.replace('.', "")
         pattern = r"(?P<hr>\d+)(:)?(?(2)(?P<min>\d{2})) (?P<ampm>am|pm)"
+        parsed = ''
 
         match = re.search(pattern, t_temp)
         # Check for a match
@@ -254,8 +284,12 @@ class Event(models.Model):
                 # Format minute 'MM'
                 if not min:
                     min = '00'
-                t_out = hr + ':' + min + ' ' + ampm
+                parsed = hr + ':' + min + ' ' + ampm
 
+        if parsed:
+            # parsed now in format HH:MM (AM|PM), get time object
+            t_out = datetime.strptime(parsed, '%I:%M %p').time()
+            
         return t_out
 
     # Given a date, return the date of the Sunday of that week!
