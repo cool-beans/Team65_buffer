@@ -45,7 +45,7 @@ def create(request):
     membership.save()
     member.membership = membership
     member.save()
-
+    context['membership'] = membership
     return render(request,'final_project/receipt.html', context)
 
 @login_required

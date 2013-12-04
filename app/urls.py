@@ -28,4 +28,13 @@ urlpatterns = patterns('',
     url(r'^event_create/$', 'app.views.events.create', name='event_create'),
 #    url(r'^filter_events/(?P<event_id>\d+)$', 'app.views.filter_events', name='filter_events'),
     url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.events.edit', name='event_edit'),
+   # Memberships
+    url(r'^memberships/$','app.views.memberships.all', name='memberships'),
+    url(r'^buy_membership/$', 'app.views.memberships.create', name='buy_membership'),
+    url(r'^view_membership/$', 'app.views.memberships.view', name='membership_view'),
+    url(r'^cancel_membership/$', 'app.views.memberships.cancel', name='membership_cancel'),
+    url(r'^create_membership_type/$', 'app.views.memberships.create_type', name='create_membership_type'),
+    url(r'^view_membership_type/$', 'app.views.memberships.view_type', name='view_membership_type'),
+    url(r'^edit_membership_type/$', 'app.views.memberships.edit_type', name='edit_membership_type'),
+
 )
