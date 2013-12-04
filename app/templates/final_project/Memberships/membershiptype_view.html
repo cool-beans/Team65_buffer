@@ -1,0 +1,30 @@
+{% extends "final_project/Common/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Program Create{% endblock %}
+
+{% block content %}
+<div class="row">
+   <div class="col-lg-12">
+      <div class="panel panel-info theme">
+         <!-- Default panel contents -->
+            <div class="panel-heading">
+               <h1 class="text-center">{{ membership_type.name }}</h1>
+            </div>
+            {% if user.is_authenticated and user.member.staff %}
+               <div class="row">
+                  <div class="col-lg-12">
+                     <a type="button" class="btn btn-primary" href="{% url 'edit_membership_type' membership_type.id %}">
+                        Edit Membership Type
+                     </a>
+                  </div>
+               </div>
+            {% endif %}
+            Description: {{membership_type.description}}<br />
+            Allowed Frequency: {{membership_type.allowed_freq}}<br />
+            Default Price: {{membership_type.default_price}}<br />
+            Visible: {{membership_type.visible}}<br />
+         </div>
+      </div>
+   </div>
+</div><!--row-->
+{% endblock %}
