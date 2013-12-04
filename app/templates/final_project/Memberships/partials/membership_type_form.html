@@ -9,7 +9,14 @@
    <input type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
    <label>Visible:</label>
    <input type="text" name="visible" value="{{ membership_type.visible }}"><br />
+    {% if buy %}
+      {% if user.member.staff %}
+         <label>User:</label>
+         <input type="text" name="buy_user" value="{{ user.member.username }}" /><br />
+
+      {% endif %}
+   {% endif %}
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
-   {% csrf_token %}
+     {% csrf_token %}
 </form>
