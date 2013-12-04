@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^event_profile/$', 'app.views.events.profile', name='event_profile'),
     url(r'^event_create/$', 'app.views.events.create', name='event_create'),
 #    url(r'^filter_events/(?P<event_id>\d+)$', 'app.views.filter_events', name='filter_events'),
-    url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.events.edit', name='event_edit'),
+    url(r'^event_edit/$', 'app.views.events.edit', name='event_edit'),
    # Memberships
     url(r'^memberships/$','app.views.memberships.all', name='memberships'),
     url(r'^buy_membership/$', 'app.views.memberships.create', name='buy_membership'),
