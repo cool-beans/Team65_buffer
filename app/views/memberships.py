@@ -38,13 +38,20 @@ def create(request):
         price = mem_type.default_price
     else: price = request.POST['price']
 
+    if not 'buy_user' in request.POST or not request.POST['buy_user']:
+        buy_member = member
+    elif not member.staff:
+        context['errors'] = ['Error: Only Staff members can buy memberships for other members.']
+    else:
+        buy_user = User.objects.get(username=request.POST['buy_user'])
+        buy_member = Member.objects.get(user=buy_user)
     # Create a new membership.
     membership = Membership(price=price,mem_type=mem_type)
     if 'exp_date' in request.POST and request.POST['exp_date']:
         membership.exp_date = request.POST['exp_date']
     membership.save()
-    member.membership = membership
-    member.save()
+    buy_member.membership = membership
+    buy_member.save()
     context['membership'] = membership
     return render(request,'final_project/Memberships/receipt.html', context)
 
