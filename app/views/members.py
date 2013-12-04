@@ -133,6 +133,7 @@ def profile(request, member_id):
     context['user'] = user
     context['member'] = member
     context['programs'] = in_program
+    context['memberships'] = Membership.objects.filter(member=buy_member)
     return render(request, 'final_project/Members/member_profile.html', context)
 
 # member_edit(request, member_id)

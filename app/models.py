@@ -7,6 +7,31 @@ import re
 # User class for built-in authentication module
 from django.contrib.auth.models import User
 
+class Member(models.Model):
+    # Members can be Staff
+    # Many Members can attend many Events
+    # Many Members can be part of many Programs
+    # Members have many Attendence for events
+    user = models.OneToOneField(User)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birthday = models.DateField()
+
+    phone = models.CharField(max_length=10)
+    email = models.CharField(max_length=30)
+
+    staff = models.BooleanField(default=False)
+
+    creation_date = models.DateField()
+
+
+    #programs = models.ManyToManyField(Program)
+    #events = models.ManyToManyField(Event)
+
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
+
+
 class MembershipType(models.Model):
     # Membership Types for members
     # These contain the name, description, and programs.
@@ -24,39 +49,16 @@ class MembershipType(models.Model):
 class Membership(models.Model):
     # This is the membership that we sell to the individual member.
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    mem_type = models.OneToOneField(MembershipType)
+    mem_type = models.ForeignKey(MembershipType)
     exp_date = models.DateField(null=True, blank=True)
     creation_date = models.DateField()
     cancelled = models.BooleanField()
     cancelled_date = models.DateField(null=True,blank=True)
+    member = models.ForeignKey(Member)
     def __unicode__(self):
         return self.mem_type.name
 
 
-class Member(models.Model):
-    # Members can be Staff
-    # Many Members can attend many Events
-    # Many Members can be part of many Programs
-    # Members have many Attendence for events
-    user = models.OneToOneField(User)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    birthday = models.DateField()
-
-    phone = models.CharField(max_length=10)
-    email = models.CharField(max_length=30)
-
-    staff = models.BooleanField(default=False)
-
-    creation_date = models.DateField()
-    memberships = models.ManyToManyField(Membership)
-
-
-    #programs = models.ManyToManyField(Program)
-    #events = models.ManyToManyField(Event)
-
-    def __unicode__(self):
-        return self.first_name + " " + self.last_name
 
 class Program(models.Model):
     # Many EventTypes in many Programs

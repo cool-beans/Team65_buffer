@@ -48,21 +48,25 @@ def buy(request,membership_type_id):
         buy_user = User.objects.get(username=request.POST['buy_user'])
         buy_member = Member.objects.get(user=buy_user)
 
-    if len(buy_member.memberships.filter(mem_type=mem_type)) > 0:
-        context['errors'] = ['Error: Cannot buy two copies of the same membership.']
-        context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/Memberships/memberships.html',context)
 
     # Create a new membership.
-    membership = Membership(price=price,mem_type=mem_type)
+    membership = Membership(price=price,
+                            mem_type=mem_type,
+                            creation_date=datetime.now(),
+                            member=buy_member)
     if 'exp_date' in request.POST and request.POST['exp_date']:
         membership.exp_date = request.POST['exp_date']
-    membership.creation_date = datetime.now()
+    membership.member = buy_member
     membership.save()
-    buy_member.memberships.add(membership)
-    buy_member.save()
+
     context['membership'] = membership
-    return render(request,'final_project/Memberships/memberships.html', context)
+    context['alert'] = 'Successfully bought membership.'
+    context['user'] = buy_member.user
+    context['member'] = buy_member
+    context['programs'] = [ prog for prog in Program.objects.all() \
+                                if len(prog.members.filter(id=member.id)) != 0]
+    context['memberships'] = Membership.objects.filter(member=buy_member)
+    return render(request, 'final_project/Members/member_profile.html', context)
 
 
 @login_required
