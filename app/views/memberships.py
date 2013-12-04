@@ -47,6 +47,12 @@ def buy(request,membership_type_id):
     else:
         buy_user = User.objects.get(username=request.POST['buy_user'])
         buy_member = Member.objects.get(user=buy_user)
+
+    if len(buy_member.memberships.filter(mem_type=mem_type)) > 0:
+        context['errors'] = ['Error: Cannot buy two copies of the same membership.']
+        context['memberships'] = MembershipType.objects.all()
+        return render(request,'final_project/Memberships/memberships.html',context)
+
     # Create a new membership.
     membership = Membership(price=price,mem_type=mem_type)
     if 'exp_date' in request.POST and request.POST['exp_date']:
