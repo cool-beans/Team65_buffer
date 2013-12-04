@@ -45,7 +45,7 @@ def create(request):
     membership.save()
     member.membership = membership
     member.save()
-
+    context['membership'] = membership
     return render(request,'final_project/receipt.html', context)
 
 @login_required
@@ -114,7 +114,7 @@ def create_type(request):
         return render(request,'final_project/memberships.html',context)
     form.save()
     m_type = MembershipType.objects.get(name=form.cleaned_data['name'])
-    context['membershipType'] = m_type
+    context['membership_type'] = m_type
     return render(request,'final_projects/membershiptype_view.html',context)
 
 @login_required
