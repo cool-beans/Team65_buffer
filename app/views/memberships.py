@@ -117,7 +117,7 @@ def create_type(request):
     form.save()
     m_type = MembershipType.objects.get(name=form.cleaned_data['name'])
     context['membership_type'] = m_type
-    return render(request,'final_projects/Memberships/membershiptype_view.html',context)
+    return render(request,'final_project/Memberships/membershiptype_view.html',context)
 
 @login_required
 def view_type(request):
