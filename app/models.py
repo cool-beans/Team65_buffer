@@ -261,6 +261,32 @@ class Event(models.Model):
                         break
         return event
 
+    # Given date, returns a list of all the events that occur on that day.
+    @staticmethod
+    def getEventsOnDate(date):
+        events = []
+
+        # Get existing events first
+        events += Event.objects.filter(date=date)
+
+        # Get recurrences that have a start_date before/on date
+        recurrences = Recurrence.objects.filter(start_date__lte=date)
+        # Filter for recurrences that have no end_recurrence or one on/after date
+        recurrences = recurrences.filter(Q(end_recurrence=None)|Q(end_recurrence__gte=date))
+
+        for recurrence in recurrence:
+            if recurrence.isValidDate(date):
+                eventtype = recurrence.eventtype
+
+                # Try to get event with the proper date and eventtype's name/start_time
+                event = Event.getEvent(name=eventtype.name,
+                                       date=date,
+                                       start_time=eventtype.start_time)
+                if event and event not in events:
+                    events.append(event)
+
+        return events
+
     @staticmethod
     def convertTime(t_in):
         t_out = ''
@@ -289,7 +315,7 @@ class Event(models.Model):
         if parsed:
             # parsed now in format HH:MM (AM|PM), get time object
             t_out = datetime.strptime(parsed, '%I:%M %p').time()
-            
+
         return t_out
 
     # Given a date, return the date of the Sunday of that week!
