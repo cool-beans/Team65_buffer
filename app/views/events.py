@@ -122,7 +122,7 @@ def create(request):
         new_eventtype = eventtype_form.save()
 
         # Create new event with new EventType
-        new_event = Event.eventFromType(new_eventtype)
+        new_event = new_eventtype.createEvent(new_eventtype.recurrence.start_date)
 
         context['user'] = user
         context['event'] = new_event
@@ -197,7 +197,6 @@ def all(request):
 
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
-
         # If the latest_date from the last access is provided
         # along with either a button = 'prev' or 'next', calculate
         # appropriate latest_date
@@ -241,7 +240,7 @@ def all(request):
 
             # Otherwise, make an Event (don't save) and append
             else:
-                new_event = Event.eventFromType(eventtype)
+                new_event = eventtype.createEvent(recurrence.start_date)
                 events.append(new_event)
 
         # For each day the event recurrs on, attach the event to list of events
@@ -250,8 +249,9 @@ def all(request):
             print "\tevent_date: " + str(event_date)
             # If recurrence has an end_recurrence, make sure event_date is not after it!
             # Otherwise, just ignore that particular day.
-            if (not recurrence.end_recurrence or
-                event_date <= recurrence.end_recurrence):
+            if ((not recurrence.end_recurrence or
+                event_date <= recurrence.end_recurrence) and \
+                event_date >= recurrence.start_date):
                 print "\tevent was appended!"
                 # If event already exists,
                 # append it to the proper day of the week
@@ -261,8 +261,7 @@ def all(request):
 
                 # Otherwise, make an event (don't save) and append
                 else:
-                    new_event = Event.eventFromType(eventtype)
-                    new_event.date = event_date
+                    new_event = eventtype.createEvent(event_date)
                     events.append(new_event)
 
     # Lambda function to sort the list of grumbls in place by timestamp (most recent first)
