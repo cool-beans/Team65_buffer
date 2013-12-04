@@ -107,6 +107,8 @@ def create_type(request):
         context['errors'] = ['Error: This page requires staff login.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
+    if request.method == 'GET':
+        return render(request, 'final_project/Memberships/membershiptype_create.html',context)
     form = MembershipTypeCreate(request.POST)
     if not form.is_valid():
         context['errors'] = ['Error: Bad membership data']
