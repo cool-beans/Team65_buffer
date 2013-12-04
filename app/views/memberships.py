@@ -34,7 +34,7 @@ def create(request):
         return render(request,'final_project/Memberships/buy_membership.html',context)
 
     # If there is no price specified just use the default price.
-    if not 'price' in request.POST or not request.POST['price']:
+    if not 'price' in request.POST or not request.POST['price'] or not member.staff:
         price = mem_type.default_price
     else: price = request.POST['price']
 
