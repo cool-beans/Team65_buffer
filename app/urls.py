@@ -31,10 +31,10 @@ urlpatterns = patterns('',
    # Memberships
     url(r'^memberships/$','app.views.memberships.all', name='memberships'),
     url(r'^buy_membership/$', 'app.views.memberships.create', name='buy_membership'),
-    url(r'^view_membership/$', 'app.views.memberships.view', name='membership_view'),
-    url(r'^cancel_membership/$', 'app.views.memberships.cancel', name='membership_cancel'),
+    url(r'^view_membership/(?P<membership_id>\d+)$', 'app.views.memberships.view', name='membership_view'),
+    url(r'^cancel_membership/(?P<membership_id>\d+)$', 'app.views.memberships.cancel', name='membership_cancel'),
     url(r'^create_membership_type/$', 'app.views.memberships.create_type', name='create_membership_type'),
     url(r'^view_membership_type/$', 'app.views.memberships.view_type', name='view_membership_type'),
-    url(r'^edit_membership_type/$', 'app.views.memberships.edit_type', name='edit_membership_type'),
+    url(r'^edit_membership_type/(?P<membership_type_id>\d+)$', 'app.views.memberships.edit_type', name='edit_membership_type'),
 
 )
