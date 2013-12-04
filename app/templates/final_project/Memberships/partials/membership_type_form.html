@@ -1,0 +1,15 @@
+<form  method="post" class="membershiptype_form">
+   <label>Name:</label>
+   <input type="text" name="name" value="{{ membership_type.name }}"><br />
+   <label>Description:</label>
+   <input type="text" name="description" value="{{ membership_type.description }}"><br />
+   <label>Allowed Frequency:</label>
+   <input type="text" name="allowed_freq" value="{{ membership_type.allowed_freq }}"><br />
+   <label>Default Price:</label>
+   <input type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
+   <label>Visible:</label>
+   <input type="text" name="visible" value="{{ membership_type.visible }}"><br />
+   <input type="submit" value="Submit" />
+   <input type="hidden" name="next" value="{{ next }}" />
+   {% csrf_token %}
+</form>

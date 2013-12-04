@@ -106,18 +106,26 @@ def create_type(request):
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
         context['memberships'] = MembershipType.objects.all()
+<<<<<<< HEAD
         return render(request,'final_project/Memberships/memberships.html',context)
-    if request.method == 'GET':
-        return render(request, 'final_project/Memberships/membershiptype_create.html',context)
+    form = MembershipTypeCreation(request.POST)
+=======
+        return render(request,'final_project/memberships.html',context)
     form = MembershipTypeCreate(request.POST)
+>>>>>>> b131c3f0af149bf15bbd08d423c3d78ea4695905
     if not form.is_valid():
         context['errors'] = ['Error: Bad membership data']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
     form.save()
     m_type = MembershipType.objects.get(name=form.cleaned_data['name'])
-    context['membership_type'] = m_type
+<<<<<<< HEAD
+    context['membershipType'] = m_type
     return render(request,'final_projects/Memberships/membershiptype_view.html',context)
+=======
+    context['membership_type'] = m_type
+    return render(request,'final_projects/membershiptype_view.html',context)
+>>>>>>> b131c3f0af149bf15bbd08d423c3d78ea4695905
 
 @login_required
 def view_type(request):
@@ -134,12 +142,17 @@ def view_type(request):
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: No such membership']
         context['memberships'] = MembershipType.objects.all()
+<<<<<<< HEAD
         return render(request,'final_project/Memberships/memberships.html',context)
+    return render(request,'final_project/Memberships/view_membershiptype.html',context)
+=======
+        return render(request,'final_project/memberships.html',context)
     if not mem_type.visible and not member.staff:
         context['errors'] = ['Error: No such membership']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/Memberships/memberships.html',context)
-    return render(request,'final_project/Memberships/view_membershiptype.html',context)
+        return render(request,'final_project/memberships.html',context)
+    return render(request,'final_project/view_membershiptype.html',context)
+>>>>>>> b131c3f0af149bf15bbd08d423c3d78ea4695905
 
 @login_required
 def edit_type(request,membership_id):
