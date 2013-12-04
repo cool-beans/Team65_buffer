@@ -139,7 +139,11 @@ class EventType(models.Model):
                       start_time=self.start_time,
                       end_time=self.end_time,
                       description=self.description,
-                      event_type = self)
+                      event_type = self,
+                      # Set original info
+                      orig_name=self.name,
+                      orig_date=date,
+                      orig_start_time=self.start_time)
         return event
 
     def getEventsGivenSunday(self, sunday_date):
@@ -160,7 +164,6 @@ class Event(models.Model):
     # Events are associated with an EventType
 
     # Set original event info only upon creation of Event!!
-    #TODO:
     orig_name = models.CharField(max_length=100)
     orig_date = models.DateField()
     orig_start_time = models.TimeField()
