@@ -36,4 +36,4 @@ class BookEvent(forms.Form):
 class MembershipTypeCreate(forms.ModelForm):
     class Meta:
         model = MembershipType
-        fields = ['name','description','allowed_freq','visible']
+        fields = ['name','description','allowed_freq','visible','default_price']
