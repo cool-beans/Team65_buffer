@@ -23,15 +23,15 @@ def create(request):
 
     # Sanitize the data.
     if request.method == 'GET':
-        return render(request, 'final_project/buy_membership.html',context)
+        return render(request, 'final_project/Memberships/buy_membership.html',context)
     if not 'membership' in request.POST or not request.POST['membership']:
         context['errors'] = ['Error: Could not find membership.']
-        return render(request,'final_project/buy_membership.html',context)
+        return render(request,'final_project/Memberships/buy_membership.html',context)
     try:
         mem_type = MembershipType.get(name=request.POST['name'])
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: Could not find membership.']
-        return render(request,'final_project/buy_membership.html',context)
+        return render(request,'final_project/Memberships/buy_membership.html',context)
 
     # If there is no price specified just use the default price.
     if not 'price' in request.POST or not request.POST['price']:
@@ -46,7 +46,7 @@ def create(request):
     member.membership = membership
     member.save()
     context['membership'] = membership
-    return render(request,'final_project/receipt.html', context)
+    return render(request,'final_project/Memberships/receipt.html', context)
 
 @login_required
 def view(request,membership_id):
@@ -58,14 +58,14 @@ def view(request,membership_id):
         mem = Membership.objects.get(id__exact=membership_id)
     except Membership.DoesNotExist:
         context['errors'] = ['Error: Could not find membership.']
-        return render(request,'final_project/member_profile.html',context)
+        return render(request,'final_project/Memberships/member_profile.html',context)
     # Either they are staff or they need to own that particular membership
     if member.memberships.filter(id__exact=membership_id).count() == 0 and \
             not member.staff:
         context['errors'] = ['Error: You do not have access to that membership.']
-        return render(request, 'final_project/member_profile.html',context)
+        return render(request, 'final_project/Memberships/member_profile.html',context)
     context['membership'] = mem
-    return render(request,'final_project/membership_view.html',context)
+    return render(request,'final_project/Memberships/membership_view.html',context)
 
 @login_required
 def cancel(request,membership_id):
@@ -77,18 +77,18 @@ def cancel(request,membership_id):
         mem = Membership.objects.get(id__exact=membership_id)
     except Membership.DoesNotExist:
         context['errors'] = ['Error: Could not find membership.']
-        return render(request,'final_project/member_profile.html',context)
+        return render(request,'final_project/Memberships/member_profile.html',context)
     # Either they are staff or they need to own that particular membership
     if member.memberships.filter(id__exact=membership_id).count() == 0 and \
             not member.staff:
         context['errors'] = ['Error: You do not have access to that membership.']
-        return render(request, 'final_project/member_profile.html',context)
+        return render(request, 'final_project/Memberships/member_profile.html',context)
 
     # Cancel the membership.
     mem.cancelled = True
     mem.cancelled_date = datetime.now()
     mem.save()
-    return render(request,'final_project/member_profile.html',context)
+    return render(request,'final_project/Memberships/member_profile.html',context)
 
 def all(request):
     context = {}
@@ -96,7 +96,7 @@ def all(request):
         context['user'] = request.user
         context['member'] = Member.objects.get(user=request.user)
     context['memberships'] = MembershipType.objects.all()
-    return render(request,'final_projects/memberships.html',context)
+    return render(request,'final_project/Memberships/memberships.html',context)
 
 @login_required
 def create_type(request):
@@ -106,16 +106,16 @@ def create_type(request):
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
     form = MembershipTypeCreation(request.POST)
     if not form.is_valid():
         context['errors'] = ['Error: Bad membership data']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
     form.save()
     m_type = MembershipType.objects.get(name=form.cleaned_data['name'])
     context['membershipType'] = m_type
-    return render(request,'final_projects/membershiptype_view.html',context)
+    return render(request,'final_projects/Memberships/membershiptype_view.html',context)
 
 @login_required
 def view_type(request):
@@ -125,15 +125,15 @@ def view_type(request):
     # Does the membership exist?
     if not mem_type in request.POST or not request.POST['mem_type']:
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
     try:
         mem_type = MembershipType.get(name=request.POST['mem_type'])
         context['membership_type'] = mem_type
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: No such membership']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
-    return render(request,'final_project/view_membershiptype.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
+    return render(request,'final_project/Memberships/view_membershiptype.html',context)
 
 @login_required
 def edit_type(request,membership_id):
@@ -143,7 +143,7 @@ def edit_type(request,membership_id):
     if not member.staff:
         context['errors'] = ['Error: That page requires staff access.']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
 
 
     # Try to get the membership.
@@ -152,7 +152,7 @@ def edit_type(request,membership_id):
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: Could not find membership to edit.']
         context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/memberships.html',context)
+        return render(request,'final_project/Memberships/memberships.html',context)
     if 'name' in request.POST and request.POST['name']:
         mem_type.name = request.POST['name']
     if 'description' in request.POST and request.POST['description']:
@@ -161,4 +161,4 @@ def edit_type(request,membership_id):
         mem_type.default_price = request.POST['default_price']
     mem_type.save()
     context['membership_type'] = mem_type
-    return render(request,'final_project/view_membershiptype.html', context)
+    return render(request,'final_project/Memberships/view_membershiptype.html', context)
