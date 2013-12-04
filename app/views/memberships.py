@@ -133,6 +133,10 @@ def view_type(request):
         context['errors'] = ['Error: No such membership']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/memberships.html',context)
+    if not mem_type.visible and not member.staff:
+        context['errors'] = ['Error: No such membership']
+        context['memberships'] = MembershipType.objects.all()
+        return render(request,'final_project/memberships.html',context)
     return render(request,'final_project/view_membershiptype.html',context)
 
 @login_required
