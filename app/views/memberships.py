@@ -23,14 +23,14 @@ def buy(request,membership_type_id):
 
     # Sanitize the data.
     if request.method == 'GET':
-        if len(MembershipType.filter(id__exact=membership_type_id)) == 0:
+        if len(MembershipType.objects.filter(id__exact=membership_type_id)) == 0:
             context['errors'] = ['Error, no such membership.']
             context['memberships'] = MembershipType.objects.all()
             return render(request,'final_project/Memberships/memberships.html',context)
-        context['membership_type'] = MembershipType.objects.get(id__exact=membershiptype_id)
+        context['membership_type'] = MembershipType.objects.get(id__exact=membership_type_id)
         return render(request, 'final_project/Memberships/buy_membership.html',context)
     try:
-        mem_type = MembershipType.get(id__exact=membership_type_id)
+        mem_type = MembershipType.objects.get(id__exact=membership_type_id)
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: Could not find membership.']
         return render(request,'final_project/Memberships/buy_membership.html',context)
@@ -51,11 +51,12 @@ def buy(request,membership_type_id):
     membership = Membership(price=price,mem_type=mem_type)
     if 'exp_date' in request.POST and request.POST['exp_date']:
         membership.exp_date = request.POST['exp_date']
+    membership.creation_date = datetime.now()
     membership.save()
-    buy_member.membership = membership
+    buy_member.memberships.add(membership)
     buy_member.save()
     context['membership'] = membership
-    return render(request,'final_project/Memberships/receipt.html', context)
+    return render(request,'final_project/Memberships/memberships.html', context)
 
 
 @login_required

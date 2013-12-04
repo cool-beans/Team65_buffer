@@ -22,15 +22,16 @@
             <th>Default Price</th>
             {% if user.member.staff %}<th>Visible</th>{% endif %}
          </tr>
-         {% for membership_type in membership_types %}
-         {% if membership_type.visible and user.member.staff %}
+         {% for membership_type in memberships %}
+         {% if membership_type.visible or user.member.staff %}
             <tr>
                <td>{{ membership_type.name }}</td>
                <td>{{ membership_type.description }}</td>
                <td>{{ membership_type.allowed_freq }}</td>
                <td>{{ membership_type.default_price }}</td>
                {% if user.member.staff %}<td>{{ membership_type.visible }}</td>{% endif %}
-               <td><a type="button" class="btn btn-primary" href="/final_project/membershiptype_view/{{membership_type.id}}">View</a></td>
+               <td><a type="button" class="btn btn-primary" href="{% url 'view_membership_type' membership_type.id %}">View</a></td>
+               <td><a type="button" class="btn btn-primary" href="{% url 'buy_membership' membership_type.id %}">Buy</a></td>
             </tr>
          {% endif %}
          {% endfor %}
