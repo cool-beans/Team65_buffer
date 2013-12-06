@@ -38,5 +38,6 @@ urlpatterns = patterns('',
 
    # Emails
     url(r'^emails/$','app.views.emails.all', name='emails'),
+    url(r'^email_programs/$','app.views.emails.programs', name='email_programs'),
 
 )
