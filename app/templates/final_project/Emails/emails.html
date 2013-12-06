@@ -1,0 +1,29 @@
+{% extends "final_project/Common/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Emails{% endblock %}
+{% load base_extra_tags %}
+{% block content %}
+<div class="row">
+  <form>
+    <div class="col-lg-2">
+      <div class="list-group">
+        <a href="{% url 'filter_members' 0 %}" class="list-group-item">All<!--<span class="badge"></span>--></a>
+        {% for program in programs %}
+        <a class="list-group-item" >
+	  <input type="checkbox" name="{program.name}" value="filter_this" />
+	  {{program.name}}<span class="badge">{{program.members.count}}</span></a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-10">
+      <table class="table table-striped table-bordered table-hover">
+        <tr><input type="textbox" name="subject" value="Email Subject..." /></tr>
+	<tr><input type="textarea" name="email" value="Email Body..." /></tr>
+      </table>
+      <input type="submit" value="Submit" />
+    </div>
+    {% csrf_token %}
+  </form>
+</div>
+
+{% endblock %}
