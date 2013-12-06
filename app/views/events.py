@@ -203,20 +203,20 @@ def all(request):
 
     today = date.today()
 
-    # Default: set latest_date to Sunday of this week
-    latest_date = Event.getSundayDate(today)
+    # Default: set sunday_date to Sunday of this week
+    sunday_date = Event.getSundayDate(today)
 
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
-        # If the latest_date from the last access is provided
+        # If the sunday_date from the last access is provided
         # along with either a button = 'prev' or 'next', calculate
-        # appropriate latest_date
-        if 'latest_date' in request.GET and request.GET['latest_date']:
+        # appropriate sunday_date
+        if 'sunday_date' in request.GET and request.GET['sunday_date']:
             if 'timeframe' in request.GET and request.GET['timeframe']:
                 if request.GET['timeframe'] == 'prev':
-                    latest_date = request.GET['latest_date'] - timedelta(days=7)
+                    sunday_date = request.GET['sunday_date'] - timedelta(days=7)
                 elif request.GET['timeframe'] == 'next':
-                    latest_date = request.GET['latest_date'] + timedelta(days=7)
+                    sunday_date = request.GET['sunday_date'] + timedelta(days=7)
 
     events = []
     monday_events = []
@@ -227,108 +227,12 @@ def all(request):
     saturday_events = []
     sunday_events = []
 
-    dates_in_week = []
-    day_to_date = {}
-
-    # Build list of dates in current week
-    for i in range(0, 7):
-        date_to_get = latest_date - timedelta(days=i)
-        # Set the day of the week (0=Monday, 6=Sunday) as key to date
-        day_to_date[date_to_get.weekday()] = date_to_get
-
-        dates_in_week.append(date_to_get)
-
-    earliest_date = latest_date - timedelta(days=6)
-
-    def getEventsOnDate(date):
-        events = []
-
-        # Get existing events first
-        events += Event.objects.filter(date=date)
-
-        # Get recurrences that have a start_date before/on date
-        recurrences = Recurrence.objects.filter(start_date__lte=date)
-        # Filter for recurrences that have no end_recurrence or one on/after date
-        recurrences = recurrences.filter(Q(end_recurrence=None)|Q(end_recurrence__gte=date))
-
-        for recurrence in recurrence:
-            if recurrence.isValidDate(date):
-                eventtype = recurrence.eventtype
-
-                # Try to get event with the proper date and eventtype's name/start_time
-                event = Event.getEvent(name=eventtype.name,
-                                       date=date,
-                                       start_time=eventtype.start_time)
-                if event and event not in events:
-                    events.append(event)
-
-        return events
-
-    # Grab all recurrences that started at least by the latest_date
-    recurrences = Recurrence.objects.filter(start_date__lte=latest_date)
-
-    for recurrence in recurrences:
-        days = recurrence.getDays()
-        eventtype = recurrence.eventtype
-        print "Checking EventType: " + eventtype.name
-
-        # If not a recurring event and date is within the past week, show event
-        if not days and (recurrence.start_date >= earliest_date):
-            day = recurrence.start_date.weekday()
-            event = eventtype.event_set.filter(date=recurrence.start_date)
-
-            # If an Event already exists for this one-time event, just append.
-            if event:
-                events.append(event[0])
-
-            # Otherwise, make an Event (don't save) and append
-            else:
-                new_event = eventtype.createEvent(recurrence.start_date)
-                events.append(new_event)
-
-        # For each day the event recurrs on, attach the event to list of events
-        for day in days:
-            event_date = day_to_date[day]
-            print "\tevent_date: " + str(event_date)
-            # If recurrence has an end_recurrence, make sure event_date is not after it!
-            # Otherwise, just ignore that particular day.
-            if ((not recurrence.end_recurrence or
-                event_date <= recurrence.end_recurrence) and \
-                event_date >= recurrence.start_date):
-                print "\tevent was appended!"
-                # If event already exists,
-                # append it to the proper day of the week
-                event = eventtype.event_set.filter(date=event_date)
-                if event:
-                    events.append(event)
-#TODO: make sure to take into account orig_date and actual date!
-                # Otherwise, make an event (don't save) and append
-                else:
-                    new_event = eventtype.createEvent(event_date)
-                    events.append(new_event)
-
-    # Lambda function to sort the list of grumbls in place by timestamp (most recent first)
-    events.sort(key=lambda event: event.date, reverse=True)
-
-    print "***************EVENT TYPES START***************"
-    for event in EventType.objects.all():
-        print "name: " + event.name
-        print "start_date: " + str(event.recurrence.start_date)
-        print "end_recurrence: " + str(event.recurrence.end_recurrence)
-        print "start_time: " + str(event.start_time)
-        print "days: " + str(event.recurrence.getDays())
-        print "--------------------------------------"
-    print "***************EVENT TYPES END***************\n\n"
-
-    print "***************EVENTS IN WEEK START****************"
-    for e in events:
-        print "EVENT: " + e.name
-        print "\tdate: " + str(e.date)
-        print "\tdesc: " + e.description
-    print "***************EVENTS IN WEEK END****************"
+    events = Event.getEventsFromSunday(sunday_date)
+    #EventType.printAllTypes()
+    #Event.printEvents(events)
 
     context['user'] = user
-    context['latest_date'] = latest_date
+    context['sunday_date'] = sunday_date
     context['events'] = events
     return render(request, 'final_project/Events/events.html', context)
 
