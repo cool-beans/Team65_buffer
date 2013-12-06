@@ -13,10 +13,6 @@ class ProgramMod(forms.Form):
     name = forms.CharField(max_length=20)
     description = forms.CharField(max_length=500)
 
-class EventTypeCreation(forms.ModelForm):
-    class Meta:
-        model = EventType
-        fields = ['name', 'start_time', 'end_time', 'description',]
 
 class MemberEdit(forms.Form):
     first_name = forms.CharField(max_length=100,required=False)
@@ -30,10 +26,32 @@ class MemberEdit(forms.Form):
 class BookEvent(forms.Form):
     name = forms.CharField(max_length=20)
     date = forms.DateField()
-    start = models.TimeField()
-    end = models.TimeField()
+    start = forms.TimeField()
+    end = forms.TimeField()
 
 class MembershipTypeCreate(forms.ModelForm):
     class Meta:
         model = MembershipType
         fields = ['name','description','allowed_freq','visible','default_price']
+class RecurringCreate(forms.Form):
+    onMonday = forms.BooleanField(initial=False,required=False)
+    onTuesday = forms.BooleanField(initial=False,required=False)
+    onWednesday = forms.BooleanField(initial=False,required=False)
+    onThursday = forms.BooleanField(initial=False,required=False)
+    onFriday = forms.BooleanField(initial=False,required=False)
+    onSaturday = forms.BooleanField(initial=False,required=False)
+    onSunday = forms.BooleanField(initial=False,required=False)
+    # Has many Events associated with one EventType
+    start_date = forms.CharField(max_length=30)
+    end_date = forms.CharField(max_length=30,required=False)
+    name = forms.CharField(max_length=100)
+    description = forms.CharField(max_length=500, required=False)
+    start_time = forms.CharField(max_length=30)
+    end_time = forms.CharField(max_length=30)
+
+
+class EventEdit(forms.Form):
+    name = forms.CharField(max_length=100,required=False)
+    description = forms.CharField(max_length=500, required=False)
+    start_time = forms.CharField(max_length=30,required=False)
+    end_time = forms.CharField(max_length=30,required=False)

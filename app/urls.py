@@ -25,10 +25,14 @@ urlpatterns = patterns('',
 
    # Events
     url(r'^events/$','app.views.events.all', name='events'),
-    url(r'^event_profile/$', 'app.views.events.profile', name='event_profile'),
-    url(r'^event_create/$', 'app.views.events.create', name='event_create'),
+    url(r'^event_profile/(?P<event_id>\d+)$', 'app.views.events.profile', name='event_profile'),
+    url(r'^event_create_recurring/$', 'app.views.events.create_recurring', name='event_create_recurring'),
 #    url(r'^filter_events/(?P<event_id>\d+)$', 'app.views.filter_events', name='filter_events'),
-    url(r'^event_edit/$', 'app.views.events.edit', name='event_edit'),
+    url(r'^event_backweek/(?P<prev_monday>\d+\-\d+\-\d+)$', 'app.views.events.backweek', name='event_backweek'),
+    url(r'^event_forwardweek/(?P<next_monday>\d+\-\d+\-\d+)$', 'app.views.events.forwardweek', name='event_forwardweek'),
+    url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.events.edit', name='event_edit'),
+
+
    # Memberships
     url(r'^memberships/$','app.views.memberships.all', name='memberships'),
     url(r'^buy_membership/(?P<membership_type_id>\d+)$', 'app.views.memberships.buy', name='buy_membership'),
@@ -41,3 +45,4 @@ urlpatterns = patterns('',
     url(r'^email_programs/$','app.views.emails.programs', name='email_programs'),
 
 )
+

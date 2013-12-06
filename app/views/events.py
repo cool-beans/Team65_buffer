@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from datetime import *
@@ -16,428 +16,196 @@ from app.models import *
 from events_helper_functions import getContextForAll
 
 from pprint import pprint
+from app.forms import *
+
+
+# A Helper method to pad out the days and transpose them to the right place.
+def getdays(monday):
+    days = [list(Event.objects.filter(date__exact=monday).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(1)).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(2)).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(3)).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(4)).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(5)).order_by('start_time','end_time')),
+            list(Event.objects.filter(date__exact=monday + timedelta(6)).order_by('start_time','end_time'))]
+    most_days = len(days[0])
+    # Find the day with the greatest length.
+    for day in days:
+        l = len(day)
+        if l > most_days:
+            most_days = l
+    padded_days = [(day + [None]*(most_days-len(day))) for day in days]
+    transposed = map(list,zip(*padded_days))
+    return transposed
+
 
 
 @login_required
-def create(request):
-    # Create a new event
-    user = request.user
-    programs = Program.objects.all()
-    context = {}
-    errors = []
+def create_recurring(request):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
 
-    # If not staff, render events page
-    if not user.member.staff:
-        errors.append('You do not have permission to create events.')
-        sunday_date = Event.getSundayDate(date.today())
-        context = getContextForAll(user, errors, sunday_date)
+    # The user must be staff.
+    if not member.staff:
+        context['errors'] = ['Error: Only staff members can create events.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
         return render(request, 'final_project/Events/events.html', context)
 
-    if (request.method == 'GET'):
-        context['user'] = user
-        context['errors'] = errors
-        context['programs'] = programs
-        return render(request,'final_project/Events/event_create.html',context)
 
-    elif (request.method == 'POST'):
-        new_recurrence = Recurrence()
-        start_date = None
+    # Get and sanitize all the fields.
+    form = RecurringCreate(request.POST)
 
-        # If start date is not specified for recurring/non-recurring event,
-        # return with error
-        if ('start_date' not in request.POST or not request.POST['start_date']):
-            errors.append('Must include start date.')
-            context['user'] = user
-            context['errors'] = errors
-            context['programs'] = programs
-            return render(request, 'final_project/Events/event_create.html', context)
-        else:
-            # Date is now in format YYYY-MM-DD
-            start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d').date()
+    if not form.is_valid():
+        context['errors'] = ['Error: Bad form data.']
+        return render(request, 'final_project/Events/create_recurring.html',context)
 
-        # Store info on whether or not event recurrs/what days of the week
-        isRecurring = False
-        for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
-            if day in request.POST:
-                isRecurring = True
-                new_recurrence.setDayRecurrence(day, isRecurring)
 
-        if isRecurring:
-            new_recurrence.isRecurring = True
+    start_time=form.cleaned_data['start_time']
+    end_time=form.cleaned_data['end_time']
+    start_date = datetime.strptime(form.cleaned_data['start_date'],"%Y-%m-%d")
+    end_date = datetime.strptime(form.cleaned_data['end_date'],"%Y-%m-%d")
+    default_start_time=time(hour=int(start_time[0:2]),minute=int(start_time[3:5]))
+    default_end_time=time(hour=int(end_time[0:2]),minute=int(end_time[3:5]))
+    rec = RecurringEvent(onMonday=form.cleaned_data['onMonday'],
+                         onTuesday=form.cleaned_data['onTuesday'],
+                         onWednesday=form.cleaned_data['onWednesday'],
+                         onThursday=form.cleaned_data['onThursday'],
+                         onFriday=form.cleaned_data['onFriday'],
+                         onSaturday=form.cleaned_data['onSaturday'],
+                         onSunday=form.cleaned_data['onSunday'],
+                         name=form.cleaned_data['name'],
+                         description=form.cleaned_data['description'],
+                         start_date=start_date,
+                         end_date=end_date,
+                         default_start_time=default_start_time,
+                         default_end_time=default_end_time)
 
-            # Look for repeating day of week closest to requested start_date
-            for i in range(0, 7):
-                check_date = start_date + timedelta(days=i)
-                if check_date.weekday in new_recurrence.getDaysNum():
-                    start_date = check_date
-                    break
 
-            new_recurrence.start_date = start_date
 
-        # If not recurring, just set start date to date given
-        else:
-            new_recurrence.start_date = start_date
 
-        # If end date is specified and event is recurring, save it in recurrence info.
-        # It's ok to not have an end date (recurrs forever)
-        if (isRecurring and 'end_recurrence' in request.POST and request.POST['end_recurrence']):
+    # Spawn all of the events associated.
+    rec.save()
+    rec.spawn_events()
 
-            # Date is now in format YYYY-MM-DD
-            end_recurrence = datetime.strptime(request.POST['end_recurrence'], '%Y-%m-%d').date()
+    # Give the context the most recent monday.
 
-            # If requested end date is either before the first time event
-            # can recurr or before the start date: error
-            if end_recurrence <= new_recurrence.start_date:
-                errors.append('Invalid end date: either must be after ' \
-                              'start date or after first recurrence of '\
-                              'a recurring event.'  )
-                context['user'] = user
-                context['errors'] = errors
-                context['programs'] = programs
-                return render(request, 'final_project/Events/event_create.html', context)
+    monday = date.today() + timedelta(-date.today().weekday())
+    context['monday'] = str(monday)
+    context['days'] = getdays(monday)
 
-            # If valid end date, set new_recurrence's end_recurrence
-            else:
-                new_recurrence.end_recurrence = request.POST['end_recurrence']
+    return render(request,'final_project/Events/events.html',context)
 
-        new_recurrence.save()
-        # Now Recurrence should be set, create event!
-        new_eventtype = EventType(recurrence=new_recurrence)
-
-        # For all programs, check if they are in POST,
-        # if so, add them to the new EventType's programs_set
-        for program in programs:
-            if program.name in request.POST:
-                new_eventtype.programs_set.add(program)
-
-        eventtype_form = EventTypeCreation(request.POST, instance=new_eventtype)
-
-        if not eventtype_form.is_valid():
-            errors.append('Bad information given. Must include start date and '\
-                          'event start/end time, event name, and programs associated '\
-                          'with this event.')
-            context['user'] = user
-            context['errors'] = errors
-            context['programs'] = programs
-            return render(request,'final_project/Events/event_create.html', context)
-
-        # Check if any such events/eventTypes exist already, if so, don't save form.
-        if Event.getEvent(name=new_eventtype.name,
-                          date=new_eventtype.recurrence.start_date,
-                          start_time=new_eventtype.start_time):
-            errors.append('Event with same day and start time and name already exists.')
-            context['user'] = user
-            context['errors'] = errors
-            context['programs'] = programs
-            return render(request, 'final_project/Events/event_create.html', context)
-
-        # Save new EventType
-        new_eventtype = eventtype_form.save()
-
-        # Create new event with new EventType
-        new_event = new_eventtype.createEvent(new_eventtype.recurrence.start_date)
-
-        context['user'] = user
-        context['event'] = new_event
-        context['eventtype'] = new_eventtype
-        return render(request,'final_project/Events/event_profile.html', context)
-
-def profile(request):
-    user = request.user
+def profile(request,event_id):
     context = {}
-    errors = []
+    if request.user.is_authenticated():
+        context['user'] = request.user
+        context['member'] = request.user.member
+        member = request.user.member
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: No such event.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+    context['event'] = event
+    if len(event.booked.filter(id__exact=member.id)) == 0:
+        context['book'] = True
+
+        context['attendcancel'] = True
+
+    return render(request,'final_project/Events/event_profile.html',context)
+
+def create(request):
+    return None
+
+def edit(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
 
     if request.method == 'GET':
-        name = ''
-        start_date = None
-        start_time = None
+        return render(request, 'final_project/Events/event_edit.html',context)
+    # The user must be staff.
+    if not member.staff:
+        context['errors'] = ['Error: Only staff members can create events.']
+        return render(request, 'final_project/Events/events.html', context)
 
-        # Check for valid:
-        # - event_name
-        # - event_start_date
-        # - event_start_time
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: No such event.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
 
-        # Check for valid event_name
-        if 'event_name' not in request.GET or not request.GET['event_name']:
-            errors.append('No event name info given in GET')
-        else:
-            name = request.GET['event_name']
+    form = EventEdit(request.POST)
 
-        # Check for valid event_start_date
-        if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
-            errors.append('No event_start_date given.')
-        else:
-            # date is now in format "Nov. 3, 2013"
-            start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
-            if not start_date:
-                errors.append('Invalid start_date given.')
+    if not form.is_valid():
+        context['errors'] = ['Error: Bad form data.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request, 'final_project/Events/event_edit.html',context)
 
-        # Check for valid event_start_time
-        if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
-            errors.append('No event_start_time given.')
-        else:
-            # convert time into a time object
-            start_time = Event.convertTime(request.GET['event_start_time'])
-            if not start_time:
-                errors.append('Invalid start_time given')
+    start_time=form.cleaned_data['start_time']
+    end_time=form.cleaned_data['end_time']
 
-        # If errors exist, render events.html
-        if errors:
-            sunday_date = Event.getSundayDate(date.today())
-            context = getContextForAll(user, errors, sunday_date)
-            return render(request, 'final_project/Events/events.html', context)
+    changed = False
+    if start_time:
+        event.start_time=time(hour=int(start_time[0:2]),minute=int(start_time[3:5]))
+        changed = True
+    if end_time:
+        event.end_time=time(hour=int(end_time[0:2]),minute=int(end_time[3:5]))
+        changed = True
+    if form.cleaned_data['name'] != '':
+        event.name = form.cleaned_data['name']
+        changed = True
+    if form.cleaned_data['description'] != '':
+        event.description = form.cleaned_data['description']
+        changed = True
+    if changed:
+        if not event.description: event.description = event.recurrence.description
+        if not event.name: event.name = event.recurrence.name
+        event.recurrence = None
+    event.save()
+    context['event'] = event
+    return redirect('/final_project/event_profile/'+ event_id)
 
-        # If all needed info (name, date, start_time) is there, get Event
-        event = Event.getEvent(name=name, date=start_date, start_time=start_time)
+def backweek(request,prev_monday):
+    context = {}
+    if request.user.is_authenticated():
+        context['user'] = request.user
+        context['member'] = request.user.member
+    monday = datetime.strptime(prev_monday,"%Y-%m-%d") - timedelta(7)
+    context['monday'] = str(monday.date())
+    context['days'] = getdays(monday)
+    return render(request,'final_project/Events/events.html',context)
 
-        # If cannot find recurrence that matches event, render events.html
-        if not event:
-            errors.append("Could not locate event, given name, start_time, date.")
-            sunday_date = Event.getSundayDate(date.today())
-            context = getContextForAll(user, errors, sunday_date)
-            return render(request, 'final_project/Events/events.html', context)
+def forwardweek(request,next_monday):
+    context = {}
+    if request.user.is_authenticated():
+        context['user'] = request.user
+        context['member'] = request.user.member
+    monday = datetime.strptime(next_monday,"%Y-%m-%d") + timedelta(7)
+    context['monday'] = str(monday.date())
+    context['days'] = getdays(monday)
+    return render(request,'final_project/Events/events.html',context)
 
-
-        context['user'] = user
-        context['event'] = event
-        return render(request, 'final_project/Events/event_profile.html', context)
 
 def all(request):
-    user = request.user
     context = {}
-    errors = []
+    if request.user.is_authenticated():
+        context['user'] = request.user
+        context['member'] = request.user.member
+    monday = date.today() + timedelta(-date.today().weekday())
+    if request.method == "POST" and  'monday' in request.POST and \
+            request.POST['monday']:
+        monday = request.POST['monday'] + timedelta(-request.POST['monday'].weekday())
 
-    # Default: set sunday_date to Sunday of this week
-    sunday_date = Event.getSundayDate(date.today())
-
-    if request.method == 'GET':
-        # If navigating to page, just return view of current week.
-        # If the sunday_date from the last access is provided
-        # along with either a button = 'prev' or 'next', calculate
-        # appropriate sunday_date
-        if 'sunday_date' in request.GET and request.GET['sunday_date']:
-            if 'timeframe' in request.GET and request.GET['timeframe']:
-                if request.GET['timeframe'] == 'prev':
-                    sunday_date = request.GET['sunday_date'] - timedelta(days=7)
-                elif request.GET['timeframe'] == 'next':
-                    sunday_date = request.GET['sunday_date'] + timedelta(days=7)
-
-    events = []
-    monday_events = []
-    tuesday_events = []
-    wednesday_events = []
-    thursday_events = []
-    friday_events = []
-    saturday_events = []
-    sunday_events = []
-
-    events = Event.getEventsFromSunday(sunday_date)
-    #EventType.printAllTypes()
-    #Event.printEvents(events)
-
-    context['user'] = user
-    context['sunday_date'] = sunday_date
-    context['events'] = events
-    return render(request, 'final_project/Events/events.html', context)
-
-
-
-# If POST, expects event's original:
-#  -name (string)
-#  -start_date (datefield)
-#  -start_time (timefield)
-# Changes can include:
-#  -name
-#  -start_time
-#  -end_time
-#  -date
-#  -description
-#  -delete
-#  -change_this_event
-#  -change_following_events
-@login_required
-def edit(request):
-    # Check if editing one-time or for all following events!
-    # Given name, start_date, start_time
-    # Try to getEvent() for the given info.
-    # If Event does not exist:
-        # error
-    # If one-time change, change only event and save before return
-    # If recurring change, change event and save,
-    # then change EventType, save.
-    # Return to event_profile of requested event
-
-    user = request.user
-    context = {}
-    event = None
-    errors = []
-
-    if request.method == 'GET':
-
-        name = ''
-        start_date = None
-        start_time = None
-
-        # Check for valid:
-        # - event_name
-        # - event_start_date
-        # - event_start_time
-
-        # Check for valid event_name
-        if 'event_name' not in request.GET or not request.GET['event_name']:
-            errors.append('No event name info given in GET')
-        else:
-            name = request.GET['event_name']
-        
-        # Check for valid event_start_date
-        if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
-            errors.append('No event_start_date given.')
-        else:
-            # date is now in format "Nov. 3, 2013"
-            start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
-            if not start_date:
-                errors.append('Invalid start_date given.')            
-
-        # Check for valid event_start_time
-        if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
-            errors.append('No event_start_time given.')
-        else:
-            # convert time into a time object
-            start_time = Event.convertTime(request.GET['event_start_time'])
-            if not start_time:
-                errors.append('Invalid start_time given')
-        
-        # If errors exist, render events.html
-        if errors:
-            sunday_date = Event.getSundayDate(date.today())
-            context = getContextForAll(user, errors, sunday_date)
-            return render(request, 'final_project/Events/events.html', context)
-
-        # If all needed info (name, date, start_time) is there, get Event
-        event = Event.getEvent(name=name, date=start_date, start_time=start_time)
-
-        # If cannot find event that matches event, render events.html
-        if not event:
-            error = ('Could not locate event given name ({name}), ',
-                         'start_date ({date}), and time ({time}).',
-                         ''.format(name=request.GET['event_name'],
-                                   date=request.GET['event_start_date'],
-                                   time=request.GET['event_start_time']))
-            errors.append(error)
-            sunday_date = Event.getSundayDate(date.today())
-            context = getContextForAll(user, errors, sunday_date)
-            return render(request, 'final_project/Events/events.html', context)
-
-        # Otherwise, can assume event was located, so return event_edit
-        # with event in context.
-        context['user'] = user
-        context['event'] = event
-        for day in event.event_type.recurrence.getDaysStr():
-            context[day] = True
-
-        in_program = event.event_type.programs.all()
-        not_in_program = list(set(Program.objects.all()) - set(in_program))
-        context['in_program'] = in_program
-        context['not_in_program'] = not_in_program
-        return render(request, 'final_project/events/event_edit.html', context)
-
-    elif request.method == 'POST':
-# Check to make sure name, start_date, and start_time all included
-        if 'event_name' not in request.POST or not request.POST['event_name']:
-            errors.append('Missing event name.')
-        if 'event_start_date' not in request.POST or not request.POST['event_start_date']:
-            errors.append('Missing event start_date.')
-        if 'event_start_time' not in request.POST or not request.POST['event_start_time']:
-            errors.append('Missing event start_time')
-        if ('change-once' not in request.POST and \
-            'change-following' not in request.POST):
-            errors.append('Missing option for change-once vs change-following')
-
-        # If all are included, try to get the event requested
-        if not errors:
-            event = Event.getEvent(name=request.POST['event_name'],
-                                   date=request.POST['event_start_date'],
-                                   start_time=request.POST['event_start_time'])
-            if not event:
-                error = ('Could not locate event given name ({name}), ',
-                         'start_date ({date}), and time ({time}).',
-                         ''.format(name=request.POST['event_name'],
-                                   date=request.POST['event_start_date'],
-                                   time=request.POST['event_start_time']))
-                errors.append(error)
-
-        # If there are errors, return user to events page
-        if errors:
-            sunday_date = Event.getSundayDate(date.today())
-            context = getContextForAll(user, errors, sunday_date)
-            return render(request, 'final_project/Events/events.html', context)
-
-        # Otherwise, can assume event was located, so proceed to edit!
-
-        # If one-time change,
-        if 'change-series' not in request.POST:
-            # Change event and save
-            # Can change: name, date, start_time, end_time, description,
-            #             is_cancelled
-            if 'name' in request.POST and request.POST['name']:
-                event.name = request.POST['name']
-            if 'date' in request.POST and request.POST['date']:
-                # date is now in format "Nov. 3, 2013"
-                parsed_date = datetime.strptime(request.POST['date'],
-                                         '%b. %d, %Y').date()
-                event.date = parsed_date
-            if 'start_time' in request.POST and request.POST['start_time']:
-                start_time = Event.convertTime(request.POST['start_time'])
-                event.start_time = start_time
-            if 'end_time' in request.POST and request.POST['end_time']:
-                end_time = Event.convertTime(request.POST['end_time'])
-                event.start_time = end_time
-            if 'description' in request.POST and request.POST['description']:
-                event.description = description
-            if 'is_cancelled' in request.POST:
-                event.is_cancelled = True
-
-            event.save()
-
-        # If changing the following events as well, then change EventType, save.
-        elif 'change-series' in request.POST:
-            eventtype = event.eventtype
-            # Change Event and Eventtype and save
-            # Can change: name, date, start_time, end_time, description,
-            #             is_cancelled
-            if 'name' in request.POST and request.POST['name']:
-                event.name = request.POST['name']
-                eventtype.name = request.POST['name']
-            if 'date' in request.POST and request.POST['date']:
-                # date is now in format "Nov. 3, 2013"
-                parsed_date = datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
-                event.date = parsed_date
-            if 'start_time' in request.POST and request.POST['start_time']:
-                start_time = Event.convertTime(request.POST['start_time'])
-                event.start_time = start_time
-                eventttype.start_time = start_time
-            if 'end_time' in request.POST and request.POST['end_time']:
-                end_time = Event.convertTime(request.POST['end_time'])
-                event.end_time = end_time
-                eventtype.end_time = end_time
-            if 'description' in request.POST and request.POST['description']:
-                event.description = description
-                eventtype.description = description
-            if 'is_cancelled' in request.POST:
-                event.is_cancelled = True
-
-            # Add programs if they are there to be added.
-            for prog in Program.objects.all():
-                name = prog.name
-                if name in request.POST and request.POST[name]:
-                    if request.POST[name] == 'remove':
-                        eventtype.programs.remove(prog)
-                    elif request.POST[name] == 'add':
-                        eventtype.programs.add(prog)
-            event.save()
-            eventtype.save()
-
-        # Return to event_profile of requested event
-        context['user'] = user
-        context['event'] = event
-        return render(request, 'final_project/Events/event_profile.html', context)
+    context['monday'] = str(monday)
+    context['days'] = getdays(monday)
+    return render(request,'final_project/Events/events.html',context)
