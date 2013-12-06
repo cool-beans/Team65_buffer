@@ -16,17 +16,26 @@ from django.core.mail import send_mail
 
 
 @login_required
+def all(request):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    context['programs'] = Program.objects.all()
+
+    return render(request,'final_project/Emails/emails.html',context)
+
+
+@login_required
 def programs(request):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
-        return render(request,'final_project/index.html')
+        return render(request,'final_project/index.html',context)
 
     if not 'content' in request.POST or not request.POST['content']:
         context['errors'] = ['Error: Could not find an email to send.']
-        return render(request,'final_project/send_email.html')
+        return render(request,'final_project/Emails/send_email.html',context)
     if not 'subject' in request.POST or not request.POST['subject']:
         context['errors'] = ['Error: Could not find a subject.']
     content = request.POST['content']
@@ -47,7 +56,7 @@ def programs(request):
                   message=email,
                   from_email="admin@teambusiness.com",
                   recipient_list = [email])
-    return render(request,'final_project/email_sent.html')
+    return render(request,'final_project/Emails/email_sent.html',context)
 
 
 @login_required
@@ -57,11 +66,11 @@ def members(request):
     context = {'user':user,'member':member}
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
-        return render(request,'final_project/index.html')
+        return render(request,'final_project/index.html',context)
 
     if not 'content' in request.POST or not request.POST['content']:
         context['errors'] = ['Error: Could not find an email to send.']
-        return render(request,'final_project/send_email.html')
+        return render(request,'final_project/Emails/send_email.html',context)
     if not 'subject' in request.POST or not request.POST['subject']:
         context['errors'] = ['Error: Could not find a subject.']
     content = request.POST['content']
@@ -77,5 +86,5 @@ def members(request):
                       message=email,
                       from_email="admin@teambusiness.com",
                       recipient_list = [email])
-    return render(request,'final_project/email_sent.html')
+    return render(request,'final_project/Emails/email_sent.html',context)
 
