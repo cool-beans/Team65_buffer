@@ -163,7 +163,7 @@ def profile(request):
             errors.append('No event name info given in GET')
         else:
             name = request.GET['event_name']
-        
+
         # Check for valid event_start_date
         if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
             errors.append('No event_start_date given.')
@@ -171,7 +171,7 @@ def profile(request):
             # date is now in format "Nov. 3, 2013"
             start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
             if not start_date:
-                errors.append('Invalid start_date given.')            
+                errors.append('Invalid start_date given.')
 
         # Check for valid event_start_time
         if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
@@ -181,7 +181,7 @@ def profile(request):
             start_time = Event.convertTime(request.GET['event_start_time'])
             if not start_time:
                 errors.append('Invalid start_time given')
-        
+
         # If errors exist, render events.html
         if errors:
             sunday_date = Event.getSundayDate(date.today())
@@ -397,6 +397,14 @@ def edit(request):
             if 'is_cancelled' in request.POST:
                 event.is_cancelled = True
 
+            # Add programs if they are there to be added.
+            for prog in Program.objects.all():
+                name = prog.name
+                if name in request.POST and request.POST[name]:
+                    if request.POST[name] == 'remove':
+                        eventtype.programs.remove(prog)
+                    elif request.POST[name] == 'add':
+                        eventtype.programs.add(prog)
             event.save()
             eventtype.save()
 
