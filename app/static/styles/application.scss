@@ -106,9 +106,13 @@ h2{
    width:400px;
    height:400px;
 }
+.email_programs{
+      position:relative;
+      left:0;
+   }
 
 form{//#login{
-   position:relative;
+     position:relative;
    left:40%;
    label, input[type=submit]{
       //Style

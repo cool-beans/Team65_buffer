@@ -89,6 +89,10 @@ h2 {
   width: 400px;
   height: 400px; }
 
+.email_programs {
+  position: relative;
+  left: 0; }
+
 form {
   position: relative;
   left: 40%; }
