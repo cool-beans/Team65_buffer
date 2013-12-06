@@ -15,12 +15,10 @@
         {% endfor %}
       </div>
     </div>
-    <div class="col-lg-10">
-      <table class="table table-striped table-bordered table-hover">
-        <tr><input type="textbox" name="subject" value="Email Subject..." /></tr>
-	<tr><input type="textarea" name="content" value="Email Body..." /></tr>
-      </table>
-      <input type="submit" value="Submit" />
+    <div class="col-lg-10" id="email">
+       <input class="center-block subject" type="text" name="subject" value="Email Subject..." /><br />
+       <input class="textbox" type="text" name="content" value="Email Body..." /><br />
+       <input class="email-submit" type="submit" value="Submit" />
     </div>
     {% csrf_token %}
   </form>
