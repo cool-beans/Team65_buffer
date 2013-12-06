@@ -112,7 +112,7 @@ class Recurrence(models.Model):
         elif day == 'Sunday':
             self.onSundays = isRecurring
 
-    def getDays(self):
+    def getDaysNum(self):
         days = []
 
         if self.onMondays:
@@ -132,10 +132,31 @@ class Recurrence(models.Model):
 
         return days
 
+    def getDaysStr(self):
+        days = []
+
+        if self.onMondays:
+            days.append('Monday')
+        if self.onTuesdays:
+            days.append('Tuesday')
+        if self.onWednesdays:
+            days.append('Wednesday')
+        if self.onThursdays:
+            days.append('Thursday')
+        if self.onFridays:
+            days.append('Friday')
+        if self.onSaturdays:
+            days.append('Saturday')
+        if self.onSundays:
+            days.append('Sunday')
+
+        return days
+
+
      # Given a date, Recurrence checks if the date is valid
     # for the Recurrence. If valid, return True. Else: False
     def isValidDate(self, date):
-        weekdays = self.getDays()
+        weekdays = self.getDaysNum()
 
         # Check date's weekday is one of the recurring weekdays
         # and if start_date is before/on date
@@ -209,7 +230,7 @@ class EventType(models.Model):
                 weekday = date.weekday()
 
                 # If event's weekday was in eventtype's weekdays
-                if (weekday in eventtype.recurrence.getDays() or \
+                if (weekday in eventtype.recurrence.getDaysNum() or \
                     weekday == eventtype.recurrence.start_date.weekday()):
                     # (if we got this far, means no Event already exists)
                     found_type = eventtype
@@ -226,7 +247,7 @@ class EventType(models.Model):
             print "start_date: " + str(event.recurrence.start_date)
             print "end_recurrence: " + str(event.recurrence.end_recurrence)
             print "start_time: " + str(event.start_time)
-            print "days: " + str(event.recurrence.getDays())
+            print "days: " + str(event.recurrence.getDaysNum())
             print "--------------------------------------"
         print "***************EVENT TYPES END***************\n\n"
 
