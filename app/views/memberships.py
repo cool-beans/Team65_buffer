@@ -97,6 +97,7 @@ def all(request):
     if request.user is not None:
         context['user'] = request.user
         context['member'] = Member.objects.get(user=request.user)
+    context['memberships'] = MembershipType.objects.all()
     return render(request,'final_project/Memberships/memberships.html',context)
 
 @login_required
