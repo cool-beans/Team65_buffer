@@ -165,7 +165,7 @@ def edit(request, member_id):
 
     # If simply getting the page to edit
     if request.method == 'GET':
-        in_program = member.program_set.all()
+        in_program = old_member.program_set.all()
         not_in_program = list(set(Program.objects.all()) - set(in_program))
 
         context['in_program'] = in_program
@@ -211,9 +211,9 @@ def edit(request, member_id):
                 # If it is then add or remove depending on the content.
                 if name in request.POST and request.POST[name]:
                     if request.POST[name] == 'remove':
-                        prog.members.remove(member)
+                        prog.members.remove(old_member)
                     elif request.POST[name] == 'add':
-                        prog.members.add(member)
+                        prog.members.add(old_member)
                     prog.save()
 
             return redirect('/final_project/member_profile/' + member_id)

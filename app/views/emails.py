@@ -28,34 +28,45 @@ def all(request):
 def programs(request):
     user = request.user
     member = Member.objects.get(user=user)
-    context = {'user':user,'member':member}
+    context = {'user':user,'member':member,'programs':Program.objects.all()}
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
         return render(request,'final_project/index.html',context)
 
     if not 'content' in request.POST or not request.POST['content']:
         context['errors'] = ['Error: Could not find an email to send.']
-        return render(request,'final_project/Emails/send_email.html',context)
+        return render(request,'final_project/Emails/emails.html',context)
     if not 'subject' in request.POST or not request.POST['subject']:
         context['errors'] = ['Error: Could not find a subject.']
+        return render(request,'final_project/Emails/emails.html',context)
+
     content = request.POST['content']
     subject = request.POST['subject']
 
 
     recipients = []
-    for program in Program.objects.all():
-        name = program.name
-        if name in request.POST and request.POST[name]:
-            for member in program.members.all():
-                if not member in recipients:
-                    recipients.append(member)
+    if 'all' in request.POST and request.POST['all']:
+        recipients = Member.objects.all()
+    else:
+        for program in Program.objects.all():
+            name = program.name
+            if name in request.POST and request.POST[name]:
+                print name
+                for member in program.members.all():
+                    if not member in recipients:
+                        recipients.append(member)
+    if len(recipients) == 0:
+        context['errors'] = ['Error: You must select at least one program to email to.']
+        return render(request,'final_project/Emails/emails.html',context)
+
     for member in recipients:
         replsubj = subject.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
         email = content.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
         send_mail(subject=replsubj,
                   message=email,
                   from_email="admin@teambusiness.com",
-                  recipient_list = [email])
+                  recipient_list = [member.email])
+    context['recipients'] = recipients
     return render(request,'final_project/Emails/email_sent.html',context)
 
 
