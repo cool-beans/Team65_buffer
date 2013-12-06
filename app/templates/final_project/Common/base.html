@@ -30,6 +30,10 @@
          {% for error in errors %}
             {% include "final_project/Common/partials/alert.html" with type="danger" message=error %}
          {% endfor %}
+         {% for alert in alerts %}
+            {% include "final_project/Common/partials/alert.html" with type="success" message=alert %}
+         {% endfor %}
+
          {% block content %}{% endblock %}
       </div><!--content-->
       <div class="row">

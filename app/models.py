@@ -7,6 +7,31 @@ import re
 # User class for built-in authentication module
 from django.contrib.auth.models import User
 
+class Member(models.Model):
+    # Members can be Staff
+    # Many Members can attend many Events
+    # Many Members can be part of many Programs
+    # Members have many Attendence for events
+    user = models.OneToOneField(User)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    birthday = models.DateField()
+
+    phone = models.CharField(max_length=10)
+    email = models.CharField(max_length=30)
+
+    staff = models.BooleanField(default=False)
+
+    creation_date = models.DateField()
+
+
+    #programs = models.ManyToManyField(Program)
+    #events = models.ManyToManyField(Event)
+
+    def __unicode__(self):
+        return self.first_name + " " + self.last_name
+
+
 class MembershipType(models.Model):
     # Membership Types for members
     # These contain the name, description, and programs.
@@ -24,39 +49,16 @@ class MembershipType(models.Model):
 class Membership(models.Model):
     # This is the membership that we sell to the individual member.
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    mem_type = models.OneToOneField(MembershipType)
+    mem_type = models.ForeignKey(MembershipType)
     exp_date = models.DateField(null=True, blank=True)
     creation_date = models.DateField()
     cancelled = models.BooleanField()
     cancelled_date = models.DateField(null=True,blank=True)
+    member = models.ForeignKey(Member)
     def __unicode__(self):
-        return self.price
+        return self.mem_type.name
 
 
-class Member(models.Model):
-    # Members can be Staff
-    # Many Members can attend many Events
-    # Many Members can be part of many Programs
-    # Members have many Attendence for events
-    user = models.OneToOneField(User)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    birthday = models.DateField()
-
-    phone = models.CharField(max_length=10)
-    email = models.CharField(max_length=30)
-
-    staff = models.BooleanField(default=False)
-
-    creation_date = models.DateField()
-    memberships = models.ManyToManyField(Membership)
-
-
-    #programs = models.ManyToManyField(Program)
-    #events = models.ManyToManyField(Event)
-
-    def __unicode__(self):
-        return self.first_name + " " + self.last_name
 
 class Program(models.Model):
     # Many EventTypes in many Programs
@@ -224,8 +226,8 @@ class Event(models.Model):
         events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
         if events and len(events)==1:
             event = events[0]
-        
-        # If no events exist, first check for an event with matching 
+
+        # If no events exist, first check for an event with matching
         # original data, if so, return null (don't check EventTypes!)
         events = Event.objects.filter(Q(orig_name=name), \
                                       Q(orig_date=date), \
@@ -249,8 +251,8 @@ class Event(models.Model):
                 print "date: " + str(eventtype.recurrence.start_date)
                 print "time: " + str(eventtype.start_time)
                 print "--------------------------------------\n"
-                # If the event started before or on date and 
-                # either has no end_recurrence or an end_recurrence >= date, 
+                # If the event started before or on date and
+                # either has no end_recurrence or an end_recurrence >= date,
 
                 # If the event started before or on date and
                 # either has no end_recurrence or an end_recurrence >= date,
@@ -265,7 +267,7 @@ class Event(models.Model):
                     # If event's weekday was in eventtype's weekdays
                     if (weekday in eventtype.recurrence.getDays() or weekday == eventtype.recurrence.start_date.weekday()):
                         # (if we got this far, means no Event already exists)
-                        # Create an event! 
+                        # Create an event!
                         event = eventtype.createEvent(date)
                         print "EVENT CREATED!"
                         break
