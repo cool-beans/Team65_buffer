@@ -26,14 +26,8 @@
             Account Created: {{ member.creation_date }}
          </li>
       </ul>
+      {% include "final_project/Common/partials/accordion.html" with accordion_name="memberships" objects=memberships %}
 
-      <ul class="list-group">
-         {% for membership in memberships %}
-            <li class="list-group-item">
-               <a href="#">{{ membership.mem_type.name }}</a><br />
-            </li>
-         {% endfor %}
-      </ul>
       </div>
    </div>
   </div><!-- panel-body -->
