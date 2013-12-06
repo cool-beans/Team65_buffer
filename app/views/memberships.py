@@ -150,4 +150,5 @@ def edit_type(request,membership_type_id):
         mem_type.default_price = request.POST['default_price']
     mem_type.save()
     context['membership_type'] = mem_type
-    return render(request,'final_project/Memberships/view_membershiptype.html', context)
+    context['alerts'] = ['Successfully changed Membership.']
+    return render(request,'final_project/Memberships/memberships.html', context)
