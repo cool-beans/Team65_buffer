@@ -29,7 +29,6 @@ def about(request):
     return render(request, 'final_project/Common/about.html', context)
 
 def helper_paginator(list, num, page):
-    context = {}
     paginator = Paginator(list, num)
     try:
         grumbls_page = paginator.page(page)
