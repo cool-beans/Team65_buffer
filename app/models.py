@@ -128,21 +128,7 @@ class Recurrence(models.Model):
 
         return days
 
-    # Given num, return string equivalent for the day
-    # {0:'Monday', 1: 'Tuesday', 2: 'Wednesday', etc.}
-    @staticmethod
-    def dayNum2Str(num):
-        num2str = { 0: 'Monday',
-                    1: 'Tuesday',
-                    2: 'Wednesday',
-                    3: 'Thursday',
-                    4: 'Friday',
-                    5: 'Saturday',
-                    6: 'Sunday' }
-        return num2str[num]
-
-
-    # Given a date, Recurrence checks if the date is valid
+     # Given a date, Recurrence checks if the date is valid
     # for the Recurrence. If valid, return True. Else: False
     def isValidDate(self, date):
         weekdays = self.getDays()
@@ -156,7 +142,19 @@ class Recurrence(models.Model):
             # Is valid date!
             return True
         return False
-
+    
+    # Given num, return string equivalent for the day
+    # {0:'Monday', 1: 'Tuesday', 2: 'Wednesday', etc.}
+    @staticmethod
+    def dayNum2Str(num):
+        num2str = { 0: 'Monday',
+                    1: 'Tuesday',
+                    2: 'Wednesday',
+                    3: 'Thursday',
+                    4: 'Friday',
+                    5: 'Saturday',
+                    6: 'Sunday' }
+        return num2str[num]
 
 class EventType(models.Model):
     # Has many Events associated with one EventType
@@ -186,10 +184,34 @@ class EventType(models.Model):
                       orig_start_time=self.start_time)
         return event
 
-    def eventOnDate(self, date):
-        date = None
+    # Given name, date, start_time, look for matching EventType and
+    # return it. Return None if no such EventType exists.
+    @staticmethod
+    def getEventType(name, date, start_time):
+        found_type = None
 
-        return date
+        eventtypes = EventType.objects.filter(Q(name=name),
+                                              Q(start_time=start_time))
+
+        for eventtype in eventtypes:
+            
+            # If the event started before or on date and
+            # either has no end_recurrence or an end_recurrence >= date,
+            # then event may exist in this EventType! Check!
+            if (eventtype.recurrence.start_date <= date and \
+                (not eventtype.recurrence.end_recurrence or \
+                eventtype.recurrence.end_recurrence >= date)):
+
+                weekday = date.weekday()
+
+                # If event's weekday was in eventtype's weekdays
+                if (weekday in eventtype.recurrence.getDays() or \
+                    weekday == eventtype.recurrence.start_date.weekday()):
+                    # (if we got this far, means no Event already exists)
+                    found_type = eventtype
+                    break
+
+        return found_type
 
     # Just prints out all the information for all EventType
     @staticmethod
@@ -232,7 +254,9 @@ class Event(models.Model):
     # Given actual name, date, start_time of an event (not original info)
     # find the specified event if it exists (or create a temp one)
     # and return it.
-    # First check Events.objects, if no such event exists,
+    #
+    # First check Events.objects for matching name, date, start_time, 
+    # Second, if no such event exists,
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
     @staticmethod
@@ -241,54 +265,32 @@ class Event(models.Model):
         event = None
 
         # First, check Events.objects for an event that fits given info
-        events = Event.objects.filter(name=name).filter(date=date).filter(start_time=start_time)
+        events = Event.objects.filter(Q(name=name),
+                                      Q(date=date),
+                                      Q(start_time=start_time))
+        # If only one matching event, return it!
         if events and len(events)==1:
-            event = events[0]
+            return events[0]
 
         # If no events exist, first check for an event with matching
         # original data, if so, return null (don't check EventTypes!)
-        events = Event.objects.filter(Q(orig_name=name), \
-                                      Q(orig_date=date), \
+        events = Event.objects.filter(Q(orig_name=name),
+                                      Q(orig_date=date),
                                       Q(orig_start_time=start_time))
+        # If events, that means there is a matching event that was
+        # changed so it no longer matches exactly the name, date, time
         if events:
-            return null
+            return None
 
-        # If you got here, no Event currently exists that is related to given info
-        # Look for the proper EventType and create a temp Event to return without saving
-        else:
-            print 'getEvent: looking through EventTypes'
-            print 'name: ' + name
-            print 'date: ' + str(date)
-            print 'time: ' + str(start_time)
+        # If you got here, no Event currently exists that is related to 
+        # given info look for the proper EventType and create a temp 
+        # Event to return without saving
+        eventtype = EventType.getEventType(name=name,
+                                 date=date,
+                                 start_time=start_time)
+        if eventtype:
+            event = eventtype.createEvent(date)
 
-            eventtypes = EventType.objects.filter(name=name).filter(start_time=start_time)
-
-            for eventtype in eventtypes:
-                print "EVENTTYPE----------------------------"
-                print "name: " + eventtype.name
-                print "date: " + str(eventtype.recurrence.start_date)
-                print "time: " + str(eventtype.start_time)
-                print "--------------------------------------\n"
-                # If the event started before or on date and
-                # either has no end_recurrence or an end_recurrence >= date,
-
-                # If the event started before or on date and
-                # either has no end_recurrence or an end_recurrence >= date,
-
-                # then event may exist in this EventType! Check!
-                if (eventtype.recurrence.start_date <= date and \
-                    (not eventtype.recurrence.end_recurrence or \
-                    eventtype.recurrence.end_recurrence >= date)):
-                    print "WEEKDAY: " + str(date.weekday())
-                    weekday = date.weekday()
-                    print "eventtype weekday: " + str(eventtype.recurrence.start_date.weekday())
-                    # If event's weekday was in eventtype's weekdays
-                    if (weekday in eventtype.recurrence.getDays() or weekday == eventtype.recurrence.start_date.weekday()):
-                        # (if we got this far, means no Event already exists)
-                        # Create an event!
-                        event = eventtype.createEvent(date)
-                        print "EVENT CREATED!"
-                        break
         return event
 
     # Given date, returns a list of all the events that occur on that day.
@@ -344,6 +346,8 @@ class Event(models.Model):
                     day_to_events['Saturday'] + \
                     day_to_events['Sunday'] )
 
+        print EventType.printAllTypes()
+        print Event.printEvents(events)
         return events
         # TODO: eventually want to return day_to_events!
         #return day_to_events

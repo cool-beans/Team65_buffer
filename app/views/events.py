@@ -22,13 +22,12 @@ from pprint import pprint
 def create(request):
     # Create a new event
     user = request.user
-    member = Member.objects.get(user=user)
     programs = Program.objects.all()
     context = {}
     errors = []
 
     # If not staff, render events page
-    if not member.staff:
+    if not user.member.staff:
         errors.append('You do not have permission to create events.')
         sunday_date = Event.getSundayDate(date.today())
         context = getContextForAll(user, errors, sunday_date)
@@ -281,24 +280,24 @@ def edit(request):
 
     if request.method == 'GET':
         # Check to make sure name, start_date, and start_time all included
-        if 'name' not in request.GET or not request.GET['name']:
+        if 'name' not in request.GET or not request.GET['event_name']:
             errors.append('Missing event name.')
-        if 'start_date' not in request.GET or not request.GET['start_date']:
+        if 'start_date' not in request.GET or not request.GET['event_start_date']:
             errors.append('Missing event start_date.')
-        if 'start_time' not in request.GET or not request.GET['start_time']:
+        if 'start_time' not in request.GET or not request.GET['event_start_time']:
             errors.append('Missing event start_time')
 
         # If all are included, try to get the event requested
         if not errors:
-            event = Event.getEvent(name=request.GET['name'],
-                                   start_date=request.GET['start_date'],
-                                   start_time=request.GET['start_time'])
+            event = Event.getEvent(name=request.GET['event_name'],
+                                   start_date=request.GET['event_start_date'],
+                                   start_time=request.GET['event_start_time'])
             if not event:
                 error = ('Could not locate event given name ({name}), ',
                          'start_date ({date}), and time ({time}).',
-                         ''.format(name=request.GET['name'],
-                                   date=request.GET['start_date'],
-                                   time=request.GET['start_time']))
+                         ''.format(name=request.GET['event_name'],
+                                   date=request.GET['event_start_date'],
+                                   time=request.GET['event_start_time']))
                 errors.append(error)
 
         # If there are errors, return user to events page
@@ -315,11 +314,11 @@ def edit(request):
 
     elif request.method == 'POST':
 # Check to make sure name, start_date, and start_time all included
-        if 'name' not in request.POSTT or not request.POST['name']:
+        if 'name' not in request.POSTT or not request.POST['event_name']:
             errors.append('Missing event name.')
-        if 'start_date' not in request.POST or not request.POST['start_date']:
+        if 'start_date' not in request.POST or not request.POST['event_start_date']:
             errors.append('Missing event start_date.')
-        if 'start_time' not in request.POST or not request.POST['start_time']:
+        if 'start_time' not in request.POST or not request.POST['event_start_time']:
             errors.append('Missing event start_time')
         if ('change-once' not in request.POST and \
             'change-following' not in request.POST):
@@ -327,15 +326,15 @@ def edit(request):
 
         # If all are included, try to get the event requested
         if not errors:
-            event = Event.getEvent(name=request.POST['name'],
-                                   start_date=request.POST['start_date'],
-                                   start_time=request.POST['start_time'])
+            event = Event.getEvent(name=request.POST['event_name'],
+                                   start_date=request.POST['event_start_date'],
+                                   start_time=request.POST['event_start_time'])
             if not event:
                 error = ('Could not locate event given name ({name}), ',
                          'start_date ({date}), and time ({time}).',
-                         ''.format(name=request.POST['name'],
-                                   date=request.POST['start_date'],
-                                   time=request.POST['start_time']))
+                         ''.format(name=request.POST['event_name'],
+                                   date=request.POST['event_start_date'],
+                                   time=request.POST['event_start_time']))
                 errors.append(error)
 
         # If there are errors, return user to events page
@@ -355,8 +354,9 @@ def edit(request):
                 event.name = request.POST['name']
             if 'date' in request.POST and request.POST['date']:
                 # date is now in format "Nov. 3, 2013"
-                date = datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
-                event.date = date
+                parsed_date = datetime.strptime(request.POST['date'], 
+                                         '%b. %d, %Y').date()
+                event.date = parsed_date
             if 'start_time' in request.POST and request.POST['start_time']:
                 start_time = Event.convertTime(request.POST['start_time'])
                 event.start_time = start_time
@@ -381,8 +381,8 @@ def edit(request):
                 eventtype.name = request.POST['name']
             if 'date' in request.POST and request.POST['date']:
                 # date is now in format "Nov. 3, 2013"
-                date = datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
-                event.date = date
+                parsed_date = datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
+                event.date = parsed_date
             if 'start_time' in request.POST and request.POST['start_time']:
                 start_time = Event.convertTime(request.POST['start_time'])
                 event.start_time = start_time
