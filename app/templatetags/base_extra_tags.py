@@ -7,7 +7,6 @@ def get_nav_page_class(request,urls):
    if request.path in ( reverse(url) for url in urls.split() ):
       return "active"
    return ""
-
-@register.filter
-def subtract(value,sub):
-   return value - sub
+@register.simple_tag
+def format_date_or_time(date):
+   return str(date)
