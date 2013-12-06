@@ -123,6 +123,20 @@ class Recurrence(models.Model):
 
         return days
 
+    # Given num, return string equivalent for the day
+    # {0:'Monday', 1: 'Tuesday', 2: 'Wednesday', etc.}
+    @staticmethod
+    def dayNum2Str(num):
+        num2str = { 0: 'Monday',
+                    1: 'Tuesday',
+                    2: 'Wednesday',
+                    3: 'Thursday',
+                    4: 'Friday',
+                    5: 'Saturday',
+                    6: 'Sunday' }
+        return num2str[num]
+
+
     # Given a date, Recurrence checks if the date is valid
     # for the Recurrence. If valid, return True. Else: False
     def isValidDate(self, date):
@@ -305,72 +319,30 @@ class Event(models.Model):
     @staticmethod
     def getEventsFromSunday(sunday_date):
         events = []
-        monday_events = []
-        tuesday_events = []
-        wednesday_events = []
-        thursday_events = []
-        friday_events = []
-        saturday_events = []
-        sunday_events = []
-
-        dates_in_week = []
-        date_to_day = {} # day<string>
-        day_to_events = {} # day<string>
+        day_to_events = {} # {'Monday': [event1, event2], ...}
 
         # Build list of dates in current week
         # Initialize day_to_events
         for i in range(0, 7):
             date_to_get = sunday_date - timedelta(days=i)
-            # Set the day of the week (0=Monday, 6=Sunday) as key to date
-            weekday = date_to_get.weekday()
+            
+            weekday_num = date_to_get.weekday()
+            weekday_str = Recurrence.dayNum2Str(weekday_num)
 
-            if weekday == 0:
-                weekday = 'Monday'
-                day_to_events[weekday] = []
-            elif weekday == 1:
-                weekday = 'Tuesday'
-                day_to_events[weekday] = []
-            elif weekday == 2:
-                weekday = 'Wednesday'
-                day_to_events[weekday] = []
-            elif weekday == 3:
-                weekday = 'Thursday'
-                day_to_events[weekday] = []
-            elif weekday == 4:
-                weekday = 'Friday'
-                day_to_events[weekday] = []
-            elif weekday == 5:
-                weekday = 'Saturday'
-                day_to_events[weekday] = []
-            elif weekday == 6:
-                weekday = 'Sunday'
-                day_to_events[weekday] = []
+            # Get all events on the date and store them in dictionary
+            day_to_events[weekday_str] = Event.getEventsOnDate(date_to_get)
 
-            print "WEEKDAY: " + weekday
-            date_to_day[date_to_get] = weekday
-            dates_in_week.append(date_to_get)
-
-        for date in dates_in_week:
-            day = date_to_day[date]
-            day_to_events[day] = Event.getEventsOnDate(date)
-
-        monday_events = day_to_events['Monday']
-        tuesday_events = day_to_events['Tuesday']
-        wednesday_events = day_to_events['Wednesday']
-        thursday_events = day_to_events['Thursday']
-        friday_events = day_to_events['Friday']
-        saturday_events = day_to_events['Saturday']
-        sunday_events = day_to_events['Sunday']
-
-        events += ( monday_events + \
-                    tuesday_events + \
-                    wednesday_events + \
-                    thursday_events + \
-                    friday_events + \
-                    saturday_events + \
-                    sunday_events )
+        events += ( day_to_events['Monday'] + \
+                    day_to_events['Tuesday'] + \
+                    day_to_events['Wednesday'] + \
+                    day_to_events['Thursday'] + \
+                    day_to_events['Friday'] + \
+                    day_to_events['Saturday'] + \
+                    day_to_events['Sunday'] )
 
         return events
+        # TODO: eventually want to return day_to_events!
+        #return day_to_events
 
     # Given a string '1 a.m.' or '10:22 p.m.' etc, return the
     # datetime object. Returns '' if invalid t_in
