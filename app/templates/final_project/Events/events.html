@@ -45,7 +45,7 @@
 	{% for event in row %}
 	<td>
 	  {% if event %}
-	  {{ event.start_time }} {{ event.get_name }}<p>
+	  {{ event.start_time }}-{{event.end_time}} {{ event.get_name }}
 	  <a type="button" class="btn btn-primary" href="/final_project/event_profile/{{event.id}}">View</a>
 	  {% endif %}
 	</td>

@@ -3,6 +3,15 @@
 {% block page %}Program Create{% endblock %}
 
 {% block content %}
+{% if user.is_authenticated and user.member.staff %}
+<div class="row">
+  <div class="col-lg-12">
+    <a type="button" class="btn btn-primary" href="{% url 'event_edit' event.id %}">
+      Edit Event
+    </a>
+  </div>
+</div>
+{% endif %}
 <div class="row">
   <div class="col-lg-12">
     <div class="panel panel-info theme">
@@ -13,16 +22,29 @@
       Description: {{event.get_description}}<br />
     </div>
   </div>
-  {% if user.is_authenticated and user.member.staff %}
-  <div class="row">
-    <div class="col-lg-12">
-      <a type="button" class="btn btn-primary" href="{% url 'event_edit' event.id %}">
-        Edit Event
-      </a>
-    </div>
-  </div>
-  {% endif %}
+</div>
 
-  <div>
+{% if book %}
+<div class="row">
+  <div class="col-lg-12">
+    <a type="button" class="btn btn-primary" href="{% url 'event_book' event.id %}">
+      Book Event
+    </a>
   </div>
-  {% endblock %}
+</div>
+{% elif attendcancel %}
+<div class="row">
+  <div class="col-lg-12">
+    <a type="button" class="btn btn-primary" href="{% url 'event_attend' event.id %}">
+      Attend Event
+    </a>
+    <a type="button" class="btn btn-primary" href="{% url 'event_cancel' event.id %}">
+      Cancel Attendance
+    </a>
+  </div>
+</div>
+
+
+{% endif %}
+{% endblock %}
+

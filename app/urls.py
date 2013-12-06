@@ -31,6 +31,9 @@ urlpatterns = patterns('',
     url(r'^event_backweek/(?P<prev_monday>\d+\-\d+\-\d+)$', 'app.views.events.backweek', name='event_backweek'),
     url(r'^event_forwardweek/(?P<next_monday>\d+\-\d+\-\d+)$', 'app.views.events.forwardweek', name='event_forwardweek'),
     url(r'^event_edit/(?P<event_id>\d+)$', 'app.views.events.edit', name='event_edit'),
+    url(r'^event_book/(?P<event_id>\d+)$', 'app.views.events.book', name='event_book'),
+    url(r'^event_attend/(?P<event_id>\d+)$', 'app.views.events.attend', name='event_attend'),
+    url(r'^event_cancel/(?P<event_id>\d+)$', 'app.views.events.cancel', name='event_cancel'),
 
 
    # Memberships

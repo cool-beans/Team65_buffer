@@ -112,12 +112,74 @@ def profile(request,event_id):
         context['days'] = getdays(monday)
         return render(request,'final_project/Events/events.html',context)
     context['event'] = event
-    if len(event.booked.filter(id__exact=member.id)) == 0:
+    if len(event.booked.filter(id__exact=member.id)) == 0 and \
+            len(event.attended.filter(id__exact=member.id)) == 0:
         context['book'] = True
-
+    if len(event.booked.filter(id__exact=member.id)) > 0:
         context['attendcancel'] = True
 
     return render(request,'final_project/Events/event_profile.html',context)
+
+@login_required
+def book(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: No such event.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+    event.booked.add(member)
+    event.save()
+    context['event'] = event
+    context['alert'] = ['Successfully Booked.']
+    return redirect('/final_project/event_profile/'+ event_id,context)
+
+@login_required
+def attend(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: No such event.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+    event.booked.remove(member)
+    event.cancelled.remove(member)
+    event.attended.add(member)
+    event.save()
+    context['event'] = event
+    context['alert'] = ['Successfully Attended.']
+    return redirect('/final_project/event_profile/'+ event_id,context)
+
+
+@login_required
+def cancel(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: No such event.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+    event.cancelled.add(member)
+    event.booked.remove(member)
+    event.attended.remove(member)
+    event.save()
+    context['event'] = event
+    context['alert'] = ['Successfully Cancelled.']
+    return redirect('/final_project/event_profile/'+ event_id,context)
+
+
 
 def create(request):
     return None
@@ -126,8 +188,6 @@ def edit(request,event_id):
     member = request.user.member
     context = {'user':request.user,'member':member}
 
-    if request.method == 'GET':
-        return render(request, 'final_project/Events/event_edit.html',context)
     # The user must be staff.
     if not member.staff:
         context['errors'] = ['Error: Only staff members can create events.']
@@ -142,6 +202,9 @@ def edit(request,event_id):
         context['days'] = getdays(monday)
         return render(request,'final_project/Events/events.html',context)
 
+    if request.method == 'GET':
+        context['event'] = event
+        return render(request, 'final_project/Events/event_edit.html',context)
     form = EventEdit(request.POST)
 
     if not form.is_valid():
