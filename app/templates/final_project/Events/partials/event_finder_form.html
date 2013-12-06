@@ -1,0 +1,7 @@
+<!-- This is used in the events.html and events_profile.html in order to identify what event is requested for the event_profile.html and event_edit.html pages. We do not necessarily store the id of the event. So we must find it using the name, start_date, and start_time. -->
+<form action="{% url path %}">
+   <input type="hidden" name="event_name" value="{{ event.name }}">
+   <input type="hidden" name="event_start_date" value="{{ event.date }}">
+   <input type="hidden" name="event_start_time" value="{{ event.start_time }}">
+   <input type="submit" class="btn btn-primary" value="{{ button_label }}">
+</form>

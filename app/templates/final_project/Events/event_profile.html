@@ -10,6 +10,7 @@
             <div class="panel-heading">
                <h1 class="text-center">{{ event.name }}</h1>
             </div>
+               {% include "final_project/Events/partials/event_finder_form.html" with path="event_edit" button_label="Edit Event" %}
             Description: {{event.description}}<br />
          </div>
       </div>

@@ -19,7 +19,7 @@ urlpatterns = patterns('',
    # Members
     url(r'^members/$', 'app.views.members.all', name='members'),
     url(r'^member_profile/(?P<member_id>\d+)$', 'app.views.members.profile', name='member_profile'),
-    url(r'^filter_members/(?P<program_id>\d+)$', 'app.views.members.all', name='filter_members'),
+    url(r'^filter_members/(?P<program_id>\d+)$', 'app.views.members.filter', name='filter_members'),
     url(r'^member_edit/(?P<member_id>\d+)$', 'app.views.members.edit', name='member_edit'),
 
    # Events

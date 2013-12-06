@@ -24,7 +24,10 @@ class Member(models.Model):
 
     creation_date = models.DateField()
 
-
+    def active_memberships(self):
+        return self.membership_set.filter(cancelled=False)
+    def cancelled_memberships(self):
+        return self.membership_set.filter(cancelled=True)
     #programs = models.ManyToManyField(Program)
     #events = models.ManyToManyField(Event)
 
@@ -331,7 +334,7 @@ class Event(models.Model):
         # Initialize day_to_events
         for i in range(0, 7):
             date_to_get = sunday_date - timedelta(days=i)
-            
+
             weekday_num = date_to_get.weekday()
             weekday_str = Recurrence.dayNum2Str(weekday_num)
 
