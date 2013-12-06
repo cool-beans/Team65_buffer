@@ -68,7 +68,7 @@ def create(request):
             # Look for repeating day of week closest to requested start_date
             for i in range(0, 7):
                 check_date = start_date + timedelta(days=i)
-                if check_date.weekday in new_recurrence.getDays():
+                if check_date.weekday in new_recurrence.getDaysNum():
                     start_date = check_date
                     break
 
@@ -332,13 +332,13 @@ def edit(request):
         # with event in context.
         context['user'] = user
         context['event'] = event
+        context['reccurence_days'] = event.event_type.recurrence.getDaysStr()
 
-
-        in_program = event.eventtype.program_set.all()
+        in_program = event.event_type.programs.all()
         not_in_program = list(set(Program.objects.all()) - set(in_program))
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
-        return render(request, 'final_project/event_edit.html', context)
+        return render(request, 'final_project/events/event_edit.html', context)
 
     elif request.method == 'POST':
 # Check to make sure name, start_date, and start_time all included
