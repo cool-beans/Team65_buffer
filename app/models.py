@@ -39,7 +39,6 @@ class MembershipType(models.Model):
 
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
-#    programs = models.ManyToManyField(Program)
     allowed_freq = models.IntegerField()
     default_price = models.IntegerField()
     visible = models.BooleanField()
@@ -69,7 +68,9 @@ class Program(models.Model):
     name = models.CharField(max_length=20)
     description = models.CharField(max_length=500)
     members = models.ManyToManyField(Member)
-
+    revenue = models.IntegerField(default=0)
+    payroll = models.IntegerField(default=0)
+    memberships = models.ManyToManyField(MembershipType)
     def __unicode__(self):
         return self.name
 
