@@ -310,6 +310,12 @@ def edit(request):
         # with event in context.
         context['user'] = user
         context['event'] = event
+
+
+        in_program = event.eventtype.program_set.all()
+        not_in_program = list(set(Program.objects.all()) - set(in_program))
+        context['in_program'] = in_program
+        context['not_in_program'] = not_in_program
         return render(request, 'final_project/event_edit.html', context)
 
     elif request.method == 'POST':
@@ -354,7 +360,7 @@ def edit(request):
                 event.name = request.POST['name']
             if 'date' in request.POST and request.POST['date']:
                 # date is now in format "Nov. 3, 2013"
-                parsed_date = datetime.strptime(request.POST['date'], 
+                parsed_date = datetime.strptime(request.POST['date'],
                                          '%b. %d, %Y').date()
                 event.date = parsed_date
             if 'start_time' in request.POST and request.POST['start_time']:
