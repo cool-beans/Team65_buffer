@@ -12,6 +12,7 @@ from django.contrib.auth import login, authenticate
 from app.forms import *
 # Imports the models
 from app.models import *
+from django.core.mail import send_mail
 
 
 # Buy a membership.
@@ -86,6 +87,23 @@ def buy(request,membership_type_id):
             else:
                 program.revenue += price_add
             program.save()
+
+
+
+    # Send the receipt for the membership.
+    email_content = """
+%s--
+Thank you for your purchase of %s for $%s per month!
+
+If you have any questions please let our staff know.
+
+--Guitar Studio
+""" % (buy_member.first_name, membership.name(),membership.price)
+    send_mail(subject="Receipt",
+              message=email_content,
+              from_email="guitar@studio.com",
+              recipient_list=[buy_member.email])
+
 
     context['memberships'] = Membership.objects.filter(member=buy_member)
     return render(request, 'final_project/Members/member_profile.html', context)
