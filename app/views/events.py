@@ -13,7 +13,10 @@ from app.forms import *
 # Imports the models
 from app.models import *
 
+from events_helper_functions import getContextForAll
+
 from pprint import pprint
+
 
 @login_required
 def create(request):
@@ -24,6 +27,13 @@ def create(request):
     context = {}
     errors = []
 
+    # If not staff, render events page
+    if not member.staff:
+        errors.append('You do not have permission to create events.')
+        sunday_date = Event.getSundayDate(date.today())
+        context = getContextForAll(user, errors, sunday_date)
+        return render(request, 'final_project/Events/events.html', context)
+
     if (request.method == 'GET'):
         context['user'] = user
         context['errors'] = errors
@@ -33,6 +43,7 @@ def create(request):
     elif (request.method == 'POST'):
         new_recurrence = Recurrence()
         start_date = None
+
         # If start date is not specified for recurring/non-recurring event,
         # return with error
         if ('start_date' not in request.POST or not request.POST['start_date']):
@@ -44,6 +55,7 @@ def create(request):
         else:
             # Date is now in format YYYY-MM-DD
             start_date = datetime.strptime(request.POST['start_date'], '%Y-%m-%d').date()
+
         # Store info on whether or not event recurrs/what days of the week
         isRecurring = False
         for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
@@ -73,6 +85,7 @@ def create(request):
 
             # Date is now in format YYYY-MM-DD
             end_recurrence = datetime.strptime(request.POST['end_recurrence'], '%Y-%m-%d').date()
+
             # If requested end date is either before the first time event
             # can recurr or before the start date: error
             if end_recurrence <= new_recurrence.start_date:
@@ -83,6 +96,7 @@ def create(request):
                 context['errors'] = errors
                 context['programs'] = programs
                 return render(request, 'final_project/Events/event_create.html', context)
+
             # If valid end date, set new_recurrence's end_recurrence
             else:
                 new_recurrence.end_recurrence = request.POST['end_recurrence']
@@ -201,10 +215,8 @@ def all(request):
     context = {}
     errors = []
 
-    today = date.today()
-
     # Default: set sunday_date to Sunday of this week
-    sunday_date = Event.getSundayDate(today)
+    sunday_date = Event.getSundayDate(date.today())
 
     if request.method == 'GET':
         # If navigating to page, just return view of current week.
