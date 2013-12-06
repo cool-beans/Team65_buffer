@@ -17,7 +17,7 @@ from app.models import *
 def all(request):
     programs = Program.objects.all()
     context = {'programs':programs}
-    if request.user is not None:
+    if request.user.is_authenticated():
         context['user'] = request.user
         context['member'] = Member.objects.get(user=request.user)
     return render(request, 'final_project/Programs/programs.html', context)

@@ -89,15 +89,15 @@ def cancel(request,membership_id):
         context['errors'] = ['Error: Could not find membership.']
         return render(request,'final_project/Memberships/member_profile.html',context)
     # Either they are staff or they need to own that particular membership
-    if member.memberships.filter(id__exact=membership_id).count() == 0 and \
+    if member.membership_set.filter(id__exact=membership_id).count() == 0 and \
             not member.staff:
         context['errors'] = ['Error: You do not have access to that membership.']
         return render(request, 'final_project/Memberships/member_profile.html',context)
 
 
-    price_add = price / len(membership.programs.all())
-    for program in membership.programs.all():
-        if buy_member.staff:
+    price_add = membership.price / len(membership.mem_type.program_set.all())
+    for program in membership.mem_type.program_set.all():
+        if membership.member.staff:
             program.payroll -= price_add
         else:
             program.revenue -= price_add
@@ -107,11 +107,11 @@ def cancel(request,membership_id):
     membership.cancelled = True
     membership.cancelled_date = datetime.now()
     membership.save()
-    return render(request,'final_project/Memberships/member_profile.html',context)
+    return render(request,'final_project/Members/member_profile.html',context)
 
 def all(request):
     context = {}
-    if request.user is not None:
+    if  request.user.is_authenticated():
         context['user'] = request.user
         context['member'] = Member.objects.get(user=request.user)
     context['memberships'] = MembershipType.objects.all()
