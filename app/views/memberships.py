@@ -148,6 +148,8 @@ def edit_type(request,membership_type_id):
         mem_type.description = request.POST['description']
     if 'default_price' in request.POST and request.POST['default_price']:
         mem_type.default_price = request.POST['default_price']
+    if 'allowed_freq' in request.POST and request.POST['allowed_freq']:
+        mem_type.allowed_freq = request.POST['allowed_freq']
     mem_type.save()
     context['membership_type'] = mem_type
     context['alerts'] = ['Successfully changed Membership.']

@@ -30,8 +30,10 @@
                <td>{{ membership_type.allowed_freq }}</td>
                <td>{{ membership_type.default_price }}</td>
                {% if user.member.staff %}<td>{{ membership_type.visible }}</td>{% endif %}
-               <td><a type="button" class="btn btn-primary" href="{% url 'view_membership_type' membership_type.id %}">View</a></td>
                <td><a type="button" class="btn btn-primary" href="{% url 'buy_membership' membership_type.id %}">Buy</a></td>
+               {% if user.member.staff %}
+                  <td><a type="button" class="btn btn-primary" href="{% url 'edit_membership_type' membership_type.id %}">Edit</a></td>
+               {% endif %}
             </tr>
          {% endif %}
          {% endfor %}
