@@ -39,10 +39,9 @@ def buy(request,membership_type_id):
         return render(request,'final_project/Memberships/buy_membership.html',context)
 
     # If there is no price specified just use the default price.
-    if not 'price' in request.POST or not request.POST['price'] or not member.staff:
+    if not 'default_price' in request.POST or not request.POST['default_price'] or not member.staff:
         price = mem_type.default_price
-    else: price = request.POST['price']
-
+    else: price = int(request.POST['default_price'])
     # If there is no variable buy_user then we are buying for ourselves.
     if not 'buy_user' in request.POST or not request.POST['buy_user']:
         buy_member = member
