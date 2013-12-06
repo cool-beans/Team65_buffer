@@ -186,7 +186,6 @@ class EventType(models.Model):
                       orig_start_time=self.start_time)
         return event
 
-
     def eventOnDate(self, date):
         date = None
 
