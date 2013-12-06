@@ -187,12 +187,6 @@ def profile(request):
             context = getContextForAll(user, errors, sunday_date)
             return render(request, 'final_project/Events/events.html', context)
 
-        print "GETTING EVENT: ---------------------"
-        print "\tname: " + name
-        print "\tdate: " + str(start_date)
-        print "\ttime: " + str(start_time)
-        print "\n\n"
-
         # If all needed info (name, date, start_time) is there, get Event
         event = Event.getEvent(name=name, date=start_date, start_time=start_time)
 
@@ -279,29 +273,57 @@ def edit(request):
     errors = []
 
     if request.method == 'GET':
-        # Check to make sure name, start_date, and start_time all included
-        if 'name' not in request.GET or not request.GET['event_name']:
-            errors.append('Missing event name.')
-        if 'start_date' not in request.GET or not request.GET['event_start_date']:
-            errors.append('Missing event start_date.')
-        if 'start_time' not in request.GET or not request.GET['event_start_time']:
-            errors.append('Missing event start_time')
 
-        # If all are included, try to get the event requested
-        if not errors:
-            event = Event.getEvent(name=request.GET['event_name'],
-                                   start_date=request.GET['event_start_date'],
-                                   start_time=request.GET['event_start_time'])
-            if not event:
-                error = ('Could not locate event given name ({name}), ',
+        name = ''
+        start_date = None
+        start_time = None
+
+        # Check for valid:
+        # - event_name
+        # - event_start_date
+        # - event_start_time
+
+        # Check for valid event_name
+        if 'event_name' not in request.GET or not request.GET['event_name']:
+            errors.append('No event name info given in GET')
+        else:
+            name = request.GET['event_name']
+        
+        # Check for valid event_start_date
+        if 'event_start_date' not in request.GET or not request.GET['event_start_date']:
+            errors.append('No event_start_date given.')
+        else:
+            # date is now in format "Nov. 3, 2013"
+            start_date = datetime.strptime(request.GET['event_start_date'], '%b. %d, %Y').date()
+            if not start_date:
+                errors.append('Invalid start_date given.')            
+
+        # Check for valid event_start_time
+        if 'event_start_time' not in request.GET or not request.GET['event_start_time']:
+            errors.append('No event_start_time given.')
+        else:
+            # convert time into a time object
+            start_time = Event.convertTime(request.GET['event_start_time'])
+            if not start_time:
+                errors.append('Invalid start_time given')
+        
+        # If errors exist, render events.html
+        if errors:
+            sunday_date = Event.getSundayDate(date.today())
+            context = getContextForAll(user, errors, sunday_date)
+            return render(request, 'final_project/Events/events.html', context)
+
+        # If all needed info (name, date, start_time) is there, get Event
+        event = Event.getEvent(name=name, date=start_date, start_time=start_time)
+
+        # If cannot find event that matches event, render events.html
+        if not event:
+            error = ('Could not locate event given name ({name}), ',
                          'start_date ({date}), and time ({time}).',
                          ''.format(name=request.GET['event_name'],
                                    date=request.GET['event_start_date'],
                                    time=request.GET['event_start_time']))
-                errors.append(error)
-
-        # If there are errors, return user to events page
-        if errors:
+            errors.append(error)
             sunday_date = Event.getSundayDate(date.today())
             context = getContextForAll(user, errors, sunday_date)
             return render(request, 'final_project/Events/events.html', context)
@@ -320,11 +342,11 @@ def edit(request):
 
     elif request.method == 'POST':
 # Check to make sure name, start_date, and start_time all included
-        if 'name' not in request.POSTT or not request.POST['event_name']:
+        if 'event_name' not in request.POST or not request.POST['event_name']:
             errors.append('Missing event name.')
-        if 'start_date' not in request.POST or not request.POST['event_start_date']:
+        if 'event_start_date' not in request.POST or not request.POST['event_start_date']:
             errors.append('Missing event start_date.')
-        if 'start_time' not in request.POST or not request.POST['event_start_time']:
+        if 'event_start_time' not in request.POST or not request.POST['event_start_time']:
             errors.append('Missing event start_time')
         if ('change-once' not in request.POST and \
             'change-following' not in request.POST):
@@ -333,7 +355,7 @@ def edit(request):
         # If all are included, try to get the event requested
         if not errors:
             event = Event.getEvent(name=request.POST['event_name'],
-                                   start_date=request.POST['event_start_date'],
+                                   date=request.POST['event_start_date'],
                                    start_time=request.POST['event_start_time'])
             if not event:
                 error = ('Could not locate event given name ({name}), ',
