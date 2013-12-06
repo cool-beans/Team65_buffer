@@ -23,6 +23,7 @@
 	 {% if user.is_authenticated %}
 	   {% if user.member.staff %}
 		<li class="{% get_nav_page_class request 'members' %}"><a href="{% url 'members' %}">Members</a></li>
+	        <li class="{% get_nav_page_class request 'emails' %}"><a href="{% url 'emails' %}">Emails</a></li>
 	   {% endif %}
        <li><a href="{% url 'member_profile' 0 %}">{{ user.member.name }}</a></li>
 	   <li class="{% get_nav_page_class request 'logout' %}"><a href="{% url 'logout' %}">Logout</a></li>

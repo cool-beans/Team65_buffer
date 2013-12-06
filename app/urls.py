@@ -36,4 +36,7 @@ urlpatterns = patterns('',
     url(r'^create_membership_type/$', 'app.views.memberships.create_type', name='create_membership_type'),
     url(r'^edit_membership_type/(?P<membership_type_id>\d+)$', 'app.views.memberships.edit_type', name='edit_membership_type'),
 
+   # Emails
+    url(r'^emails/$','app.views.emails.all', name='emails'),
+
 )
