@@ -332,7 +332,8 @@ def edit(request):
         # with event in context.
         context['user'] = user
         context['event'] = event
-        context['reccurence_days'] = event.event_type.recurrence.getDaysStr()
+        for day in event.event_type.recurrence.getDaysStr():
+            context[day] = True
 
         in_program = event.event_type.programs.all()
         not_in_program = list(set(Program.objects.all()) - set(in_program))
