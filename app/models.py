@@ -75,6 +75,8 @@ class Program(models.Model):
     revenue = models.IntegerField(default=0)
     payroll = models.IntegerField(default=0)
     memberships = models.ManyToManyField(MembershipType)
+    def profit(self):
+        return self.revenue - self.payroll
     def __unicode__(self):
         return self.name
 
@@ -167,7 +169,7 @@ class Recurrence(models.Model):
             # Is valid date!
             return True
         return False
-    
+
     # Given num, return string equivalent for the day
     # {0:'Monday', 1: 'Tuesday', 2: 'Wednesday', etc.}
     @staticmethod
@@ -219,7 +221,7 @@ class EventType(models.Model):
                                               Q(start_time=start_time))
 
         for eventtype in eventtypes:
-            
+
             # If the event started before or on date and
             # either has no end_recurrence or an end_recurrence >= date,
             # then event may exist in this EventType! Check!
@@ -280,7 +282,7 @@ class Event(models.Model):
     # find the specified event if it exists (or create a temp one)
     # and return it.
     #
-    # First check Events.objects for matching name, date, start_time, 
+    # First check Events.objects for matching name, date, start_time,
     # Second, if no such event exists,
     # Second, find proper EventType and create a temp Event
     # Third, if no EventType matches, then return None
@@ -307,8 +309,8 @@ class Event(models.Model):
         if events:
             return None
 
-        # If you got here, no Event currently exists that is related to 
-        # given info look for the proper EventType and create a temp 
+        # If you got here, no Event currently exists that is related to
+        # given info look for the proper EventType and create a temp
         # Event to return without saving
         eventtype = EventType.getEventType(name=name,
                                  date=date,
