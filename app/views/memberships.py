@@ -14,21 +14,23 @@ from app.forms import *
 from app.models import *
 
 
-
+# Buy a membership.
 @login_required
 def buy(request,membership_type_id):
     user = request.user
     member = Member.objects.get(user=request.user)
     context = {'user':user,'member':member}
 
-    # Sanitize the data.
-    if request.method == 'GET':
+
+    if request.method == 'GET': # If we are trying to get the page.
         if len(MembershipType.objects.filter(id__exact=membership_type_id)) == 0:
             context['errors'] = ['Error, no such membership.']
             context['memberships'] = MembershipType.objects.all()
             return render(request,'final_project/Memberships/memberships.html',context)
         context['membership_type'] = MembershipType.objects.get(id__exact=membership_type_id)
         return render(request, 'final_project/Memberships/buy_membership.html',context)
+
+    # Try to get the membership to edit. If there isn't one then render an error.
     try:
         mem_type = MembershipType.objects.get(id__exact=membership_type_id)
     except MembershipType.DoesNotExist:
@@ -40,16 +42,25 @@ def buy(request,membership_type_id):
         price = mem_type.default_price
     else: price = request.POST['price']
 
+    # If there is no variable buy_user then we are buying for ourselves.
     if not 'buy_user' in request.POST or not request.POST['buy_user']:
         buy_member = member
+    # If we are not buying for ourself then we have to be staff.
     elif not member.staff:
         context['errors'] = ['Error: Only Staff members can buy memberships for other members.']
+        return render(request, 'final_project/Memberships/buy_membership.html',context)
+    # Now we know we are staff and
     else:
-        buy_user = User.objects.get(username=request.POST['buy_user'])
+        try:
+            buy_user = User.objects.get(username=request.POST['buy_user'])
+        except User.DoesNotExist:
+            context['errors'] = ['Error, there is no such member.']
+            return render(request, 'final_project/Memberships/buy_membership.html',context)
         buy_member = Member.objects.get(user=buy_user)
 
 
     # Create a new membership.
+
     membership = Membership(price=price,
                             mem_type=mem_type,
                             creation_date=datetime.now(),
@@ -65,18 +76,22 @@ def buy(request,membership_type_id):
     context['member'] = buy_member
     context['programs'] = buy_member.program_set.all()
 
-    price_add = price / len(membership.mem_type.program_set.all())
-    for program in membership.mem_type.program_set.all():
-        if buy_member.staff:
-            program.payroll += price_add
-        else:
-            program.revenue += price_add
-        program.save()
+    # If the membership has programs associated with it we need to divide the
+    # revenue or payroll amongst the memberships.
+    if len(membership.mem_type.program_set.all()) > 0:
+        price_add = price / len(membership.mem_type.program_set.all())
+        for program in membership.mem_type.program_set.all():
+            if buy_member.staff:
+                program.payroll += price_add
+            else:
+                program.revenue += price_add
+            program.save()
 
     context['memberships'] = Membership.objects.filter(member=buy_member)
     return render(request, 'final_project/Members/member_profile.html', context)
 
 
+# Cancel a membership.
 @login_required
 def cancel(request,membership_id):
     user = request.user
@@ -94,21 +109,25 @@ def cancel(request,membership_id):
         context['errors'] = ['Error: You do not have access to that membership.']
         return render(request, 'final_project/Memberships/member_profile.html',context)
 
-
-    price_add = membership.price / len(membership.mem_type.program_set.all())
-    for program in membership.mem_type.program_set.all():
-        if membership.member.staff:
-            program.payroll -= price_add
-        else:
-            program.revenue -= price_add
-        program.save()
+    # If the membership has programs associated with it we need to divide the
+    # revenue or payroll amongst the memberships.
+    if len(membership.mem_type.program_set.all()) > 0:
+        price_add = membership.price / len(membership.mem_type.program_set.all())
+        for program in membership.mem_type.program_set.all():
+            if membership.member.staff:
+                program.payroll -= price_add
+            else:
+                program.revenue -= price_add
+            program.save()
 
     # Cancel the membership.
     membership.cancelled = True
     membership.cancelled_date = datetime.now()
     membership.save()
+    context['member'] = membership.member
     return render(request,'final_project/Members/member_profile.html',context)
 
+# Serve all memberships.
 def all(request):
     context = {}
     if  request.user.is_authenticated():
@@ -117,17 +136,21 @@ def all(request):
     context['memberships'] = MembershipType.objects.all()
     return render(request,'final_project/Memberships/memberships.html',context)
 
+
+# Create a new type of membership.
 @login_required
 def create_type(request):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
+    # Only staff members can create membership types.
     if not member.staff:
         context['errors'] = ['Error: This page requires staff login.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
-    if request.method == 'GET':
+    if request.method == 'GET': # If we are trying to get the page.
         return render(request, 'final_project/Memberships/membershiptype_create.html',context)
+    # Get and sanitize the data.
     form = MembershipTypeCreate(request.POST)
     if not form.is_valid():
         context['errors'] = ['Error: Bad membership data']
@@ -139,30 +162,35 @@ def create_type(request):
     return render(request,'final_project/Memberships/membershiptype_view.html',context)
 
 
+# Edit a membership type.
 @login_required
 def edit_type(request,membership_type_id):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
+    # Only staff can edit memberships.
     if not member.staff:
         context['errors'] = ['Error: That page requires staff access.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
     try:
+        # Try to get the membership.
         mem_type = MembershipType.objects.get(id__exact=membership_type_id)
     except MembershipType.DoesNotExist:
+        # If there is no such membership return an error.
         context['errors'] = ['Error: Could not find membership to edit.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
 
-    if request.method == 'GET':
+    if request.method == 'GET': # If we are trying to get the page.
         context['membership_type'] = mem_type
         in_program = mem_type.program_set.all()
         not_in_program = list(set(Program.objects.all()) - set(in_program))
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
         return render(request,'final_project/Memberships/membershiptype_edit.html',context)
-    # Try to get the membership.
+
+    # If the data is given then modify it.
     if 'name' in request.POST and request.POST['name']:
         mem_type.name = request.POST['name']
     if 'description' in request.POST and request.POST['description']:
@@ -171,8 +199,12 @@ def edit_type(request,membership_type_id):
         mem_type.default_price = request.POST['default_price']
     if 'allowed_freq' in request.POST and request.POST['allowed_freq']:
         mem_type.allowed_freq = request.POST['allowed_freq']
+
+
+    # Look through each program and see if the name is in the POST
     for prog in Program.objects.all():
         name = prog.name
+        # If it is then add or remove depending on the content.
         if name in request.POST and request.POST[name]:
             if request.POST[name] == 'add':
                 prog.memberships.add(mem_type)
@@ -185,3 +217,4 @@ def edit_type(request,membership_type_id):
     context['alerts'] = ['Successfully changed Membership.']
     context['memberships'] = MembershipType.objects.all()
     return render(request,'final_project/Memberships/memberships.html', context)
+
