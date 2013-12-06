@@ -7,10 +7,11 @@
   <form method="post" class="email_programs" action="{% url 'email_programs' %}">
     <div class="col-lg-2">
       <div class="list-group">
-        <a href="{% url 'filter_members' 0 %}" class="list-group-item">All<!--<span class="badge"></span>--></a>
+        <a class="list-group-item">
+	  <input type="checkbox" name="all" value="filter_this" /> All<!--<span class="badge"></span>--></a>
         {% for program in programs %}
         <a class="list-group-item" >
-	  <input type="checkbox" name="{program.name}" value="filter_this" />
+	  <input type="checkbox" name="{{program.name}}" value="filter_this" />
 	  {{program.name}}<span class="badge">{{program.members.count}}</span></a>
         {% endfor %}
       </div>
