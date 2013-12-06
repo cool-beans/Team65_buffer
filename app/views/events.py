@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from datetime import *#datetime, date, timedelta
+from datetime import *
 
 # Decorator to use built-in authentication system
 from django.contrib.auth.decorators import login_required
@@ -182,9 +182,11 @@ def profile(request):
             if not start_time:
                 errors.append('Invalid start_time given')
         
-        # If errors exist, redirect to events
+        # If errors exist, render events.html
         if errors:
-            return redirect('/final_project/events')
+            sunday_date = Event.getSundayDate(date.today())
+            context = getContextForAll(user, errors, sunday_date)
+            return render(request, 'final_project/Events/events.html', context)
 
         print "GETTING EVENT: ---------------------"
         print "\tname: " + name
@@ -195,16 +197,13 @@ def profile(request):
         # If all needed info (name, date, start_time) is there, get Event
         event = Event.getEvent(name=name, date=start_date, start_time=start_time)
 
-        # If cannot find recurrence that matches event, redirect to events
+        # If cannot find recurrence that matches event, render events.html
         if not event:
             errors.append("Could not locate event, given name, start_time, date.")
-            for error in errors:
-                print "ERROR: " + error
-                print "\tname: " + name
-                print "\tdate: " + str(start_date)
-                print "\ttime: " + str(start_time)
+            sunday_date = Event.getSundayDate(date.today())
+            context = getContextForAll(user, errors, sunday_date)
+            return render(request, 'final_project/Events/events.html', context)
 
-            return redirect('/final_project/events')
 
         context['user'] = user
         context['event'] = event
@@ -304,9 +303,9 @@ def edit(request):
 
         # If there are errors, return user to events page
         if errors:
-            context['user'] = user
-            context['errors'] = errors
-            return redirect('final_project/events')
+            sunday_date = Event.getSundayDate(date.today())
+            context = getContextForAll(user, errors, sunday_date)
+            return render(request, 'final_project/Events/events.html', context)
 
         # Otherwise, can assume event was located, so return event_edit
         # with event in context.
@@ -341,9 +340,9 @@ def edit(request):
 
         # If there are errors, return user to events page
         if errors:
-            context['user'] = user
-            context['errors'] = errors
-            return redirect('final_project/events')
+            sunday_date = Event.getSundayDate(date.today())
+            context = getContextForAll(user, errors, sunday_date)
+            return render(request, 'final_project/Events/events.html', context)
 
         # Otherwise, can assume event was located, so proceed to edit!
 
