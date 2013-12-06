@@ -60,7 +60,7 @@ def buy(request,membership_type_id):
     membership.save()
 
     context['membership'] = membership
-    context['alert'] = 'Successfully bought membership.'
+    context['alert'] = ['Successfully bought membership.']
     context['user'] = buy_member.user
     context['member'] = buy_member
     context['programs'] = [ prog for prog in Program.objects.all() \
