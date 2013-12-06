@@ -55,6 +55,10 @@ class Membership(models.Model):
     cancelled = models.BooleanField()
     cancelled_date = models.DateField(null=True,blank=True)
     member = models.ForeignKey(Member)
+    def name(self):
+        return self.mem_type.name
+    def description(self):
+        return self.mem_type.description
     def __unicode__(self):
         return self.mem_type.name
 
@@ -167,7 +171,7 @@ class EventType(models.Model):
                       orig_start_time=self.start_time)
         return event
 
-    
+
     def eventOnDate(self, date):
         date = None
 
