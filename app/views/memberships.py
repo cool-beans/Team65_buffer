@@ -63,8 +63,16 @@ def buy(request,membership_type_id):
     context['alerts'] = ['Successfully bought membership.']
     context['user'] = buy_member.user
     context['member'] = buy_member
-    context['programs'] = [ prog for prog in Program.objects.all() \
-                                if len(prog.members.filter(id=member.id)) != 0]
+    context['programs'] = buy_member.program_set.all()
+
+    price_add = price / len(membership.mem_type.program_set.all())
+    for program in membership.mem_type.program_set.all():
+        if buy_member.staff:
+            program.payroll += price_add
+        else:
+            program.revenue += price_add
+        program.save()
+
     context['memberships'] = Membership.objects.filter(member=buy_member)
     return render(request, 'final_project/Members/member_profile.html', context)
 
@@ -76,7 +84,7 @@ def cancel(request,membership_id):
     context = {'user':user,'member':member}
     # Try to get the membership.
     try:
-        mem = Membership.objects.get(id__exact=membership_id)
+        membership = Membership.objects.get(id__exact=membership_id)
     except Membership.DoesNotExist:
         context['errors'] = ['Error: Could not find membership.']
         return render(request,'final_project/Memberships/member_profile.html',context)
@@ -86,10 +94,19 @@ def cancel(request,membership_id):
         context['errors'] = ['Error: You do not have access to that membership.']
         return render(request, 'final_project/Memberships/member_profile.html',context)
 
+
+    price_add = price / len(membership.programs.all())
+    for program in membership.programs.all():
+        if buy_member.staff:
+            program.payroll -= price_add
+        else:
+            program.revenue -= price_add
+        program.save()
+
     # Cancel the membership.
-    mem.cancelled = True
-    mem.cancelled_date = datetime.now()
-    mem.save()
+    membership.cancelled = True
+    membership.cancelled_date = datetime.now()
+    membership.save()
     return render(request,'final_project/Memberships/member_profile.html',context)
 
 def all(request):
@@ -140,6 +157,10 @@ def edit_type(request,membership_type_id):
 
     if request.method == 'GET':
         context['membership_type'] = mem_type
+        in_program = mem_type.program_set.all()
+        not_in_program = list(set(Program.objects.all()) - set(in_program))
+        context['in_program'] = in_program
+        context['not_in_program'] = not_in_program
         return render(request,'final_project/Memberships/membershiptype_edit.html',context)
     # Try to get the membership.
     if 'name' in request.POST and request.POST['name']:
@@ -150,6 +171,15 @@ def edit_type(request,membership_type_id):
         mem_type.default_price = request.POST['default_price']
     if 'allowed_freq' in request.POST and request.POST['allowed_freq']:
         mem_type.allowed_freq = request.POST['allowed_freq']
+    for prog in Program.objects.all():
+        name = prog.name
+        if name in request.POST and request.POST[name]:
+            if request.POST[name] == 'add':
+                prog.memberships.add(mem_type)
+            elif request.POST[name] == 'remove':
+                prog.memberships.remove(mem_type)
+            prog.save()
+
     mem_type.save()
     context['membership_type'] = mem_type
     context['alerts'] = ['Successfully changed Membership.']

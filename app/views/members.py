@@ -232,8 +232,7 @@ def search(profile):
     context = {'user':user,'member':member}
     if not member.staff:
         context['errors'] = ['Error: Only staff members can search for members.']
-        context['programs'] =[ prog for prog in Program.objects.all() \
-                                   if len(prog.members.filter(id=member.id)) != 0]
+        context['programs'] = member.program_set.all()
         context['memberships'] = Membership.objects.filter(member=member)
         return render(request,'final_project/Members/member_profile',context)
 
