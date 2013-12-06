@@ -397,6 +397,14 @@ def edit(request):
             if 'is_cancelled' in request.POST:
                 event.is_cancelled = True
 
+            # Add programs if they are there to be added.
+            for prog in Program.objects.all():
+                name = prog.name
+                if name in request.POST and request.POST[name]:
+                    if request.POST[name] == 'remove':
+                        eventtype.programs.remove(prog)
+                    elif request.POST[name] == 'add':
+                        eventtype.programs.add(prog)
             event.save()
             eventtype.save()
 
