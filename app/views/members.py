@@ -127,12 +127,10 @@ def profile(request, member_id):
     else:
         member = Member.objects.get(user=request.user)
 
-    in_program = [ prog for prog in Program.objects.all() \
-                       if len(prog.members.filter(id=member.id)) != 0]
 
     context['user'] = user
     context['member'] = member
-    context['programs'] = in_program
+    context['programs'] = member.program_set.all()
     context['memberships'] = Membership.objects.filter(member=member)
     return render(request, 'final_project/Members/member_profile.html', context)
 
@@ -165,10 +163,8 @@ def edit(request, member_id):
 
     # If simply getting the page to edit
     if request.method == 'GET':
-        in_program = [ prog for prog in Program.objects.all() \
-                              if len(prog.members.filter(id=member.id)) != 0]
-        not_in_program = [ prog for prog in Program.objects.all() \
-                              if len(prog.members.filter(id=member.id)) == 0]
+        in_program = member.program_set.all()
+        not_in_program = list(set(Program.objects.all()) - set(in_program))
 
         context['in_program'] = in_program
         context['not_in_program'] = not_in_program
@@ -227,3 +223,29 @@ def edit(request, member_id):
     context['member_to_edit'] = old_member
     context['errors'] = errors
     return render(request, 'final_project/Members/member_edit.html', context)
+
+
+@login_required
+def search(profile):
+    user = request.user
+    member = Member.objects.get(user=user)
+    context = {'user':user,'member':member}
+    if not member.staff:
+        context['errors'] = ['Error: Only staff members can search for members.']
+        context['programs'] =[ prog for prog in Program.objects.all() \
+                                   if len(prog.members.filter(id=member.id)) != 0]
+        context['memberships'] = Membership.objects.filter(member=member)
+        return render(request,'final_project/Members/member_profile',context)
+
+    if not 'search' in request.POST or not request.POST['search']:
+        context['errors'] = ['Error: Bad search string.']
+        context['members'] = Member.objects.all()
+        context['programs'] = Program.objects.all()
+        return render(request,'final_project/Members/members.html',context)
+    search = request.POST['search']
+    context['members'] = Member.objects.filter(Q(first_name__contains=search) | \
+                                                   Q(last_name__contains=search))
+
+    return render(request,'final_project/Members/members.html',context)
+
+
