@@ -81,6 +81,7 @@ def register(request):
     context['errors'] = errors
     return render(request, 'final_project/Members/register.html', context)
 
+# Serve all of the programs and members.
 @login_required
 def all(request):
     context = {}
@@ -89,6 +90,8 @@ def all(request):
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 
+# Serve only the members who are in the program with id program_id.
+# If there is no such program, serve all members.
 @login_required
 def filter (request, program_id):
     context = {}
@@ -107,15 +110,13 @@ def filter (request, program_id):
     return render(request, 'final_project/Members/members.html', context)
 
 
-
-#TODO: make member_profile not accessible except by staff and the member themselves.
+# Serve the members profile. If the member is staff then they can see whoever
+# they want to, otherwise redirect to their own profile.
 @login_required
 def profile(request, member_id):
     context = {}
     user = request.user
     member = Member.objects.get(user=user)
-
-
 
     # Are they staff? If so then let them see whoever
     if member.staff:
@@ -154,6 +155,7 @@ def edit(request, member_id):
     member = Member.objects.get(user=user)
     errors = []
 
+    # Try to get the member to edit. If there is no such member then render an error.
     try:
         old_member = Member.objects.get(id=member_id)
     except Member.DoesNotExist:
@@ -172,13 +174,8 @@ def edit(request, member_id):
 
     # If trying to save changes to member
     elif request.method == 'POST':
-        # Gigantic if statement checking if form is valid and fields are
-        # not blank
-
-        # Data was all clean, can modify and save old_user and old_member
-        # Then redirect to member_profile.html
         form = MemberEdit(request.POST)
-
+        # Sanitize the data.
         if not form.is_valid():
             errors.append('Error, bad form data')
             context = {'user':user,'member':member,
@@ -186,9 +183,7 @@ def edit(request, member_id):
             return render(request,'final_project/Members/member_edit.html',context)
         else:
             old_user = old_member.user
-
-            # Change first_name, last_name, birthday, phone, and email
-            # of the old_member and save the old_member
+            # If each field is present then change the data.
             if form.cleaned_data['first_name'] is not None:
                 old_member.first_name = request.POST['first_name']
             if form.cleaned_data['last_name'] is not None:
@@ -199,6 +194,9 @@ def edit(request, member_id):
                 old_member.phone = request.POST['phone']
             if form.cleaned_data['email'] is not None:
                 old_member.email = request.POST['email']
+
+            # If we are trying give/remove user staff access then verify
+            # that the user who is currently editing is staff.
             if 'make_staff' in request.POST and member.staff:
                 old_member.staff = True
             if 'remove_staff' in request.POST and member.staff:
@@ -207,8 +205,10 @@ def edit(request, member_id):
             context['user'] = user
             context['member'] = old_member
             context['errors'] = errors
+            # Look through each program and see if the name is in the POST
             for prog in Program.objects.all():
                 name = prog.name
+                # If it is then add or remove depending on the content.
                 if name in request.POST and request.POST[name]:
                     if request.POST[name] == 'remove':
                         prog.members.remove(member)
@@ -225,22 +225,27 @@ def edit(request, member_id):
     return render(request, 'final_project/Members/member_edit.html', context)
 
 
+# Search for a user from a string.
 @login_required
 def search(profile):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
+    # Only staff can search.
     if not member.staff:
         context['errors'] = ['Error: Only staff members can search for members.']
         context['programs'] = member.program_set.all()
         context['memberships'] = Membership.objects.filter(member=member)
         return render(request,'final_project/Members/member_profile',context)
 
+    # Verify that a string was given.
     if not 'search' in request.POST or not request.POST['search']:
         context['errors'] = ['Error: Bad search string.']
         context['members'] = Member.objects.all()
         context['programs'] = Program.objects.all()
         return render(request,'final_project/Members/members.html',context)
+
+    # Search in first and last name.
     search = request.POST['search']
     context['members'] = Member.objects.filter(Q(first_name__contains=search) | \
                                                    Q(last_name__contains=search))
