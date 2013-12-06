@@ -354,8 +354,12 @@ def edit(request):
                 event.name = request.POST['name']
             if 'date' in request.POST and request.POST['date']:
                 # date is now in format "Nov. 3, 2013"
+<<<<<<< HEAD
+                parsed_date = datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
+=======
                 parsed_date = datetime.strptime(request.POST['date'], 
                                          '%b. %d, %Y').date()
+>>>>>>> 2be11fb273f8519f65ad145a259ecc014f33edbc
                 event.date = parsed_date
             if 'start_time' in request.POST and request.POST['start_time']:
                 start_time = Event.convertTime(request.POST['start_time'])
