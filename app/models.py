@@ -30,7 +30,8 @@ class Member(models.Model):
         return self.membership_set.filter(cancelled=True)
     #programs = models.ManyToManyField(Program)
     #events = models.ManyToManyField(Event)
-
+    def name(self):
+        return self.first_name+" "+self.last_name
     def __unicode__(self):
         return self.first_name + " " + self.last_name
 
