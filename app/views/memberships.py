@@ -121,27 +121,9 @@ def create_type(request):
     context['membership_type'] = m_type
     return render(request,'final_project/Memberships/membershiptype_view.html',context)
 
-@login_required
-def view_type(request,membership_type_id):
-    user = request.user
-    member = Member.objects.get(user=user)
-    context = {'user':user,'member':member}
-    # Does the membership exist?
-    try:
-        mem_type = MembershipType.get(id__exact=membership_type_id)
-        context['membership_type'] = mem_type
-    except MembershipType.DoesNotExist:
-        context['errors'] = ['Error: No such membership']
-        context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/Memberships/memberships.html',context)
-    if not mem_type.visible and not member.staff:
-        context['errors'] = ['Error: No such membership']
-        context['memberships'] = MembershipType.objects.all()
-        return render(request,'final_project/Memberships/memberships.html',context)
-    return render(request,'final_project/Memberships/view_membershiptype.html',context)
 
 @login_required
-def edit_type(request,membership_id):
+def edit_type(request,membership_type_id):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member}
@@ -149,15 +131,17 @@ def edit_type(request,membership_id):
         context['errors'] = ['Error: That page requires staff access.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
-
-
-    # Try to get the membership.
     try:
-        mem_type = MembershipType.objects.get(id__exact=membership_id)
+        mem_type = MembershipType.objects.get(id__exact=membership_type_id)
     except MembershipType.DoesNotExist:
         context['errors'] = ['Error: Could not find membership to edit.']
         context['memberships'] = MembershipType.objects.all()
         return render(request,'final_project/Memberships/memberships.html',context)
+
+    if request.method == 'GET':
+        context['membership_type'] = mem_type
+        return render(request,'final_project/Memberships/membershiptype_edit.html',context)
+    # Try to get the membership.
     if 'name' in request.POST and request.POST['name']:
         mem_type.name = request.POST['name']
     if 'description' in request.POST and request.POST['description']:
