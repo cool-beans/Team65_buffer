@@ -25,6 +25,14 @@
          <li class="list-group-item">
             Account Created: {{ member.creation_date }}
          </li>
+      </ul>
+      <ul class="list-group">
+         {% for membership in memberships %}
+            <li class="list-group-item">
+               <a href="#">{{ membership.mem_type.name }}</a><br />
+            </li>
+         {% endfor %}
+      </ul>
       </div>
    </div>
   </div><!-- panel-body -->
