@@ -1,0 +1,13 @@
+{% extends "final_project/Common/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Emails{% endblock %}
+{% load base_extra_tags %}
+{% block content %}
+Email sent to
+<ul>
+  {% for member in recipients %}
+  <li>{{ member.name }}</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
