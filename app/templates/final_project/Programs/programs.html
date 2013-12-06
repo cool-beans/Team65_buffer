@@ -1,7 +1,6 @@
 {% extends "final_project/Common/base.html" %}
 {% block title %}Final Project{% endblock %}
 {% block page %}Members{% endblock %}
-{% load base_extra_tags %}
 {% block content %}
 {% if user.is_authenticated and user.member.staff %}
 <div class="row">
@@ -34,7 +33,7 @@
             <td>{{ program.members.count }}</td>
 	    <td>{{ program.revenue }}</td>
 	    <td>{{ program.payroll }}</td>
-	    <td>{{ program.revenue|subtract:program.payroll }}</td>
+	    <td>{{ program.profit }}</td>
             <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{program.id}}">View Profile</a></td>
          </tr>
          {% endfor %}
