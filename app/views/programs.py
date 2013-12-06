@@ -19,6 +19,7 @@ def all(request):
     context = {'programs':programs}
     if request.user is not None:
         context['user'] = request.user
+        context['member'] = Member.objects.get(user=request.user)
     return render(request, 'final_project/Programs/programs.html', context)
 
 def profile(request,program_id):
@@ -71,15 +72,16 @@ def edit(request, program_id):
     member = Member.objects.get(user=request.user)
     context = {'user':user,'member':member,'programs':Program.objects.all()}
     program = Program.objects.get(id=program_id)
-    context['program'] = program
     if not member.staff:
         # Make sure that the currently logged in user is a staff member
         context['errors'] =['This page requires Staff login.']
         return render(request, 'final_project/Programs/programs.html',context)
     if (request.method == 'GET'):
+        context['program'] = program
         return render(request, 'final_project/Programs/program_edit.html',context)
     form = ProgramMod(request.POST)
     if not form.is_valid():
+        context['program'] = program
         context['errors'] =['Bad name or description provided.']
         return render(request,'final_project/Programs/program_edit.html',context)
     if (form.cleaned_data['name']):
@@ -87,6 +89,7 @@ def edit(request, program_id):
     if (form.cleaned_data['description']):
         program.description = form.cleaned_data['description']
     program.save()
+    context['program'] = program
     return render(request,'final_project/Programs/program_profile.html',context)
 
 

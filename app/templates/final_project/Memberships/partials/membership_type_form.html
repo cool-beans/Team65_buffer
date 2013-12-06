@@ -9,6 +9,7 @@
    <input type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
    <label>Visible:</label>
    <input type="text" name="visible" value="{{ membership_type.visible }}"><br />
+   {% include 'final_project/Programs/partials/add_remove_program_form_partial.html' %}
     {% if buy %}
       {% if user.member.staff %}
          <label>User:</label>
