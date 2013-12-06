@@ -109,6 +109,18 @@ h2{
 .email_programs{
       position:relative;
       left:0;
+      #email{
+         .textbox{
+            width:100%;
+            height:12em;
+         }
+         .subject{
+            width:50%;
+         }
+         .email-submit input[type="submit"]{
+            left:100%;
+         }
+      }
    }
 
 form{//#login{

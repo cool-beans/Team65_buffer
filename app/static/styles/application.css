@@ -92,6 +92,13 @@ h2 {
 .email_programs {
   position: relative;
   left: 0; }
+  .email_programs #email .textbox {
+    width: 100%;
+    height: 12em; }
+  .email_programs #email .subject {
+    width: 50%; }
+  .email_programs #email .email-submit input[type="submit"] {
+    left: 100%; }
 
 form {
   position: relative;
