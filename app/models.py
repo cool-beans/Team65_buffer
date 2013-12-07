@@ -34,6 +34,20 @@ class Member(models.Model):
         return self.first_name+" "+self.last_name
     def __unicode__(self):
         return self.first_name + " " + self.last_name
+    def get_rating(self):
+        events = Event.objects.filter(date__month=date.today().month)
+        count = 0
+        for event in events:
+            if self in event.booked.all() or \
+                    self in event.attended.all():
+                count = count + 1
+        return count
+    def get_allowed(self):
+        memberships = Membership.objects.filter(member=self)
+        count = 0
+        for mem in memberships:
+            count = count + mem.mem_type.allowed_freq
+        return count
     @staticmethod
     def getcount():
         return Member.objects.count()
@@ -102,7 +116,7 @@ class Program(models.Model):
         return self.revenue - self.payroll
     def __unicode__(self):
         return self.name
-    
+
 
 class RecurringEvent(models.Model):
     LOWER = datetime(2013,1,1)

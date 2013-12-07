@@ -25,6 +25,10 @@
          <li class="list-group-item">
             Account Created: {{ member.creation_date }}
          </li>
+	 <li class="list-group-item">
+	   You have booked/attended {{ member.get_rating }} out of
+	   {{ member.get_allowed }} allowed classes this month.
+	 </li>
       </ul>
       {% include "final_project/Common/partials/accordion.html" with accordion_name="memberships" objects=memberships %}
 
