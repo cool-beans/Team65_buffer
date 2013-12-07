@@ -313,4 +313,3 @@ def cancel(request,event_id):
         context['errors'] = ['Error: no such event.']
     event.delete()
     return render(request,'final_project/Events/events.html',context)
->>>>>>> 1a9dd6d5485d0b1c8dcba8c05dc132e6903474cd
