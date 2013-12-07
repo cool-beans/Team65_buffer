@@ -18,8 +18,8 @@
       </div>
     </div>
     <div class="col-lg-10" id="email">
-       <input class="form-control center-block subject" type="text" name="subject" value="Email Subject..." /><br />
-       <textarea class="form-control" name="content" value="Email Body..." rows="13"></textarea><br />
+       <input class="form-control center-block subject" placeholder="Email Subject..." type="text" name="subject" value="{{ subject }}" /><br />
+       <textarea class="form-control" name="content" placeholder="Email Body ...." value="{{ content }}" rows="13"></textarea><br />
        <input class="email-submit" type="submit" value="Submit" />
     </div>
     {% csrf_token %}
