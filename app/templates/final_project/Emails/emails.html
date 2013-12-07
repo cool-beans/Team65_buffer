@@ -8,17 +8,18 @@
     <div class="col-lg-2">
       <div class="list-group">
         <a class="list-group-item">
-	     <input type="checkbox" name="all" value="filter_this" />All</a>
-         {% for program in programs %}
-            <a class="list-group-item" >
-	        <input type="checkbox" name="{{program.name}}" value="filter_this" />
-	        {{program.name}}<span class="badge">{{program.members.count}}</span></a>
+	        <input type="checkbox" name="all" value="filter_this" /> All
+        </a>
+            {% for program in programs %}
+               <a class="list-group-item" >
+               <!-- Note that Program.name must be on the same line for the styling too work -->
+	           <input type="checkbox" name="{{program.name}}" value="filter_this" /> {{program.name}}<span class="badge">{{program.members.count}}</span></a>
         {% endfor %}
       </div>
     </div>
     <div class="col-lg-10" id="email">
-       <input class="center-block subject" type="text" name="subject" value="Email Subject..." /><br />
-       <input class="textbox" type="text" name="content" value="Email Body..." /><br />
+       <input class="form-control center-block subject" type="text" name="subject" value="Email Subject..." /><br />
+       <textarea class="form-control" name="content" value="Email Body..." rows="13"></textarea><br />
        <input class="email-submit" type="submit" value="Submit" />
     </div>
     {% csrf_token %}
