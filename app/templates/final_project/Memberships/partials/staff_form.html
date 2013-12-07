@@ -1,18 +1,18 @@
-<form  method="post" class="membershiptype_form">
+<form  method="post" class="form">
    <label class="control-label">Name:</label>
    <input class="form-control" type="text" name="name" value="{{ membership_type.name }}"><br />
    <label>Description:</label>
-   <input type="text" name="description" value="{{ membership_type.description }}"><br />
+   <textarea class='form-control' name="description">{{ membership_type.description }}</textarea><br />
    <label>Allowed Frequency:</label>
-   <input type="text" name="allowed_freq" value="{{ membership_type.allowed_freq }}"><br />
+   <input class="form-control" type="text" name="allowed_freq" value="{{ membership_type.allowed_freq }}"><br />
    <label>Default Price:</label>
-   <input type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
+   <input class="form-control" type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
    <label>Visible:</label>
-   <input type="text" name="visible" value="{{ membership_type.visible }}"><br />
+   <input class="form-control" type="text" name="visible" value="{{ membership_type.visible }}"><br />
    {% include 'final_project/Programs/partials/add_remove_program_form_partial.html' %}
    {% if buy %}
       <label>User:</label>
-      <input type="text" name="buy_user" value="{{ user.member.username }}" /><br />
+      <input class="form-control" type="text" name="buy_user" value="{{ user.member.username }}" /><br />
    {% endif %}
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />

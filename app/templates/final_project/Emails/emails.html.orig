@@ -1,0 +1,32 @@
+{% extends "final_project/Common/base.html" %}
+{% block title %}Final Project{% endblock %}
+{% block page %}Emails{% endblock %}
+{% load base_extra_tags %}
+{% block content %}
+<div class="row">
+  <form method="post" class="email_programs" action="{% url 'send_email' %}">
+    <div class="col-lg-2">
+      <div class="list-group">
+        <a class="list-group-item">
+	        <input type="checkbox" name="all" value="filter_this" /> All
+        </a>
+            {% for program in programs %}
+               <a class="list-group-item" >
+               <!-- Note that Program.name must be on the same line for the styling too work -->
+	           <input type="checkbox" name="{{program.name}}" value="filter_this" /> {{program.name}}<span class="badge">{{program.members.count}}</span></a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-lg-10" id="email">
+       <input class="form-control center-block subject" placeholder="Email Subject..." type="text" name="subject" value="{{ subject }}" /><br />
+<<<<<<< HEAD
+       <textarea class="form-control" name="content" placeholder="Email Body ...." value="" rows="13">{{ content }}</textarea><br />
+=======
+       <textarea class="form-control" name="content" placeholder="Email Body ...."  rows="13">{{content}}</textarea><br />
+>>>>>>> 104569a8278e14cd8588c9d78011602ff43a1fb2
+       <input class="email-submit" type="submit" value="Submit" />
+    </div>
+    {% csrf_token %}
+  </form>
+</div>
+{% endblock %}

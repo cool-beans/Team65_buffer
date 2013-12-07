@@ -19,7 +19,8 @@ from django.core.mail import send_mail
 def all(request):
     member = request.user.member
     context = {'user':request.user,'member':member}
-    context['programs'] = Program.objects.all()
+    # Array of only programs with members in them
+    context['programs'] = Program.objects.exclude(members__isnull=True)
     context['total_members'] = Member.objects.count()
     return render(request,'final_project/Emails/emails.html',context)
 

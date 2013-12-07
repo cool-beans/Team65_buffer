@@ -100,33 +100,33 @@ h2 {
   .email_programs #email .email-submit input[type="submit"] {
     left: 100%; }
 
-/*form{//#login{
+form {
+  position: relative;
+  left: 30%;
+  /*label, input[type=submit]{
+     //Style
+     font-weight:normal;
+     font-family:$header_font;
+     font-size:22px;
+  }*/
+  /*input[type=submit]{
      position:relative;
-   left:40%;
-   label, input[type=submit]{
-      //Style
-      font-weight:normal;
-      font-family:$header_font;
-      font-size:22px;
-   }
-   label{
-         //Postioning
-         width:10%;
-         margin-bottom:1%;
-      }
-   input[type=submit]{
-      position:relative;
-      left: 4%;
-   }
-  }
-*/
-.form-control input[type="text"] {
+     left: 4%;
+  }*/ }
+  form label {
+    width: 10%;
+    margin-bottom: 1%; }
+
+input[type="text"], input[type="password"] {
   width: 300px;
   display: inline-block; }
 
-/* Member/Programs Tables */
-th {
-  background-color: blue; }
+.form textarea {
+  width: 600px; }
+
+.form input[type="date"], .form input[type="time"] {
+  width: 200px;
+  display: inline-block; }
 
 /* Member/Programs */
 .panel {

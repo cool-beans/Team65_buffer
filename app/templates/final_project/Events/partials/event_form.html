@@ -1,9 +1,9 @@
 {% load base_extra_tags %}
-<form method="post" class="event_form">
+<form method="post" class="form">
    <label>Name:</label>
    <input class='form-control' type="text" name="name" value="{{ event.name }}"><br />
    <label>Description:</label>
-   <input class='form-control' type="textarea" name="description" value="{{ event.description }}"><br />
+   <textarea class='form-control' name="description">{{ event.description }}</textarea><br />
    <label>Repeat on:</label>
    <input type="checkbox" name="onMonday" value="True" {{ Monday|yesno:"checked," }}> M
    <input type="checkbox" name="onTuesday" value="True"  {{ Tuesday|yesno:"checked," }}> T
