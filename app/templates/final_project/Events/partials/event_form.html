@@ -1,9 +1,9 @@
 {% load base_extra_tags %}
 <form method="post" class="event_form">
    <label>Name:</label>
-   <input type="text" name="name" value="{{ event.name }}"><br />
+   <input class='form-control' type="text" name="name" value="{{ event.name }}"><br />
    <label>Description:</label>
-   <input type="textarea" name="description" value="{{ event.description }}"><br />
+   <input class='form-control' type="textarea" name="description" value="{{ event.description }}"><br />
    <label>Repeat on:</label>
    <input type="checkbox" name="onMonday" value="True" {{ Monday|yesno:"checked," }}> M
    <input type="checkbox" name="onTuesday" value="True"  {{ Tuesday|yesno:"checked," }}> T
@@ -14,11 +14,11 @@
    <input type="checkbox" name="onSunday" value="True" {{ Sunday|yesno:"checked," }}> Su
    <br />
    <label>Start Date:</label>
-   <input type="date" name="start_date" value="{% format_date_or_time event.event_type.recurrence.start_date %}"><br />
+   <input class='form-control' type="date" name="start_date" value="{% format_date_or_time event.event_type.recurrence.start_date %}"><br />
    <label>End Repeating:</label>
-   <input type="date" name="end_date" value="{% format_date_or_time event.event_type.reocurrence.end_recurrence %}"><br />
-   <label> Start time: </label> <input type="time" name="start_time" value="{% format_date_or_time event.start_time %}"><br />
-   <label> End time:</label> <input type="time" name="end_time" value="{% format_date_or_time event.end_time %}"><br />
+   <input class='form-control' type="date" name="end_date" value="{% format_date_or_time event.event_type.reocurrence.end_recurrence %}"><br />
+   <label> Start time: </label> <input class='form-control' type="time" name="start_time" value="{% format_date_or_time event.start_time %}"><br />
+   <label> End time:</label> <input class='form-control' type="time" name="end_time" value="{% format_date_or_time event.end_time %}"><br />
    {% include 'final_project/Programs/partials/add_remove_program_form_partial.html' %}
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />

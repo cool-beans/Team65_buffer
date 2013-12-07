@@ -93,7 +93,7 @@ h2 {
   position: relative;
   left: 0; }
   .email_programs #email .textbox {
-    width: 100%;
+    width: 100% !important;
     height: 12em; }
   .email_programs #email .subject {
     width: 50%; }
@@ -120,7 +120,7 @@ h2 {
    }
   }
 */
-.form-control {
+.form-control input[type="text"] {
   width: 300px;
   display: inline-block; }
 

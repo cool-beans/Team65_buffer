@@ -1,21 +1,21 @@
 <form  method="post" class="user_form">
    <label>Username:</label>
-   <input type="text" name="username" value="{{ member_to_edit.user.username }}"><br />
+   <input class='form-control' type="text" name="username" value="{{ member_to_edit.user.username }}"><br />
    <label>First Name:</label>
-   <input type="text" name="first_name" value="{{ member_to_edit.first_name }}"><br />
+   <input class='form-control' type="text" name="first_name" value="{{ member_to_edit.first_name }}"><br />
    <label>Last Name:</label>
-   <input type="text" name="last_name" value="{{ member_to_edit.last_name }}"><br />
+   <input class='form-control' type="text" name="last_name" value="{{ member_to_edit.last_name }}"><br />
    <label>Birthday:</label>
    <input type="date" name="birthday" value="{{ member_to_edit.birthday }}"><br />
    <label>Phone:</label>
-   <input type="text" name="phone" value="{{ member_to_edit.phone }}"><br />
+   <input class='form-control' type="text" name="phone" value="{{ member_to_edit.phone }}"><br />
    <label>Email:</label>
-   <input type="text" name="email" value="{{ member_to_edit.email }}"><br />
+   <input class='form-control' type="text" name="email" value="{{ member_to_edit.email }}"><br />
    {% if not user.is_authenticated %}
       <label>Password:</label>
-      <input type="password" name="pass1"><br />
+      <input class='form-control' type="password" name="pass1"><br />
       <label>Confirm Password:</label>
-      <input type="password" name="pass2"><br />
+      <input class='form-control' type="password" name="pass2"><br />
    {% else %}
       {% if user.member.staff %}
       {% if member_to_edit.staff %}
