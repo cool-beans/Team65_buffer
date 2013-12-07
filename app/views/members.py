@@ -87,7 +87,7 @@ def register(request):
 def all(request):
     context = {}
     context['user'] = request.user
-    context['members'] = helper_paginator(Member.objects.all(),3,request.GET.get('page'))
+    context['members'] = helper_paginator(Member.objects.all(),10,request.GET.get('page'))
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 
