@@ -1,11 +1,14 @@
 /* Color Variables */
+$button_text_color: #fff;
 $text_color: #666;
 $light_grey: #F5F5F5;
 $medium_grey: #E7E7E7;
 $dark_grey: #D0D0D0;
 $green: #7AEC74;
 $pink: #F1B2A3;
-$blue: #BCDFFA;
+$button_blue: #5881b3;
+$blue:#BCDFFA;
+$light_blue:#73a9d6;
 $yellow: #FFF377;
 
 /*Positioning Constants*/
@@ -27,6 +30,7 @@ html, body {
   }
   a:hover {
       text-decoration:none;
+      color:$text_color;
   }
 }
 
@@ -158,6 +162,26 @@ input[type="text"], input[type="password"]{
 /* Member/Programs */
 .panel{
    box-shadow:none;
+}
+/*buttons*/
+input[type="submit"]{
+   color:$button_text_color;
+   border:none;
+   background-color:$button_blue;
+   padding:5px;
+   &:hover{
+
+      background-color:#2b669a;
+   }
+}
+.btn-primary{
+   background-color:$button_blue;
+   background-image:none;
+   border:none;
+   border-radius:0;
+   &:hover{
+      background-color:#2b669a;
+   }
 }
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5{

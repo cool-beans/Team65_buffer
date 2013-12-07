@@ -12,7 +12,8 @@ html, body {
   html a, body a {
     color: #666666; }
   html a:hover, body a:hover {
-    text-decoration: none; }
+    text-decoration: none;
+    color: #666666; }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Comfortaa"; }
@@ -131,6 +132,23 @@ input[type="text"], input[type="password"] {
 /* Member/Programs */
 .panel {
   box-shadow: none; }
+
+/*buttons*/
+input[type="submit"] {
+  color: white;
+  border: none;
+  background-color: #5881b3;
+  padding: 5px; }
+  input[type="submit"]:hover {
+    background-color: #2b669a; }
+
+.btn-primary {
+  background-color: #5881b3;
+  background-image: none;
+  border: none;
+  border-radius: 0; }
+  .btn-primary:hover {
+    background-color: #2b669a; }
 
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5 {

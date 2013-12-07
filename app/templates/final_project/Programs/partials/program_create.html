@@ -2,7 +2,7 @@
    <label>Name:</label>
    <input class='form-control' type="text" name="name" value="{{ program.name }}"><br />
    <label>Description:</label>
-   <input class='form-control' type="textarea" name="description" value="{{ program.description }}"><br />
+   <textarea class='form-control' name="description">{{ program.description }}</textarea><br />
    <input type="submit" value="Submit" />
    <input type="hidden" name="next" value="{{ next }}" />
    {% csrf_token %}
