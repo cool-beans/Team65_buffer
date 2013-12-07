@@ -34,7 +34,9 @@ class Member(models.Model):
         return self.first_name+" "+self.last_name
     def __unicode__(self):
         return self.first_name + " " + self.last_name
-
+    @staticmethod
+    def getcount():
+        return Member.objects.count()
 
 class MembershipType(models.Model):
     # Membership Types for members
@@ -79,6 +81,22 @@ class Program(models.Model):
         return self.revenue - self.payroll
     def __unicode__(self):
         return self.name
+    @staticmethod
+    def total_revenue():
+        rev = 0
+        for p in Program.objects.all():
+            rev += p.revenue
+        return rev
+    @staticmethod
+    def total_payroll():
+        pay = 0
+        for p in Program.objects.all():
+            pay += p.payroll
+        return pay
+    @staticmethod
+    def total_profit():
+        return total_revenue() - total_payroll()
+
 
 class RecurringEvent(models.Model):
     LOWER = datetime(2013,1,1)

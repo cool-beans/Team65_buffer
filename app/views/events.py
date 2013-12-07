@@ -53,6 +53,9 @@ def create_recurring(request):
         context['days'] = getdays(monday)
         return render(request, 'final_project/Events/events.html', context)
 
+    if request.method == 'GET':
+        return render(request, 'final_project/Events/create_recurring.html',context)
+
 
     # Get and sanitize all the fields.
     form = RecurringCreate(request.POST)
@@ -272,3 +275,23 @@ def all(request):
     context['monday'] = str(monday)
     context['days'] = getdays(monday)
     return render(request,'final_project/Events/events.html',context)
+
+
+@login_required
+def attendance(request):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    if not member.staff:
+        monday = datetime.strptime(next_monday,"%Y-%m-%d") + timedelta(7)
+        context['monday'] = str(monday.date())
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+    events = Events.objects.filter(date__exact=date.today())
+    attendance = []
+    for event in events:
+        for member in event.booked.all():
+            attendance.append((member,event))
+    context['attendance'] = attendance
+    return render(request,'final_project/Events/attendance.html',context)
+
+

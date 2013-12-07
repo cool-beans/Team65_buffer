@@ -25,7 +25,7 @@ def all(request):
 
 
 @login_required
-def programs(request):
+def send(request):
     user = request.user
     member = Member.objects.get(user=user)
     context = {'user':user,'member':member,'programs':Program.objects.all()}
@@ -51,10 +51,14 @@ def programs(request):
         for program in Program.objects.all():
             name = program.name
             if name in request.POST and request.POST[name]:
-                print name
                 for member in program.members.all():
                     if not member in recipients:
                         recipients.append(member)
+        for member in Member.objects.all():
+            name = member.user.username
+            if name in request.POST and request.POST[name]:
+                if not member in recipients:
+                    recipients.append
     if len(recipients) == 0:
         context['errors'] = ['Error: You must select at least one program to email to.']
         return render(request,'final_project/Emails/emails.html',context)
