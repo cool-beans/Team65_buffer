@@ -100,19 +100,29 @@ h2 {
   .email_programs #email .email-submit input[type="submit"] {
     left: 100%; }
 
-form {
-  position: relative;
-  left: 40%; }
-  form label, form input[type=submit] {
-    font-weight: normal;
-    font-family: "Comfortaa";
-    font-size: 22px; }
-  form label {
-    width: 10%;
-    margin-bottom: 1%; }
-  form input[type=submit] {
-    position: relative;
-    left: 4%; }
+/*form{//#login{
+     position:relative;
+   left:40%;
+   label, input[type=submit]{
+      //Style
+      font-weight:normal;
+      font-family:$header_font;
+      font-size:22px;
+   }
+   label{
+         //Postioning
+         width:10%;
+         margin-bottom:1%;
+      }
+   input[type=submit]{
+      position:relative;
+      left: 4%;
+   }
+  }
+*/
+.form-control {
+  width: 300px;
+  display: inline-block; }
 
 /* Member/Programs Tables */
 th {
