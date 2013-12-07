@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -29,12 +30,11 @@ def about(request):
     return render(request, 'final_project/Common/about.html', context)
 
 def helper_paginator(list, num, page):
-    context = {}
     paginator = Paginator(list, num)
     try:
-        grumbls_page = paginator.page(page)
+        paginator_page = paginator.page(page)
     except PageNotAnInteger:
-        grumbls_page = paginator.page(1)
+        paginator_page = paginator.page(1)
     except EmptyPage:
-        grumbls_page = paginator.page(paginator.num_pages)
-        return grumbls_page
+        paginator_page = paginator.page(paginator.num_pages)
+    return paginator_page

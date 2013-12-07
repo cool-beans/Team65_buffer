@@ -17,30 +17,36 @@
          <tr>
             <th>Program Name</th>
             <th>Description</th>
-            <!--  <th>Visible</th> -->
-            <th>Number of Members</th>
-	    <th>Revenue</th>
-	    <th>Payroll</th>
-	    <th>Profit</th>
+            {% if user.member.staff %}
+               <th>Number of Members</th>
+	           <th>Revenue</th>
+	           <th>Payroll</th>
+	           <th>Profit</th>
+            {% endif %}
             <th>View Profile</th>
          </tr>
 	 <tr>
 	   <td>All</td>
 	   <td>All of our wonderful members.</td>
-	   <td>{{ total_members }}</td>
-	   <td>{{ total_revenue }}</td>
-	   <td>{{ total_payroll }}</td>
-	   <td>{{ total_profit }}</td>
+
+         {% if user.member.staff %}
+	        <td>{{ total_members }}</td>
+	        <td>{{ total_revenue }}</td>
+	        <td>{{ total_payroll }}</td>
+	        <td>{{ total_profit }}</td>
+         {% endif %}
+	        <td></td>
 	 </tr>
       {% for program in programs %}
          <tr>
             <td>{{ program.name }}</td>
             <td>{{ program.description }}</td>
-            <!-- <td>{{ program.visible }}</td> -->
+          {% if user.member.staff %}
             <td>{{ program.members.count }}</td>
-	    <td>{{ program.revenue }}</td>
-	    <td>{{ program.payroll }}</td>
-	    <td>{{ program.profit }}</td>
+	        <td>{{ program.revenue }}</td>
+	        <td>{{ program.payroll }}</td>
+	        <td>{{ program.profit }}</td>
+         {% endif %}
             <td><a type="button" class="btn btn-primary" href="/final_project/program_profile/{{program.id}}">View Profile</a></td>
          </tr>
          {% endfor %}

@@ -12,6 +12,7 @@ from django.contrib.auth import login, authenticate
 from app.forms import *
 # Imports the models
 from app.models import *
+from app.views.common import helper_paginator
 
 
 def register(request):
@@ -86,7 +87,7 @@ def register(request):
 def all(request):
     context = {}
     context['user'] = request.user
-    context['members'] = Member.objects.all()
+    context['members'] = helper_paginator(Member.objects.all(),10,request.GET.get('page'))
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 

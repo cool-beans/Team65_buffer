@@ -1,4 +1,5 @@
 {% extends "final_project/Common/base.html" %}
+{% load base_extra_tags %}
 {% block title %}Final Project{% endblock %}
 {% block page %}Members{% endblock %}
 
@@ -27,13 +28,14 @@
             <td>{{ member.first_name }}</td>
             <td>{{ member.last_name }}</td>
             <td>{{ member.email }}</td>
-            <td>{{ member.phone }}</td>
+            <td>{% format_phone_number member.phone %}</td>
             <td>{{ member.creation_date }}</td>
             <td><a type="button" class="btn btn-primary" href="/final_project/member_profile/{{member.id}}">View Profile</a></td>
          </tr>
          {% endfor %}
                   <!-- end forloop -->
       </table>
+      {% include "final_project/Common/partials/pagination.html" with objects=members no_objects_message="No Members Yet" %}
    </div>
 </div><!--row-->
 {% endblock %}
