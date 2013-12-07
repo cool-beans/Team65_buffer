@@ -25,6 +25,19 @@
             {% endif %}
             <th>View Profile</th>
          </tr>
+<<<<<<< HEAD
+	 <tr>
+	   <td>All</td>
+	   <td>All of our wonderful members.</td>
+         {% if user.member.staff %}
+	        <td>{{ total_members }}</td>
+	        <td>{{ total_revenue }}</td>
+	        <td>{{ total_payroll }}</td>
+	        <td>{{ total_profit }}</td>
+         {% endif %}
+	        <td></td>
+	 </tr>
+=======
    <tr>
       <td>All</td>
       <td>All of our wonderful members.</td>
@@ -36,6 +49,7 @@
       {% endif %}
       <td></td>
    </tr>
+>>>>>>> 17c81ef8fb1002c02b7fa557bed99865cb8047f7
       {% for program in programs %}
          <tr>
             <td>{{ program.name }}</td>
