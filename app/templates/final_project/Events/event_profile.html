@@ -9,9 +9,24 @@
     <a type="button" class="btn btn-primary" href="{% url 'event_edit' event.id %}">
       Edit Event
     </a>
+
+  {% if book %}
+    <a type="button" class="btn btn-primary" href="{% url 'event_book' event.id %}">
+      Book Event
+    </a>
+  {% elif attendcancel %}
+    <a type="button" class="btn btn-primary" href="{% url 'event_attend' event.id %}">
+      Attend Event
+    </a>
+    <a type="button" class="btn btn-primary" href="{% url 'cancel_attendance' event.id %}">
+      Cancel Attendance
+    </a>
+  {% endif %}
+
   </div>
 </div>
 {% endif %}
+
 <div class="row">
   <div class="col-lg-12">
     <div class="panel panel-info theme">
@@ -37,43 +52,5 @@
   </div>
 </div>
 
-{% if member.staff %}
-<div class="row">
-  <div class="col-lg-12">
-    <a type="button" class="btn btn-primary" href="{% url 'cancel' event.id %}">
-      Cancel Event
-    </a>
-    <a type="button" class="btn btn-primary" href="{% url 'cancel_following' event.id %}">
-      Cancel All Following
-    </a>
-    <a type="button" class="btn btn-primary" href="{% url 'cancel_all' event.id %}">
-      Remove All Events in this Series
-    </a>
-  </div>
-</div>
-{% endif %}
-
-{% if book %}
-<div class="row">
-  <div class="col-lg-12">
-    <a type="button" class="btn btn-primary" href="{% url 'event_book' event.id %}">
-      Book Event
-    </a>
-  </div>
-</div>
-{% elif attendcancel %}
-<div class="row">
-  <div class="col-lg-12">
-    <a type="button" class="btn btn-primary" href="{% url 'event_attend' event.id %}">
-      Attend Event
-    </a>
-    <a type="button" class="btn btn-primary" href="{% url 'cancel_attendance' event.id %}">
-      Cancel Attendance
-    </a>
-  </div>
-</div>
-
-
-{% endif %}
 {% endblock %}
 

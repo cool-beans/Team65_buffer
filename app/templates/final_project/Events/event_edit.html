@@ -4,6 +4,20 @@
 
 {% block content %}
 <div class="row">
+  <div class="col-lg-12 col-lg-offset-3">
+    <a type="button" class="btn btn-primary" href="{% url 'cancel' event.id %}">
+      Cancel Event
+    </a>
+    <a type="button" class="btn btn-primary" href="{% url 'cancel_following' event.id %}">
+      Cancel All Following
+    </a>
+    <a type="button" class="btn btn-primary" href="{% url 'cancel_all' event.id %}">
+      Remove All Events in this Series
+    </a>
+  </div>
+</div>
+<br />
+<div class="row">
    <div class="col-lg-12">
      <form method="post" class="event_form">
        <label>Name:</label>
