@@ -20,7 +20,7 @@ def all(request):
     member = request.user.member
     context = {'user':request.user,'member':member}
     context['programs'] = Program.objects.all()
-    context['total_members'] = Members.objects.count()
+    context['total_members'] = Member.objects.count()
     return render(request,'final_project/Emails/emails.html',context)
 
 
