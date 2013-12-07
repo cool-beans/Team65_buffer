@@ -4,15 +4,15 @@
 {% load base_extra_tags %}
 {% block content %}
 <div class="row">
-  <form method="post" class="email_programs" action="{% url 'email_programs' %}">
+  <form method="post" class="email_programs" action="{% url 'send_email' %}">
     <div class="col-lg-2">
       <div class="list-group">
         <a class="list-group-item">
-	  <input type="checkbox" name="all" value="filter_this" /> All<!--<span class="badge"></span>--></a>
-        {% for program in programs %}
-        <a class="list-group-item" >
-	  <input type="checkbox" name="{{program.name}}" value="filter_this" />
-	  {{program.name}}<span class="badge">{{program.members.count}}</span></a>
+	     <input type="checkbox" name="all" value="filter_this" />All</a>
+         {% for program in programs %}
+            <a class="list-group-item" >
+	        <input type="checkbox" name="{{program.name}}" value="filter_this" />
+	        {{program.name}}<span class="badge">{{program.members.count}}</span></a>
         {% endfor %}
       </div>
     </div>
@@ -24,5 +24,4 @@
     {% csrf_token %}
   </form>
 </div>
-
 {% endblock %}
