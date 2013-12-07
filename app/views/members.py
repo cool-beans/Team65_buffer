@@ -87,7 +87,7 @@ def register(request):
 def all(request):
     context = {}
     context['user'] = request.user
-    context['members'] = helper_paginator(Member.objects.all(),10,request.GET.get('page'))
+    context['members'] = helper_paginator(Member.objects.order_by('first_name').all(),10,request.GET.get('page'))
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 
@@ -100,7 +100,7 @@ def filter (request, program_id):
     members = []
     try:
         program = Program.objects.get(id=program_id)
-        members = Member.objects.filter(program=program).order_by('first_name')
+        members = Member.objects.filter(program=program).order_by_by('first_name')
     except Program.DoesNotExist:
         members = Member.objects.all()
 
@@ -161,7 +161,7 @@ def edit(request, member_id):
         old_member = Member.objects.get(id=member_id)
     except Member.DoesNotExist:
         context['errors'] = ['Error: Could not find member to edit']
-        context['members'] = Member.objects.all()
+        context['members'] = Member.objects.order_by('first_name').all()
         return render(request,'final_project/members.html',context)
 
     # If simply getting the page to edit
@@ -242,7 +242,7 @@ def search(profile):
     # Verify that a string was given.
     if not 'search' in request.POST or not request.POST['search']:
         context['errors'] = ['Error: Bad search string.']
-        context['members'] = Member.objects.all()
+        context['members'] = Member.objects.order_by('first_name').all()
         context['programs'] = Program.objects.all()
         return render(request,'final_project/Members/members.html',context)
 

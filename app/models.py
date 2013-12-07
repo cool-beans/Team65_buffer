@@ -67,6 +67,27 @@ class Membership(models.Model):
     def __unicode__(self):
         return self.mem_type.name
 
+    @staticmethod
+    def total_revenue():
+        rev = 0
+        for member in Member.objects.filter(staff=False):
+            for m in member.membership_set.filter(cancelled=False):
+                rev += m.price
+        return rev
+
+    @staticmethod
+    def total_payroll():
+        pay = 0
+        for member in Member.objects.filter(staff=True):
+            for m in member.membership_set.filter(cancelled=False):
+                pay += m.price
+        return pay
+
+
+    @staticmethod
+    def total_profit():
+        return Membership.total_revenue() - Membership.total_payroll()
+
 
 
 class Program(models.Model):
@@ -81,22 +102,7 @@ class Program(models.Model):
         return self.revenue - self.payroll
     def __unicode__(self):
         return self.name
-    @staticmethod
-    def total_revenue():
-        rev = 0
-        for p in Program.objects.all():
-            rev += p.revenue
-        return rev
-    @staticmethod
-    def total_payroll():
-        pay = 0
-        for p in Program.objects.all():
-            pay += p.payroll
-        return pay
-    @staticmethod
-    def total_profit():
-        return total_revenue() - total_payroll()
-
+    
 
 class RecurringEvent(models.Model):
     LOWER = datetime(2013,1,1)

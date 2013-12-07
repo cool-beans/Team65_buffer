@@ -292,6 +292,25 @@ def attendance(request):
         for member in event.booked.all():
             attendance.append((member,event))
     context['attendance'] = attendance
+
     return render(request,'final_project/Events/attendance.html',context)
 
 
+@login_required
+def cancel(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    monday = date.today() + timedelta(-date.today().weekday())
+    context['monday'] = str(monday)
+    context['days'] = getdays(monday)
+    if not member.staff:
+        context['errors'] = ['Error: only staff members can cancel events.']
+        return render(request,'final_project/Events/events.html',context)
+
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: no such event.']
+    event.delete()
+    return render(request,'final_project/Events/events.html',context)
+>>>>>>> 1a9dd6d5485d0b1c8dcba8c05dc132e6903474cd
