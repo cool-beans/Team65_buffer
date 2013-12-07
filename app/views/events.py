@@ -116,11 +116,13 @@ def profile(request,event_id):
         context['days'] = getdays(monday)
         return render(request,'final_project/Events/events.html',context)
     context['event'] = event
-    if len(event.booked.filter(id__exact=member.id)) == 0 and \
+
+    if request.user.is_authenticated(): # Otherwise, no member.id!    
+        if len(event.booked.filter(id__exact=member.id)) == 0 and \
             len(event.attended.filter(id__exact=member.id)) == 0:
-        context['book'] = True
-    if len(event.booked.filter(id__exact=member.id)) > 0:
-        context['attendcancel'] = True
+            context['book'] = True
+        if len(event.booked.filter(id__exact=member.id)) > 0:
+            context['attendcancel'] = True
 
     return render(request,'final_project/Events/event_profile.html',context)
 
