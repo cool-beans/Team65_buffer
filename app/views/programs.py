@@ -18,9 +18,14 @@ from app.models import *
 def all(request):
     programs = Program.objects.all()
     context = {'programs':programs}
+
     if request.user.is_authenticated():
         context['user'] = request.user
         context['member'] = Member.objects.get(user=request.user)
+        context['total_members'] = Member.objects.count()
+        context['total_revenue'] = Membership.total_revenue()
+        context['total_payroll'] = Membership.total_payroll()
+        context['total_profit'] = Membership.total_profit()
     return render(request, 'final_project/Programs/programs.html', context)
 
 # Serve a specific program profile.

@@ -293,5 +293,3 @@ def attendance(request):
             attendance.append((member,event))
     context['attendance'] = attendance
     return render(request,'final_project/Events/attendance.html',context)
-
-
