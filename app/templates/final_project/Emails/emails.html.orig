@@ -19,7 +19,11 @@
     </div>
     <div class="col-lg-10" id="email">
        <input class="form-control center-block subject" placeholder="Email Subject..." type="text" name="subject" value="{{ subject }}" /><br />
+<<<<<<< HEAD
+       <textarea class="form-control" name="content" placeholder="Email Body ...." value="" rows="13">{{ content }}</textarea><br />
+=======
        <textarea class="form-control" name="content" placeholder="Email Body ...."  rows="13">{{content}}</textarea><br />
+>>>>>>> 104569a8278e14cd8588c9d78011602ff43a1fb2
        <input class="email-submit" type="submit" value="Submit" />
     </div>
     {% csrf_token %}

@@ -100,7 +100,7 @@ def filter (request, program_id):
     members = []
     try:
         program = Program.objects.get(id=program_id)
-        members = Member.objects.filter(program=program).order_by_by('first_name')
+        members = Member.objects.filter(program=program).order_by('first_name')
     except Program.DoesNotExist:
         members = Member.objects.all()
 
