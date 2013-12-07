@@ -138,7 +138,7 @@ def book(request,event_id):
         context['days'] = getdays(monday)
         return render(request,'final_project/Events/events.html',context)
 
-    if member.get_rating() >= member.get_allowed():
+    if member.get_rating() >= member.get_allowed() and not member.staff:
         context['errors'] = ['Error: You cannot attend any more classes this month.']
         monday = date.today() + timedelta(-date.today().weekday())
         context['monday'] = str(monday)
@@ -301,24 +301,50 @@ def all(request):
     return render(request,'final_project/Events/events.html',context)
 
 
+
 @login_required
-def attendance(request):
+def cancel_following(request,event_id):
     member = request.user.member
     context = {'user':request.user,'member':member}
+    monday = date.today() + timedelta(-date.today().weekday())
+    context['monday'] = str(monday)
+    context['days'] = getdays(monday)
     if not member.staff:
-        monday = datetime.strptime(next_monday,"%Y-%m-%d") + timedelta(7)
-        context['monday'] = str(monday.date())
-        context['days'] = getdays(monday)
+        context['errors'] = ['Error: only staff members can cancel events.']
         return render(request,'final_project/Events/events.html',context)
-    events = Events.objects.filter(date__exact=date.today())
-    attendance = []
-    for event in events:
-        for member in event.booked.all():
-            attendance.append((member,event))
-    context['attendance'] = attendance
 
-    return render(request,'final_project/Events/attendance.html',context)
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: no such event.']
+        return render(request, 'final_project/Events/events.html',context)
 
+    for del_event in Event.objects.filter(recurrence=event.recurrence):
+        if del_event.date < event.date:
+            del_event.delete()
+    return render(request,'final_project/Events/events.html',context)
+
+
+@login_required
+def cancel_all(request,event_id):
+    member = request.user.member
+    context = {'user':request.user,'member':member}
+    monday = date.today() + timedelta(-date.today().weekday())
+    context['monday'] = str(monday)
+    context['days'] = getdays(monday)
+    if not member.staff:
+        context['errors'] = ['Error: only staff members can cancel events.']
+        return render(request,'final_project/Events/events.html',context)
+
+    try:
+        event = Event.objects.get(id__exact=event_id)
+    except Event.DoesNotExist:
+        context['errors'] = ['Error: no such event.']
+        return render(request, 'final_project/Events/events.html',context)
+
+    for del_event in Event.objects.filter(recurrence=event.recurrence):
+        del_event.delete()
+    return render(request,'final_project/Events/events.html',context)
 
 @login_required
 def cancel(request,event_id):
@@ -335,7 +361,7 @@ def cancel(request,event_id):
         event = Event.objects.get(id__exact=event_id)
     except Event.DoesNotExist:
         context['errors'] = ['Error: no such event.']
-
+        return render(request, 'final_project/Events/events.html',context)
 
     for member in event.booked.all():
         email_content = """
