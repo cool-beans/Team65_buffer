@@ -63,6 +63,7 @@ def send(request):
         context['errors'] = ['Error: You must select at least one program to email to.']
         return render(request,'final_project/Emails/emails.html',context)
 
+    context['alert'] = "Email successfully sent to: "
     for member in recipients:
         replsubj = subject.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
         email = content.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
@@ -70,36 +71,8 @@ def send(request):
                   message=email,
                   from_email="admin@teambusiness.com",
                   recipient_list = [member.email])
-    context['recipients'] = recipients
-    return render(request,'final_project/Emails/email_sent.html',context)
+        context['alert'] += member.name()
+    return render(request,'final_project/Emails/emails.html',context)
 
 
-@login_required
-def members(request):
-    user = request.user
-    member = Member.objects.get(user=user)
-    context = {'user':user,'member':member}
-    if not member.staff:
-        context['errors'] = ['Error: This page requires staff login.']
-        return render(request,'final_project/index.html',context)
-
-    if not 'content' in request.POST or not request.POST['content']:
-        context['errors'] = ['Error: Could not find an email to send.']
-        return render(request,'final_project/Emails/send_email.html',context)
-    if not 'subject' in request.POST or not request.POST['subject']:
-        context['errors'] = ['Error: Could not find a subject.']
-    content = request.POST['content']
-    subject = request.POST['subject']
-
-
-    for member in Member.objects.all():
-        name = member.user.username
-        if name in request.POST and request.POST[name]:
-            replsubj = subject.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
-            email = content.replace("{firstname}",member.first_name).replace("{lastname}",member.last_name)
-            send_mail(subject=replsubj,
-                      message=email,
-                      from_email="admin@teambusiness.com",
-                      recipient_list = [email])
-    return render(request,'final_project/Emails/email_sent.html',context)
 
