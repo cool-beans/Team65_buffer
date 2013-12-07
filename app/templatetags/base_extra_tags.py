@@ -10,3 +10,6 @@ def get_nav_page_class(request,urls):
 @register.simple_tag
 def format_date_or_time(date):
    return str(date)
+@register.simple_tag
+def format_phone_number(phone):
+   return  "(%s%s%s) %s%s%s-%s%s%s%s" % tuple(phone)
