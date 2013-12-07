@@ -14,7 +14,7 @@
       </div>
    </div>
    <div class="col-lg-10">
-      <table class="table table-striped table-bordered table-hover">
+      <table id="member-table" class="table table-hover">
          <tr>
             <th>Member First Name</th>
             <th>Member Last Name</th>
@@ -35,7 +35,7 @@
          {% endfor %}
                   <!-- end forloop -->
       </table>
-      {% include "final_project/Common/partials/pagination.html" with objects=members no_objects_message="No Members Yet" %}
+      {% include "final_project/Common/partials/pagination.html" with objects=members no_objects_message="No Members Yet" should_paginate=should_paginate %}
    </div>
 </div><!--row-->
 {% endblock %}

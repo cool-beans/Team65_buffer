@@ -2,9 +2,6 @@
 /*Positioning Constants*/
 /*Fonts*/
 /*Global Styles*/
-th {
-  background-color: blue; }
-
 html, body {
   height: 100%;
   font-family: Lucida Console;
@@ -149,6 +146,15 @@ input[type="submit"] {
   border-radius: 0; }
   .btn-primary:hover {
     background-color: #2b669a; }
+
+.pager li > a {
+  background-color: #5881b3;
+  border: none; }
+  .pager li > a:hover {
+    background-color: #2b669a; }
+
+.table th, #member-table {
+  text-align: center; }
 
 /*Color Pallet used for testing purposes only */
 #Color1, #Color2, #Color3, #Color4, #Color5 {

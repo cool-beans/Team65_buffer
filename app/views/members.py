@@ -86,8 +86,10 @@ def register(request):
 @login_required
 def all(request):
     context = {}
+    members = Member.objects.order_by('first_name').all()
     context['user'] = request.user
-    context['members'] = helper_paginator(Member.objects.order_by('first_name').all(),10,request.GET.get('page'))
+    context['members'] = helper_paginator(members,10,request.GET.get('page'))
+    context['should_paginate'] = 10 < len(members)
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 
@@ -106,7 +108,8 @@ def filter (request, program_id):
 
 
     context['user'] = user
-    context['members'] = members
+    context['members'] = helper_paginator(members,10,request.GET.get('page'))
+    context['should_paginate'] = 10 < len(members)
     context['programs'] = Program.objects.all()
     return render(request, 'final_project/Members/members.html', context)
 

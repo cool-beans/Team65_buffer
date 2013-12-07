@@ -117,7 +117,7 @@ def profile(request,event_id):
         return render(request,'final_project/Events/events.html',context)
     context['event'] = event
 
-    if request.user.is_authenticated(): # Otherwise, no member.id!    
+    if request.user.is_authenticated(): # Otherwise, no member.id!
         if len(event.booked.filter(id__exact=member.id)) == 0 and \
             len(event.attended.filter(id__exact=member.id)) == 0:
             context['book'] = True
@@ -298,7 +298,7 @@ def all(request):
             request.POST['monday']:
         monday = request.POST['monday'] + timedelta(-request.POST['monday'].weekday())
 
-    context['monday'] = str(monday)
+    context['monday'] = monday
     context['days'] = getdays(monday)
     return render(request,'final_project/Events/events.html',context)
 

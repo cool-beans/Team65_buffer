@@ -5,16 +5,28 @@
 {% block content %}
 <div class="row">
   <div class="col-lg-12">
-    <table class="table table-striped table-bordered table-hover">
-      <th><a type="button" class="btn btn-primary" href="{% url 'event_backweek' monday %}">
-          Previous Week
-	</a></th>
-      <th>Week of {{monday}}</th>
-      <th><a type="button" class="btn btn-primary" href="{% url 'event_forwardweek' monday %}">
-	  Next Week
-	</a></th>
-
-    </table>
+   <ul class="pager">
+     <li class="jumbotron">
+     <span>{{ monday|date:"F" }}</span>
+     </li>
+  </ul>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+   <ul class="pager">
+     <li class="previous"><a type="button" class="btn btn-primary" href="{% url 'event_backweek' monday %}">
+          &larr; Previous Week
+      </a></li>
+     <li class="current">
+         <span>Week of {{ monday|date:"D d M Y" }}</span>
+     </li>
+     <li class="next">
+         <a type="button" class="btn btn-primary" href="{% url 'event_forwardweek' monday %}">
+	        Next Week &rarr;
+	     </a>
+     </li>
+  </ul>
   </div>
 </div>
 {% if user.is_authenticated and user.member.staff %}
