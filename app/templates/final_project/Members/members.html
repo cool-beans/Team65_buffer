@@ -34,6 +34,7 @@
          {% endfor %}
                   <!-- end forloop -->
       </table>
+      {% include "final_project/Common/partials/pagination.html" with objects=members no_objects_message="No Members Yet" %}
    </div>
 </div><!--row-->
 {% endblock %}

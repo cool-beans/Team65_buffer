@@ -1,0 +1,18 @@
+ {% if objects %}
+<div class="pagination">
+   <span class="step-links">
+      {% if objects.has_previous %}
+         <a href="?page={{ objects.previous_page_number }}">&lt</a>
+      {% endif %}
+      <span class="current">
+         {{ objects.number }}
+      </span>
+      {% if objects.has_next %}
+         <a href="?page={{ objects.next_page_number }}">&gt</a>
+      {% endif %}
+   </span>
+</div>
+{% else %}
+<h4>{{ no_objects_message }}</h4>
+{% endif %}
+
