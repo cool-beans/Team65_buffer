@@ -30,9 +30,11 @@
     <a type="button" class="btn btn-primary" href="{% url 'event_book' event.id %}">
       Book Event
     </a>
+    {% if member.staff %}
     <a type="button" class="btn btn-primary" href="{% url 'event_cancel' event.id %}">
       Cancel Event
     </a>
+    {% endif %}
   </div>
 </div>
 {% elif attendcancel %}
@@ -41,7 +43,7 @@
     <a type="button" class="btn btn-primary" href="{% url 'event_attend' event.id %}">
       Attend Event
     </a>
-    <a type="button" class="btn btn-primary" href="{% url 'event_cancel' event.id %}">
+    <a type="button" class="btn btn-primary" href="{% url 'cancel_attendance' event.id %}">
       Cancel Attendance
     </a>
   </div>

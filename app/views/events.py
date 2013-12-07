@@ -17,6 +17,7 @@ from events_helper_functions import getContextForAll
 
 from pprint import pprint
 from app.forms import *
+from django.core.mail import send_mail
 
 
 # A Helper method to pad out the days and transpose them to the right place.
@@ -127,6 +128,7 @@ def profile(request,event_id):
 def book(request,event_id):
     member = request.user.member
     context = {'user':request.user,'member':member}
+
     try:
         event = Event.objects.get(id__exact=event_id)
     except Event.DoesNotExist:
@@ -135,10 +137,32 @@ def book(request,event_id):
         context['monday'] = str(monday)
         context['days'] = getdays(monday)
         return render(request,'final_project/Events/events.html',context)
+
+    if member.get_rating() >= member.get_allowed():
+        context['errors'] = ['Error: You cannot attend any more classes this month.']
+        monday = date.today() + timedelta(-date.today().weekday())
+        context['monday'] = str(monday)
+        context['days'] = getdays(monday)
+        return render(request,'final_project/Events/events.html',context)
+
+    email_content = """
+%s--
+Thank you for booking class %s.
+
+Class starts at %s and lasts till %s. Please be sure to arrive 10 to 15 minutes early.
+
+We look forward to seeing you,
+
+--Guitar Studio
+""" % (member.first_name,  event.get_name(), event.start_time, event.end_time)
+    send_mail(subject="Thank you for your booking!",
+              message=email_content,
+              from_email="guitar@studio.com",
+              recipient_list=[member.email])
     event.booked.add(member)
     event.save()
     context['event'] = event
-    context['alert'] = ['Successfully Booked.']
+    context['alerts'] = ['Successfully Booked.']
     return redirect('/final_project/event_profile/'+ event_id,context)
 
 @login_required
@@ -163,7 +187,7 @@ def attend(request,event_id):
 
 
 @login_required
-def cancel(request,event_id):
+def cancel_attendance(request,event_id):
     member = request.user.member
     context = {'user':request.user,'member':member}
     try:
@@ -179,7 +203,7 @@ def cancel(request,event_id):
     event.attended.remove(member)
     event.save()
     context['event'] = event
-    context['alert'] = ['Successfully Cancelled.']
+    context['alerts'] = ['Successfully Cancelled.']
     return redirect('/final_project/event_profile/'+ event_id,context)
 
 
@@ -268,7 +292,7 @@ def all(request):
         context['user'] = request.user
         context['member'] = request.user.member
     monday = date.today() + timedelta(-date.today().weekday())
-    if request.method == "POST" and  'monday' in request.POST and \
+    if request.method == "POST" and 'monday' in request.POST and \
             request.POST['monday']:
         monday = request.POST['monday'] + timedelta(-request.POST['monday'].weekday())
 
@@ -311,6 +335,22 @@ def cancel(request,event_id):
         event = Event.objects.get(id__exact=event_id)
     except Event.DoesNotExist:
         context['errors'] = ['Error: no such event.']
+
+
+    for member in event.booked.all():
+        email_content = """
+%s--
+We regret to inform you that your class %s from %s to %s was cancelled!
+
+Please feel free to make up your class or reschedule with your teacher.
+
+--Guitar Studio
+""" % (member.first_name, event.start_time, event.end_time, event.get_name())
+        send_mail(subject="Cancellations",
+                  message=email_content,
+                  from_email="guitar@studio.com",
+                  recipient_list=[member.email])
+
     event.delete()
     return render(request,'final_project/Events/events.html',context)
->>>>>>> 1a9dd6d5485d0b1c8dcba8c05dc132e6903474cd
+
