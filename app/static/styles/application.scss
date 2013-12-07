@@ -123,7 +123,7 @@ h2{
       }
    }
 
-form{//#login{
+/*form{//#login{
      position:relative;
    left:40%;
    label, input[type=submit]{
@@ -142,7 +142,11 @@ form{//#login{
       left: 4%;
    }
   }
-
+*/
+.form-control{
+   width:300px;
+   display:inline-block;
+}
 /* Member/Programs Tables */
    th{
       background-color:blue;

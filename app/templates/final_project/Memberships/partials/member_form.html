@@ -1,0 +1,9 @@
+<form  method="post" class="membershiptype_form">
+   <label>Name:</label> {{ membership_type.name }}<br />
+   <label>Description:</label> {{ membership_type.description }}<br />
+   <label>Allowed Frequency:</label> {{ membership_type.allowed_freq }}<br />
+   <label>Price:</label> {{ membership_type.default_price }}<br />
+   <input type="submit" value="Buy" />
+   <input type="hidden" name="next" value="{{ next }}" />
+   {% csrf_token %}
+</form>

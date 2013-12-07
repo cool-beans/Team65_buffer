@@ -1,23 +1,5 @@
-<form  method="post" class="membershiptype_form">
-   <label>Name:</label>
-   <input class='form-control' type="text" name="name" value="{{ membership_type.name }}"><br />
-   <label>Description:</label>
-   <input class='form-control' type="text" name="description" value="{{ membership_type.description }}"><br />
-   <label>Allowed Frequency:</label>
-   <input class='form-control' type="text" name="allowed_freq" value="{{ membership_type.allowed_freq }}"><br />
-   <label>Default Price:</label>
-   <input class='form-control' type="text" name="default_price" value="{{ membership_type.default_price }}"><br />
-   <label>Visible:</label>
-   <input class='form-control' type="text" name="visible" value="{{ membership_type.visible }}"><br />
-   {% include 'final_project/Programs/partials/add_remove_program_form_partial.html' %}
-    {% if buy %}
-      {% if user.member.staff %}
-         <label>User:</label>
-         <input class='form-control' type="text" name="buy_user" value="{{ user.member.username }}" /><br />
-
-      {% endif %}
-   {% endif %}
-   <input type="submit" value="Submit" />
-   <input type="hidden" name="next" value="{{ next }}" />
-     {% csrf_token %}
-</form>
+{% if user.member.staff %}
+   {% include 'final_project/Memberships/partials/staff_form.html' %}
+{% else %}
+   {% include 'final_project/Memberships/partials/member_form.html' %}
+{% endif %}
