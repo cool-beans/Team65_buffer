@@ -320,7 +320,7 @@ def cancel_following(request,event_id):
         return render(request, 'final_project/Events/events.html',context)
 
     for del_event in Event.objects.filter(recurrence=event.recurrence):
-        if del_event.date < event.date:
+        if del_event.date >= event.date:
             del_event.delete()
     return render(request,'final_project/Events/events.html',context)
 
