@@ -61,6 +61,8 @@ def send(request):
                     recipients.append
     if len(recipients) == 0:
         context['errors'] = ['Error: You must select at least one program to email to.']
+        context['subject'] = subject
+        context['content'] = content
         return render(request,'final_project/Emails/emails.html',context)
 
     context['alert'] = "Email successfully sent to: "
